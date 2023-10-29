@@ -2,6 +2,8 @@ from pprint import pprint
 from PIL import Image
 import piexif
 
+# ooga booga
+
 codec = 'ISO-8859-1'  # or latin-1
 
 def exif_to_tag(exif_dict):
