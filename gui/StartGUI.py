@@ -21,19 +21,23 @@ class StartGUI(tk.Frame):
 
     def get_dir(self):
         return fd.askdirectory(title='select workspace', initialdir='/home/')
+    
+    def get_file(self):
+        # Load specific project file
+        pass
         
     def new_project(self):
-        projpath = self.get_dir()
-        if not projpath:
+        projdir = self.get_dir()
+        if not projdir:
             return
-        self.controller.start_project(projpath)
+        self.controller.new_project(projdir)
 
     def open_project(self):
         # TODO: eventually this should select a specific save file, not just a dir
-        projpath = self.get_dir()
-        if not projpath:
+        projfile = "error" # self.get_file()
+        if not projfile:
             return
-        self.controller.start_project(projpath)
+        self.controller.open_project(projfile)
 
 
         

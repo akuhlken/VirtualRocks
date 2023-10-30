@@ -33,8 +33,6 @@ class PipelineGUI(tk.Frame):
 
     def setup_layout(self):
 
-        self.map_image = r'C:\Users\akuhl\Desktop\GitHub\VirtualRocks\gui\tempmap.png'
-
         left = tk.Frame(self, bg=self.controller.backcolor)
         right = tk.Frame(self, bg=self.controller.backcolor)
         prog = tk.Frame(left, bg=self.controller.backcolor)
@@ -45,21 +43,13 @@ class PipelineGUI(tk.Frame):
 
         temp3 = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor).pack(fill="both", expand=True)
 
-        image = ImageTk.PhotoImage(Image.open(self.map_image))
-
         # TODO: Keep map image in the middle of its window
         self.map = tk.Canvas(left, bg=self.controller.backcolor)
         self.map.pack(fill='both', expand=True, side='right')
-        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
-        self.map.bind('<Configure>', self.resizer)
-
+        
         # control elements
-        self.img = Image.open(r"C:\Users\akuhl\Desktop\GitHub\VirtualRocks\gui\DJI_0441.jpg")
-        self.img = self.img.resize((150, 100), Image.LANCZOS)
-        self.img = ImageTk.PhotoImage(self.img)
-        panel = tk.Label(right, image=self.img)
-        panel.image = self.img
-        panel.pack()
+        self.img = tk.Canvas(left, bg=self.controller.backcolor)
+        self.img.pack(fill='both', expand=True, side='right')
         self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.add_images).pack()
         self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor).pack()
         self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.set_bounds()).pack()
@@ -80,6 +70,19 @@ class PipelineGUI(tk.Frame):
     def start_recon(self):
         pass
         # TODO: call apropriate scripts
+
+    def set_map(self, mapdir):
+        image = ImageTk.PhotoImage(Image.open(mapdir))
+        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
+        self.map_image = mapdir
+        self.map.bind('<Configure>', self.resizer)
+
+    def set_example_image(self, imagedir):
+        image = ImageTk.PhotoImage(Image.open(imagedir))
+        self.example_image_id = self.img.create_image(0, 0, image=image, anchor='nw')
+        resized_image = image.resize(500, 300, Image.Resampling.LANCZOS)
+        new_image = ImageTk.PhotoImage(resized_image)
+        self.img.itemconfigure(self.example_image_id, image=new_image)
 
     def resizer(self, e):
         global image1, resized_image, new_image
