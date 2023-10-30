@@ -1,4 +1,7 @@
 import tkinter as tk
+from PIL import ImageTk, Image
+from tkinter import filedialog
+import os
 
 class PipelineGUI(tk.Frame):
 
@@ -40,20 +43,25 @@ class PipelineGUI(tk.Frame):
         controlframe.grid(row=0, column=1, sticky="nsew")
         logframe.grid(row=1, column=1, sticky="nsew")
 
-        self.rowconfigure(0, weight=10)
-        self.columnconfigure(0, weight=10)
+        self.rowconfigure(0, weight=5)
+        self.columnconfigure(0, weight=5)
         self.rowconfigure(1, weight=1)
         self.columnconfigure(1, weight=1)
 
+        # view elements
         MAP_PLACEHOLDER = tk.Button(mapframe, text="[map]").pack(fill="both", expand=True)
-
         PROGRESS_PLACEHOLDER = tk.Button(progressframe, text="[Progress Bar]").pack(fill="both", expand=True)
-        
-        IMAGE_PLACEHOLDER = tk.Button(controlframe, text="[Image]").pack(fill="both", expand=True)
+
+        # control elements
+        img = Image.open("/home/kuhlkena/Documents/GitHub/VirtualRocks/gui/DJI_0441.jpg")
+        img = img.resize((250, 250), Image.ANTIALIAS)
+        img = ImageTk.PhotoImage(img)
+        panel = tk.Label(controlframe, image=img)
+        panel.image = img
+        panel.pack(fill="both", expand=True)
         addphotos = tk.Button(controlframe, text="Add Photos").pack(fill="both", expand=True)
         setbounds = tk.Button(controlframe, text="Set Bounds").pack(fill="both", expand=True)
         action = tk.Button(controlframe, text="Start Reconstruction").pack(fill="both", expand=True)
-
         LOG_PLACEHOLDER = tk.Button(logframe, text="[Log]").pack(fill="both", expand=True)
 
         
