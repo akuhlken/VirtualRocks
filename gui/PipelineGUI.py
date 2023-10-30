@@ -43,26 +43,43 @@ class PipelineGUI(tk.Frame):
         controlframe.grid(row=0, column=1, sticky="nsew")
         logframe.grid(row=1, column=1, sticky="nsew")
 
-        self.rowconfigure(0, weight=5)
-        self.columnconfigure(0, weight=5)
-        self.rowconfigure(1, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=5, minsize=20)
+        self.rowconfigure(1, weight=1, minsize=10)
+        self.columnconfigure(0, weight=5, minsize=20)
+        self.columnconfigure(1, weight=1, minsize=5)
 
         # view elements
         MAP_PLACEHOLDER = tk.Button(mapframe, text="[map]").pack(fill="both", expand=True)
         PROGRESS_PLACEHOLDER = tk.Button(progressframe, text="[Progress Bar]").pack(fill="both", expand=True)
 
         # control elements
-        img = Image.open("/home/kuhlkena/Documents/GitHub/VirtualRocks/gui/DJI_0441.jpg")
-        img = img.resize((250, 250), Image.ANTIALIAS)
-        img = ImageTk.PhotoImage(img)
-        panel = tk.Label(controlframe, image=img)
-        panel.image = img
+        self.img = Image.open("/home/kuhlkena/Documents/GitHub/VirtualRocks/gui/DJI_0441.jpg")
+        self.img = self.img.resize((250, 250), Image.ANTIALIAS)
+        self.img = ImageTk.PhotoImage(self.img)
+        panel = tk.Label(controlframe, image=self.img)
+        panel.image = self.img
         panel.pack(fill="both", expand=True)
-        addphotos = tk.Button(controlframe, text="Add Photos").pack(fill="both", expand=True)
-        setbounds = tk.Button(controlframe, text="Set Bounds").pack(fill="both", expand=True)
-        action = tk.Button(controlframe, text="Start Reconstruction").pack(fill="both", expand=True)
+        self.addphotos = tk.Button(controlframe, text="Add Photos", command=lambda: self.add_images).pack(fill="both", expand=True)
+        self.numimages = tk.Label(controlframe, text="Number of images:").pack()
+        self.setbounds = tk.Button(controlframe, text="Set Bounds", command=lambda: self.set_bounds()).pack(fill="both", expand=True)
+        self.outres = tk.Label(controlframe, text="Output Resulution:").pack()
+        self.action = tk.Button(controlframe, text="Start Reconstruction", command=lambda: self.start_recon).pack(fill="both", expand=True)
         LOG_PLACEHOLDER = tk.Button(logframe, text="[Log]").pack(fill="both", expand=True)
+
+        # TODO: dissable bounds and action button
+        
+
+    def add_images(self):
+        # TODO: get images
+        # self.numimages["text"] = "Num Images: VAL"
+        pass
+
+    def set_bounds(self):
+        pass
+
+    def start_recon(self):
+        pass
+        # TODO: call apropriate scripts
 
         
 
