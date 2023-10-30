@@ -8,3 +8,5 @@ class PipelineGUI(tk.Frame):
         self.controller = controller
         label = tk.Label(self, text="This is page 1", font=controller.title_font)
         label.pack(side="top", fill="x", pady=10)
+
+        print(self.projpath)
