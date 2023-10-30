@@ -7,10 +7,14 @@ from StartGUI import StartGUI
 class main(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-
+        self.minsize(500, 300)
         self.geometry("1000x500")
         self.title("VirtualRocks")
-        self.title_font = tkfont.Font(family='Helvetica', size=24, weight="bold", slant="italic")
+
+        # Application styling
+        self.font = tkfont.Font(family='Arial', size=24, weight="bold")
+        self.buttoncolor = "#ffffff"
+        self.backcolor = "#ffffff"
 
         # container is a stack of fames (aka out two main pages)
         self.container = tk.Frame(self)

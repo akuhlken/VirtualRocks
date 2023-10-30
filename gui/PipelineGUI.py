@@ -35,23 +35,20 @@ class PipelineGUI(tk.Frame):
 
         self.map_image = r'C:\Users\akuhl\Desktop\GitHub\VirtualRocks\gui\tempmap.png'
 
-        left = tk.Frame(self, highlightbackground="black", highlightthickness=1)
-        right = tk.Frame(self, highlightbackground="black", highlightthickness=1)
-        prog = tk.Frame(left, highlightbackground="black", highlightthickness=1)
-        log = tk.Frame(right, highlightbackground="black", highlightthickness=1)
+        left = tk.Frame(self, bg=self.controller.backcolor)
+        right = tk.Frame(self, bg=self.controller.backcolor)
+        prog = tk.Frame(left, bg=self.controller.backcolor)
 
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
 
-        temp3 = tk.Button(prog, height=10, text="[progress]").pack(fill="both", expand=True)
+        temp3 = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor).pack(fill="both", expand=True)
 
         image = ImageTk.PhotoImage(Image.open(self.map_image))
-        imageWidth = image.width()
-        imageHeight = image.height()
 
         # TODO: Keep map image in the middle of its window
-        self.map = tk.Canvas(left)
+        self.map = tk.Canvas(left, bg=self.controller.backcolor)
         self.map.pack(fill='both', expand=True, side='right')
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map.bind('<Configure>', self.resizer)
@@ -63,12 +60,12 @@ class PipelineGUI(tk.Frame):
         panel = tk.Label(right, image=self.img)
         panel.image = self.img
         panel.pack()
-        self.addphotos = tk.Button(right, text="Add Photos", command=lambda: self.add_images).pack()
-        self.numimages = tk.Label(right, text="Number of images:").pack()
-        self.setbounds = tk.Button(right, text="Set Bounds", command=lambda: self.set_bounds()).pack()
-        self.outres = tk.Label(right, text="Output Resulution:").pack()
-        self.action = tk.Button(right, text="Start Reconstruction", command=lambda: self.start_recon).pack()
-        self.log = tk.Button(right, text="Log", command=lambda: self.start_recon).pack(fill="both", expand=True)
+        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.add_images).pack()
+        self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor).pack()
+        self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.set_bounds()).pack()
+        self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor).pack()
+        self.action = tk.Button(right, text="Start Reconstruction", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.start_recon).pack()
+        self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor).pack(fill="both", expand=True)
 
         # TODO: dissable bounds and action button
         
@@ -97,6 +94,8 @@ class PipelineGUI(tk.Frame):
         resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
         new_image = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=new_image)
+
+        print(e.width, e.height)
 
         
 
