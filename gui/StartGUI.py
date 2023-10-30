@@ -1,17 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog as fd
 
-def get_dir():
-    return fd.askdirectory(title='select workspace', initialdir='/home/')
-
-def new_project():
-    projpath = get_dir()
-    return projpath
-
-def open_project():
-    projpath = get_dir()
-    return projpath
-
 class StartGUI(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -23,9 +12,26 @@ class StartGUI(tk.Frame):
         middleframe = tk.Frame(self)
         middleframe.place(anchor="c", relx=.5, rely=.5)
 
-        newBtn = tk.Button(middleframe, height=10, width=20, text="New", command=lambda: controller.start_project(new_project()))
-        openBtn = tk.Button(middleframe, height=10, width=20, text="Open", command=lambda: controller.start_project(open_project()))
+        newBtn = tk.Button(middleframe, height=10, width=20, text="New", command=lambda: self.new_project())
+        openBtn = tk.Button(middleframe, height=10, width=20, text="Open", command=lambda: self.open_project())
 
         newBtn.pack(padx=20, side='left')
         openBtn.pack(padx=20, side='right')
+
+    def get_dir(self):
+        return fd.askdirectory(title='select workspace', initialdir='/home/')
+        
+    def new_project(self):
+        projpath = self.get_dir()
+        if not projpath:
+            return
+        self.controller.start_project(projpath)
+
+    def open_project(self):
+        # TODO: eventually this should select a specific save file, not just a dir
+        projpath = self.get_dir()
+        if not projpath:
+            return
+        self.controller.start_project(projpath)
+
         

@@ -6,7 +6,11 @@ class PipelineGUI(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.projpath = projpath
         self.controller = controller
+        self.creat_menu()
+        self.setup_layout()
+        print(self.projpath)
 
+    def creat_menu(self):
         menubar = tk.Menu(self)  
 
         file = tk.Menu(menubar, tearoff=0)  
@@ -22,6 +26,43 @@ class PipelineGUI(tk.Frame):
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info)  
 
-        controller.config(menu=menubar)
+        self.controller.config(menu=menubar)
 
-        print(self.projpath)
+    def setup_layout(self):
+
+        mapframe = tk.Frame(self, highlightbackground="black", highlightthickness=1)
+        progressframe = tk.Frame(self, highlightbackground="black", highlightthickness=1)
+        controlframe = tk.Frame(self, highlightbackground="black", highlightthickness=1)
+        logframe = tk.Frame(self, highlightbackground="black", highlightthickness=1)
+
+        mapframe.grid(row=0, column=0, sticky="nsew")
+        progressframe.grid(row=1, column=0, sticky="nsew")
+        controlframe.grid(row=0, column=1, sticky="nsew")
+        logframe.grid(row=1, column=1, sticky="nsew")
+
+        self.rowconfigure(0, weight=10)
+        self.columnconfigure(0, weight=10)
+        self.rowconfigure(1, weight=1)
+        self.columnconfigure(1, weight=1)
+
+        MAP_PLACEHOLDER = tk.Button(mapframe, text="[map]").pack(fill="both", expand=True)
+
+        PROGRESS_PLACEHOLDER = tk.Button(progressframe, text="[Progress Bar]").pack(fill="both", expand=True)
+        
+        IMAGE_PLACEHOLDER = tk.Button(controlframe, text="[Image]").pack(fill="both", expand=True)
+        addphotos = tk.Button(controlframe, text="Add Photos").pack(fill="both", expand=True)
+        setbounds = tk.Button(controlframe, text="Set Bounds").pack(fill="both", expand=True)
+        action = tk.Button(controlframe, text="Start Reconstruction").pack(fill="both", expand=True)
+
+        LOG_PLACEHOLDER = tk.Button(logframe, text="[Log]").pack(fill="both", expand=True)
+
+        
+
+
+
+
+
+
+
+
+

@@ -12,18 +12,12 @@ class main(tk.Tk):
         self.title("VirtualRocks")
         self.title_font = tkfont.Font(family='Helvetica', size=24, weight="bold", slant="italic")
 
-        # the container is where we'll stack a bunch of frames
-        # on top of each other, then the one we want visible
-        # will be raised above the others
+        # container is a stack of fames (aka out two main pages)
         self.container = tk.Frame(self)
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        """ startFrame = StartGUI(parent=container, controller=self)
-        self.frames["StartGUI"] = startFrame
-        startFrame.grid(row=0, column=0, sticky="nsew")
- """            
         frame = StartGUI(parent=self.container, controller=self)
         frame.grid(row=0, column=0, sticky="nsew")
         frame.tkraise()
