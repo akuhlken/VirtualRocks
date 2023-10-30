@@ -8,7 +8,7 @@ class main(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        self.geometry("1920x1080")
+        self.geometry("500x500")
         self.title("VirtualRocks")
         self.title_font = tkfont.Font(family='Helvetica', size=24, weight="bold", slant="italic")
 
