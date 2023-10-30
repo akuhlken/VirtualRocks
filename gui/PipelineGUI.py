@@ -48,8 +48,8 @@ class PipelineGUI(tk.Frame):
         self.map.pack(fill='both', expand=True, side='right')
         
         # control elements
-        self.img = tk.Canvas(left, bg=self.controller.backcolor)
-        self.img.pack(fill='both', expand=True, side='right')
+        self.panel = tk.Label(right)
+        self.panel.pack()
         self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.add_images).pack()
         self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor).pack()
         self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.set_bounds()).pack()
@@ -78,11 +78,11 @@ class PipelineGUI(tk.Frame):
         self.map.bind('<Configure>', self.resizer)
 
     def set_example_image(self, imagedir):
-        image = ImageTk.PhotoImage(Image.open(imagedir))
-        self.example_image_id = self.img.create_image(0, 0, image=image, anchor='nw')
-        resized_image = image.resize(500, 300, Image.Resampling.LANCZOS)
-        new_image = ImageTk.PhotoImage(resized_image)
-        self.img.itemconfigure(self.example_image_id, image=new_image)
+        img = Image.open(imagedir)
+        img = img.resize((150, 100), Image.Resampling.LANCZOS)
+        img = ImageTk.PhotoImage(img)
+        self.panel.config(image=img)
+        self.panel.image = img
 
     def resizer(self, e):
         global image1, resized_image, new_image
@@ -97,8 +97,6 @@ class PipelineGUI(tk.Frame):
         resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
         new_image = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=new_image)
-
-        print(e.width, e.height)
 
         
 

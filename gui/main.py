@@ -39,8 +39,8 @@ class main(tk.Tk):
         # TODO: self.projfile = progjdir + new file
         frame = PipelineGUI(self.container, self, projdir)
         frame.grid(row=0, column=0, sticky="nsew")
-        frame.set_map("/home/kuhlkena/Documents/GitHub/VirtualRocks/gui/tempmap.png")
-        frame.set_example_image("/home/kuhlkena/Documents/GitHub/VirtualRocks/gui/DJI_0441.jpg")
+        frame.set_map(r"C:\Users\kuhlkena\Documents\capstone\VirtualRocks\gui\tempmap.png")
+        frame.set_example_image(r"C:\Users\kuhlkena\Documents\capstone\VirtualRocks\gui\DJI_0441.jpg")
         frame.tkraise()
 
     def open_project(self, projfile):
