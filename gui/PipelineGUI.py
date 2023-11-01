@@ -1,9 +1,12 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 from tkinter import filedialog
-import os
+import pathlib as pl
 
 class PipelineGUI(tk.Frame):
+    
+    DEFAULT_MAP = pl.Path(f"gui/tempmap.png").resolve()
+    DEFAULT_PREVIEW = pl.Path(f"gui/DJI_0441.jpg").resolve()
 
     def __init__(self, parent, controller, projpath):
         tk.Frame.__init__(self, parent)
