@@ -72,7 +72,6 @@ class main(tk.Tk):
     def update_map(self):
         pass
 
-
 if __name__ == "__main__":
     app = main()
     app.mainloop()

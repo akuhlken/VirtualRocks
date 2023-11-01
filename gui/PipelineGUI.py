@@ -62,17 +62,11 @@ class PipelineGUI(tk.Frame):
 
         # TODO: dissable bounds and action button
         
-    def add_images(self):
-        # TODO: get images
-        # self.numimages["text"] = "Num Images: VAL"
-        pass
-
-    def set_bounds(self):
-        pass
-
-    def start_recon(self):
-        pass
-        # TODO: call apropriate scripts
+    def update_text(self, numimg=None, outres=None):
+        if numimg:
+            self.numimages = "Num images: " + numimg
+        if outres:
+            self.outres = "Output resolution: " + outres
 
     def set_map(self, mapdir):
         image = ImageTk.PhotoImage(Image.open(mapdir))
