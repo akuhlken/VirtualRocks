@@ -34,6 +34,15 @@ def iterate(imgDir):
     # this is where i should loop through the images in the directory, passing the files from the directory to imgEXIF
     # end should return dictionary (or an object)
     # probably should make a dictionary of dictionaries.
+
+    # we can use this to limit what file types we input if we want
+    for path in pl.Path(imgDir).glob('*.jpg'):
+        with open(str(path)) as f:
+            print(pl.Path(str(f)).stem)
+            #imagePath = pl.Path(imgDir + pl.Path(str(f)).stem + ".jpg").resolve()
+            #imgEXIF(imagePath)
+            # need to fix the file names
+
     imagePath = pl.Path(imgDir + "/DJI_0441.jpg").resolve()
     imgEXIF(imagePath)
 
@@ -64,7 +73,7 @@ def main():
     exif_dict = piexif.load(im.info.get('exif'))
     exif_dict = exif_to_tag(exif_dict)
 
-    print(filename)
+    print(pl.Path(filename).stem)
     pprint(exif_dict['GPS'])
 
     exif_dict = piexif.load(im2.info.get('exif'))
