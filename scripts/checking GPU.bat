@@ -3,6 +3,7 @@
 cd Desktop
 mkdir env:userprofile\Desktop\"Cuda"
 SET  a = "NVIDIA"
-SET  b = wmic path win32_VideoController get name
-if not x%a:b=%==x%a% echo It has an NVIDIA chip
+
+for /f  %%i in ('gwmi win32_VideoController | FL Name') do ^
+    if "%%j"=="a" do pip install cuda-pyton
 end local
