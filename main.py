@@ -1,6 +1,6 @@
 import tkinter as tk           
 from tkinter import font as tkfont  
-
+import scripts.getMeta as meta
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 
@@ -49,6 +49,7 @@ class main(tk.Tk):
 
     def add_photos(self, imagedir):
         self.imagedir = imagedir
+        meta.iterate(self.imagedir)
 
     def set_bounds(self, A, B):
         self.A = A
@@ -71,7 +72,6 @@ class main(tk.Tk):
 
     def update_map(self):
         pass
-
 
 if __name__ == "__main__":
     app = main()

@@ -1,6 +1,6 @@
 import tkinter as tk
 from PIL import ImageTk, Image
-from tkinter import filedialog
+from tkinter import filedialog as fd
 import pathlib as pl
 
 class PipelineGUI(tk.Frame):
@@ -53,26 +53,25 @@ class PipelineGUI(tk.Frame):
         # control elements
         self.panel = tk.Label(right)
         self.panel.pack()
-        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.add_images).pack()
+        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.add_photos()).pack()
         self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor).pack()
         self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.set_bounds()).pack()
         self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor).pack()
         self.action = tk.Button(right, text="Start Reconstruction", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.start_recon).pack()
         self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor).pack(fill="both", expand=True)
 
-        # TODO: dissable bounds and action button
-        
-    def add_images(self):
-        # TODO: get images
-        # self.numimages["text"] = "Num Images: VAL"
-        pass
+        #self.setbounds.config(state="disabled")
+        #self.action.config(state="disabled")
 
-    def set_bounds(self):
-        pass
+    def add_photos(self):
+        self.controller.add_photos(fd.askdirectory(title='select workspace', initialdir='/home/'))
+        # TODO set number of images 
 
-    def start_recon(self):
-        pass
-        # TODO: call apropriate scripts
+    def update_text(self, numimg=None, outres=None):
+        if numimg:
+            self.numimages = "Num images: " + numimg
+        if outres:
+            self.outres = "Output resolution: " + outres
 
     def set_map(self, mapdir):
         image = ImageTk.PhotoImage(Image.open(mapdir))
