@@ -68,6 +68,7 @@ class main(tk.Tk):
         # TODO: Iterate should return a success or fail and only activate button if it worked
         meta.iterate(self.imagedir)
         self.page2.setbounds.config(state="active")
+        self.page2.update_text(numimg=0)
 
     def set_bounds(self, A, B):
         self.page2.action.config(state="active")

@@ -3,11 +3,18 @@ from PIL import Image
 import piexif
 import pathlib as pl
 
-# class photoManager
-# look at StartGUI for stuff about def __init__
+# class PhotoManager():
 
+#fields
+    # dict of imgs + metadata
+    # max lat
+    # min lat
+    # max long
+    # min long
+    # numImgs
 
-# should be class with dictionary as a field, max lat long as field, min lat long as field
+# def __init__(self, parent, controller):
+
 
 codec = 'ISO-8859-1'  # or latin-1
 
@@ -31,6 +38,8 @@ def exif_to_tag(exif_dict):
 
 def iterate(imgDir):
     print("hm, sux")
+
+    numImages = 0
     # this is where i should loop through the images in the directory, passing the files from the directory to imgEXIF
     # end should return dictionary (or an object)
     # probably should make a dictionary of dictionaries.
@@ -38,14 +47,13 @@ def iterate(imgDir):
     # we can use this to limit what file types we input if we want
     for path in pl.Path(imgDir).glob('*.jpg'):
         with open(str(path)) as f:
-            print(pl.Path(str(f)).stem)
+            numImages += 1
+            #print(pl.Path(str(f)).stem)
+
             #imagePath = pl.Path(imgDir + pl.Path(str(f)).stem + ".jpg").resolve()
             #imgEXIF(imagePath)
-            # need to fix the file names
-
-    imagePath = pl.Path(imgDir + "/DJI_0441.jpg").resolve()
-    imgEXIF(imagePath)
-
+            # need to fix the file name stuff
+    print("number of image loaded: " + str(numImages))
 
 def imgEXIF(filename):
     # open the file
