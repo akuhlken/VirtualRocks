@@ -7,16 +7,17 @@ class PipelineGUI(tk.Frame):
     
     DEFAULT_MAP = pl.Path(f"gui/tempmap.png").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/DJI_0441.jpg").resolve()
+    STATE = 0  # 0 = not started, 1 = in progress, 2 = done
 
     def __init__(self, parent, controller, projpath):
         tk.Frame.__init__(self, parent)
         self.projpath = projpath
         self.controller = controller
-        self.creat_menu()
+        self.create_menu()
         self.setup_layout()
         print(self.projpath)
 
-    def creat_menu(self):
+    def create_menu(self):
         menubar = tk.Menu(self)  
 
         file = tk.Menu(menubar, tearoff=0)  
@@ -53,21 +54,44 @@ class PipelineGUI(tk.Frame):
         # control elements
         self.panel = tk.Label(right)
         self.panel.pack()
-        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.add_photos()).pack()
-        self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor).pack()
-        self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.set_bounds()).pack()
-        self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor).pack()
-        self.action = tk.Button(right, text="Start Reconstruction", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.start_recon).pack()
-        self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor).pack(fill="both", expand=True)
+        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.photos_handler())
+        self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor)
+        self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.bounds_handler())
+        self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor)
+        self.action = tk.Button(right, text="Start", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.action_handler())
+        self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor)
+        
+        self.addphotos.pack()
+        self.numimages.pack()
+        self.setbounds.pack()
+        self.outres.pack()
+        self.action.pack()
+        self.log.pack(fill="both", expand=True)
 
-        #self.setbounds.config(state="disabled")
-        #self.action.config(state="disabled")
+        self.setbounds.config(state="disabled")
+        self.action.config(state="disabled")
 
-    def add_photos(self):
+    def photos_handler(self):
         self.controller.add_photos(fd.askdirectory(title='select workspace', initialdir='/home/'))
-        # TODO set number of images 
+
+    def bounds_handler(self):
+        self.controller.set_bounds((0,0),(0,0))
+
+    def action_handler(self):
+        if self.STATE == 0:
+            self.controller.start_recon()
+            #self.action.config(text="Cancel")
+            return
+        if self.STATE == 1:
+            self.controller.cancel_recon()
+            #self.action.config(text="Start")
+            return
+        if self.STATE == 2:
+            self.controller.export()
+            return
 
     def update_text(self, numimg=None, outres=None):
+        # for coden: call with update_text(numimg= NUMBER OF IMAGES) these are optional args
         if numimg:
             self.numimages = "Num images: " + numimg
         if outres:

@@ -3,6 +3,10 @@ from tkinter import font as tkfont
 import scripts.getMeta as meta
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
+from time import sleep
+from threading import Thread
+
+debug = True # while true, recon scripts will not be run
 
 class main(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -31,38 +35,62 @@ class main(tk.Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        frame = StartGUI(parent=self.container, controller=self)
-        frame.grid(row=0, column=0, sticky="nsew")
-        frame.tkraise()
+        self.page1 = StartGUI(parent=self.container, controller=self)
+        self.page1.grid(row=0, column=0, sticky="nsew")
+        self.page1.tkraise()
 
     def new_project(self, projdir):
         # TODO: self.projfile = progjdir + new file
-        frame = PipelineGUI(self.container, self, projdir)
-        frame.grid(row=0, column=0, sticky="nsew")
-        frame.set_map(frame.DEFAULT_MAP)
-        frame.set_example_image(frame.DEFAULT_PREVIEW)
-        frame.tkraise()
+        self.page2 = PipelineGUI(self.container, self, projdir)
+        self.page2.grid(row=0, column=0, sticky="nsew")
+        self.page2.set_map(self.page2.DEFAULT_MAP)
+        self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
+        self.page2.tkraise()
 
     def open_project(self, projfile):
         # TODO: loading of old project
         print("NOT YET COMPLETED")
 
+    def _recon(self):
+        self.page2.STATE = 1
+        self.page2.action.config(text="Cancel")
+        if not debug:
+            pass # TODO: run scripts
+        else:
+            print("starting recon")
+            sleep(5)
+            print("recon complete")
+        self.page2.action.config(text="Export")
+        self.page2.STATE = 2
+
     def add_photos(self, imagedir):
         self.imagedir = imagedir
+        # TODO: Iterate should return a success or fail and only activate button if it worked
         meta.iterate(self.imagedir)
+        self.page2.setbounds.config(state="active")
 
     def set_bounds(self, A, B):
+        self.page2.action.config(state="active")
         self.A = A
         self.B = B
 
     def start_recon(self):
-        pass
+        self.thread1 = Thread(target = self._recon)
+        self.thread1.start()
 
     def cancel_recon(self):
-        pass
+        # TODO: kill self.thread1
+        if not debug:
+            pass # TODO: cancel recon
+        else:
+            print("canceling recon")
+        #self.page2.action.config(text="Start")
 
     def export(self):
-        pass
+        if not debug:
+            pass # TODO: export model
+        else:
+            print("Exported")
 
     def update_log(self):
         pass
