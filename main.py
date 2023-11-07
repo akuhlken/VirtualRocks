@@ -1,10 +1,12 @@
+import subprocess
 import tkinter as tk           
 from tkinter import font as tkfont  
 import scripts.getMeta as meta
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from time import sleep
-from threading import Thread
+from threading import Thread    
+from os import system
 
 debug = True # while true, recon scripts will not be run
 
@@ -75,6 +77,10 @@ class main(tk.Tk):
         self.B = B
 
     def start_recon(self):
+        # both of these get a permission denied error
+
+        #subprocess.call(["/home/kuhlkena/Documents/GitHub/VirtualRocks/scripts/temp.py"])
+        #system("/home/kuhlkena/Documents/GitHub/VirtualRocks/scripts/temp.py")
         self.thread1 = Thread(target = self._recon)
         self.thread1.start()
 
