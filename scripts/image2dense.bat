@@ -2,7 +2,7 @@
 
 REM Pre-condition: DATASET_PATH must point to a directory with ONLY an images folder containing drone photos
 
-set DATASET_PATH=C:\Users\kuhlkena\Downloads\test1
+set DATASET_PATH=C:\Users\akuhl\Downloads\colmap-test
 echo DATASET_PATH is set to %DATASET_PATH%
 
 setlocal enabledelayedexpansion

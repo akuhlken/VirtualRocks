@@ -1,14 +1,14 @@
 import subprocess
 import tkinter as tk           
 from tkinter import font as tkfont  
-import scripts.getMeta as meta
+#import scripts.getMeta as meta
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from time import sleep
 from threading import Thread    
 from os import system
 
-debug = True # while true, recon scripts will not be run
+debug = False # while true, recon scripts will not be run
 
 class main(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -57,7 +57,7 @@ class main(tk.Tk):
         self.page2.STATE = 1
         self.page2.action.config(text="Cancel")
         if not debug:
-            pass # TODO: run scripts
+            subprocess.call(r"C:\Users\akuhl\Desktop\GitHub\VirtualRocks\scripts\image2dense.bat", shell=True)
         else:
             print("starting recon")
             sleep(5)
@@ -66,9 +66,7 @@ class main(tk.Tk):
         self.page2.STATE = 2
 
     def add_photos(self, imagedir):
-        self.imagedir = imagedir
-        # TODO: Iterate should return a success or fail and only activate button if it worked
-        meta.iterate(self.imagedir)
+        pass
         self.page2.setbounds.config(state="active")
 
     def set_bounds(self, A, B):
