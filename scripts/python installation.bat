@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 :: Define Python version and installation directory
-set "PYTHON_VERSION=3.10.0"
+set "PYTHON_VERSION=3.12.0"
 set "INSTALL_DIR=C:\Python\%PYTHON_VERSION%"
 
 :: URL to Python installer
