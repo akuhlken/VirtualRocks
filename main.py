@@ -1,6 +1,8 @@
-import tkinter as tk           
+import tkinter as tk       
+from pprint import pprint    
 from tkinter import font as tkfont  
 import scripts.getMeta as meta
+from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from time import sleep
@@ -66,7 +68,12 @@ class main(tk.Tk):
     def add_photos(self, imagedir):
         self.imagedir = imagedir
         # TODO: Iterate should return a success or fail and only activate button if it worked
-        meta.iterate(self.imagedir)
+        
+        self.currentProj = PhotoManager(self.imagedir)
+        self.currentProj.makeDict()
+        #pprint(self.currentProj.ImgMetaDict)
+        print("img dir: " + str(self.currentProj.imgDir) + " has " + str(self.currentProj.NUM_IMGS) + " images!")
+
         self.page2.setbounds.config(state="active")
         self.page2.update_text(numimg=0)
 

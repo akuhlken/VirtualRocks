@@ -7,16 +7,26 @@ import pathlib as pl
 
 #fields
     # dict of imgs + metadata
-    # max lat
-    # min lat
-    # max long
-    # min long
-    # numImgs
+    # MAX_LAT = -100
+    # MIN_LAT = 100
+    # MAX_LONG = -200
+    # MIN_LONG = 200
+    # NUM_IMGS = 0
+    # imgDir
 
-# def __init__(self, parent, controller):
+# def __init__(self, imgDir):
+#   self.imgDir = imgDir
 
 
-codec = 'ISO-8859-1'  # or latin-1
+
+#needed functions:
+    # makeDict - makes the dictionary of images and their metadata. finds # of images, max lat + long values
+    # getDict - returns the value of the dictionary to whoever calls it.
+    # getBounds - returns the min and max latitude and longitudes (as found in makeDict)
+    # getNumImg - returns the number of images, as found by makeDict
+
+
+codec = 'ISO-8859-1'
 
 def exif_to_tag(exif_dict):
     exif_tag_dict = {}
@@ -28,9 +38,11 @@ def exif_to_tag(exif_dict):
         for tag in exif_dict[ifd]:
             try:
                 element = exif_dict[ifd][tag].decode(codec)
+                #print("good: " + str(piexif.TAGS[ifd][tag]["name"]) + " " + str(element))
 
             except AttributeError:
                 element = exif_dict[ifd][tag]
+                #print("bad: " + str(piexif.TAGS[ifd][tag]["name"]) + " " + str(element))
 
             exif_tag_dict[ifd][piexif.TAGS[ifd][tag]["name"]] = element
 
@@ -54,6 +66,8 @@ def iterate(imgDir):
             #imgEXIF(imagePath)
             # need to fix the file name stuff
     print("number of image loaded: " + str(numImages))
+    imagePath = pl.Path(imgDir + r"\DJI_0441.jpg").resolve()
+    imgEXIF(imagePath)
 
 def imgEXIF(filename):
     # open the file
@@ -63,6 +77,7 @@ def imgEXIF(filename):
     exif_dict = exif_to_tag(exif_dict)
     # print out the metadata to the terminal
     print(filename)
+    # the 'GPS' prints out the metadata that mentions GPS stuff
     pprint(exif_dict['GPS'])
 
     return
