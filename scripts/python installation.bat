@@ -1,74 +1,31 @@
 @echo off
-setlocal EnableDelayedExpansion
+setlocal enabledelayedexpansion
 
-set url=https://endoflife.date/api/python.json
+:: Define Python version and installation directory
+set "PYTHON_VERSION=3.10.0"
+set "INSTALL_DIR=C:\Python\%PYTHON_VERSION%"
 
-set "response="
-for /f "usebackq delims=" %%i in (`powershell -command "& {(Invoke-WebRequest -Uri '%url%').Content}"`) do set "response=!response!%%i"
+:: URL to Python installer
+set "PYTHON_URL=https://www.python.org/ftp/python/%PYTHON_VERSION%/python-%PYTHON_VERSION%-amd64.exe"
 
-set "latest_py_version="
-for /f "tokens=1,2 delims=}" %%a in ("%response%") do (
-    set "object=%%a}"
-    for %%x in (!object!) do (
-        for /f "tokens=1,* delims=:" %%y in ("%%x") do (
-            if "%%~y" == "latest" (
-                set "latest_py_version=%%~z"
-            )
-        )
-    )
+:: Create installation directory if it doesn't exist
+if not exist "%INSTALL_DIR%" (
+    mkdir "%INSTALL_DIR%"
 )
 
-echo %latest_py_version%
+:: Download Python installer
+echo Downloading Python %PYTHON_VERSION%...
+bitsadmin.exe /transfer "PythonInstaller" "%PYTHON_URL%" "%INSTALL_DIR%\python-%PYTHON_VERSION%-amd64.exe"
 
-REM Set the minimum required Python version
-set python_version=%latest_py_version%
+:: Install Python silently
+echo Installing Python %PYTHON_VERSION%...
+"%INSTALL_DIR%\python-%PYTHON_VERSION%-amd64.exe" /quiet InstallAllUsers=1 PrependPath=1
 
-REM Check if Python is already installed and if the version is less than python_version
-echo Checking if Python %python_version% or greater is already installed...
-set "current_version="
-where python >nul 2>nul && (
-    for /f "tokens=2" %%v in ('python --version 2^>^&1') do set "current_version=%%v"
-)
-if "%current_version%"=="" (
-    echo Python is not installed. Proceeding with installation.
+:: Check if Python installation was successful
+if exist "%INSTALL_DIR%\python.exe" (
+    echo Python %PYTHON_VERSION% has been successfully installed.
 ) else (
-    if "%current_version%" geq "%python_version%" (
-        echo Python %python_version% or greater is already installed. Exiting.
-        pause
-        exit
-    )
+    echo Failed to install Python. Please check the installation log for details.
 )
 
-REM Define the URL and file name of the Python installer
-set "url=https://www.python.org/ftp/python/%python_version%/python-%python_version%-amd64.exe"
-set "installer=python-%python_version%-amd64.exe"
-
-REM Define the installation directory
-set "targetdir=C:\Python%python_version%"
-
-REM Download the Python installer
-echo Downloading Python installer...
-powershell -Command "(New-Object Net.WebClient).DownloadFile('%url%', '%installer%')"
-
-REM Install Python with a spinner animation
-echo Installing Python...
-start /wait %installer% /quiet /passive TargetDir=%targetdir% Include_test=0 ^
-&& (echo Done.) || (echo Failed!)
-echo.
-
-REM Add Python to the system PATH
-echo Adding Python to the system PATH...
-setx PATH "%targetdir%;%PATH%"
-if %errorlevel% EQU 1 (
-  echo Python has been successfully installed to your system BUT failed to set system PATH. Try running the script as administrator.
-  pause
-  exit
-)
-echo Python %python_version% has been successfully installed and added to the system PATH.
-
-REM Cleanup
-echo Cleaning up...
-del %installer%
-
-echo Done!
-pause
+endlocal
