@@ -20,6 +20,7 @@ bitsadmin.exe /transfer "PythonInstaller" "%PYTHON_URL%" "%INSTALL_DIR%\python-%
 :: Install Python silently
 echo Installing Python %PYTHON_VERSION%...
 start /wait "" "%INSTALL_DIR%\python-%PYTHON_VERSION%-amd64.exe" /quiet InstallAllUsers=1 PrependPath=1
+:: "%INSTALL_DIR%\python-%PYTHON_VERSION%-amd64.exe" /quiet InstallAllUsers=1 PrependPath=1
 
 :: Check if Python installation was successful
 if exist "%INSTALL_DIR%\python.exe" (
