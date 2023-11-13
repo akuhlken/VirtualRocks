@@ -4,7 +4,7 @@ flag = False
 
 def dense2mesh(projdir):
     print("Loaded dense2mesh.py")
-    flag = True
+    flag = False
     # Path to Colmap dense folder
     base_path = projdir + r"\dense"
 
@@ -24,6 +24,8 @@ def dense2mesh(projdir):
     if flag: 
         ~flag
         return False
+    
+    print(ms.number_meshes())
 
     # Point cloud simplification
     print("Optimizing Point Cloud")
