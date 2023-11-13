@@ -6,7 +6,8 @@ from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from time import sleep
 from threading import Thread    
-from os import system
+import pathlib as pl
+import scripts.dense2mesh as d2m
 
 debug = False # while true, recon scripts will not be run
 
@@ -15,12 +16,13 @@ class main(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         # Controller Variables
-        self.projfile = ""
+        self.projdir = ""
         self.imagedir = ""
         self.A = (0,0)
         self.B = (0,0)
         self.map = None
         self.image = None
+        self.p = None
 
         self.minsize(500, 300)
         self.geometry("1000x500")
@@ -44,6 +46,7 @@ class main(tk.Tk):
     def new_project(self, projdir):
         # TODO: self.projfile = progjdir + new file
         self.page2 = PipelineGUI(self.container, self, projdir)
+        self.projdir = projdir
         self.page2.grid(row=0, column=0, sticky="nsew")
         self.page2.set_map(self.page2.DEFAULT_MAP)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
@@ -56,17 +59,26 @@ class main(tk.Tk):
     def _recon(self):
         self.page2.STATE = 1
         self.page2.action.config(text="Cancel")
-        if not debug:
-            subprocess.call(r"C:\Users\akuhl\Desktop\GitHub\VirtualRocks\scripts\image2dense.bat", shell=True)
-        else:
+        if debug:
             print("starting recon")
             sleep(5)
             print("recon complete")
-        self.page2.action.config(text="Export")
-        self.page2.STATE = 2
+            return
+        else:
+            image2dense = pl.Path("scripts/image2dense.bat").resolve()
+            workingdir = image2dense.parent
+            self.p = subprocess.Popen([str(image2dense), str(self.projdir), str(self.imagedir)], cwd=str(workingdir))
+            self.page2.action.config(text="Cancel")
+            self.page2.STATE = 1
+
+        rcode = self.p.wait()
+        if rcode == 0: # Start dense2mesh
+            if d2m.dense2mesh(self.projdir): # true if exited normally
+                self.page2.action.config(text="Export")
+                self.page2.STATE = 2
 
     def add_photos(self, imagedir):
-        pass
+        self.imagedir = imagedir
         self.page2.setbounds.config(state="active")
 
     def set_bounds(self, A, B):
@@ -75,20 +87,23 @@ class main(tk.Tk):
         self.B = B
 
     def start_recon(self):
-        # both of these get a permission denied error
-
-        #subprocess.call(["/home/kuhlkena/Documents/GitHub/VirtualRocks/scripts/temp.py"])
-        #system("/home/kuhlkena/Documents/GitHub/VirtualRocks/scripts/temp.py")
         self.thread1 = Thread(target = self._recon)
         self.thread1.start()
 
     def cancel_recon(self):
-        # TODO: kill self.thread1
-        if not debug:
-            pass # TODO: cancel recon
-        else:
+        if debug:
             print("canceling recon")
-        #self.page2.action.config(text="Start")
+            return
+        else:
+            try:
+                d2m.kill()
+                self.p.terminate()  # Attempt to gracefully terminate
+                self.p.wait(timeout=5)  # Wait for the process to finish (with timeout)
+            except subprocess.TimeoutExpired:
+                self.p.kill()  # Forcefully kill if terminate() didn't work
+
+            self.page2.action.config(text="Start")
+            self.page2.STATE = 0
 
     def export(self):
         if not debug:

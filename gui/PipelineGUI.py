@@ -15,7 +15,6 @@ class PipelineGUI(tk.Frame):
         self.controller = controller
         self.create_menu()
         self.setup_layout()
-        print(self.projpath)
 
     def create_menu(self):
         menubar = tk.Menu(self)  
@@ -80,11 +79,9 @@ class PipelineGUI(tk.Frame):
     def action_handler(self):
         if self.STATE == 0:
             self.controller.start_recon()
-            #self.action.config(text="Cancel")
             return
         if self.STATE == 1:
             self.controller.cancel_recon()
-            #self.action.config(text="Start")
             return
         if self.STATE == 2:
             self.controller.export()
@@ -101,7 +98,7 @@ class PipelineGUI(tk.Frame):
         image = ImageTk.PhotoImage(Image.open(mapdir))
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir
-        self.map.bind('<Configure>', self.resizer)
+        self.map.bind('<Configure>', self._resizer)
 
     def set_example_image(self, imagedir):
         img = Image.open(imagedir)
@@ -110,7 +107,7 @@ class PipelineGUI(tk.Frame):
         self.panel.config(image=img)
         self.panel.image = img
 
-    def resizer(self, e):
+    def _resizer(self, e):
         global image1, resized_image, new_image
         image1 = Image.open(self.map_image)
         width_scale = e.width / image1.width
