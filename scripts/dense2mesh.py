@@ -79,6 +79,7 @@ def dense2mesh(projdir):
         return False
     
     print("Done!")
+    return True
 
 def kill():
     flag = True

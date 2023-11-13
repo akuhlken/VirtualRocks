@@ -5,19 +5,21 @@ import pathlib as pl
 
 class PipelineGUI(tk.Frame):
     
-    DEFAULT_MAP = pl.Path(f"gui/tempmap.png").resolve()
-    DEFAULT_PREVIEW = pl.Path(f"gui/DJI_0441.jpg").resolve()
-    STATE = 0  # 0 = not started, 1 = in progress, 2 = done
+    # GUI constants
+    DEFAULT_MAP = pl.Path(f"gui\placeholder\map.jpg").resolve()
+    DEFAULT_PREVIEW = pl.Path(f"gui\placeholder\drone.jpg").resolve()
 
     def __init__(self, parent, controller, projpath):
         tk.Frame.__init__(self, parent)
         self.projpath = projpath
         self.controller = controller
+        self.state = 0  # 0 = not started, 1 = in progress, 2 = done
         self.create_menu()
         self.setup_layout()
 
+    # Settup method for top menu bar
     def create_menu(self):
-        menubar = tk.Menu(self)  
+        menubar = tk.Menu(self) 
 
         file = tk.Menu(menubar, tearoff=0)  
         file.add_command(label="New")  
@@ -26,29 +28,23 @@ class PipelineGUI(tk.Frame):
         file.add_command(label="Save as")    
         file.add_separator()  
         file.add_command(label="Exit", command=self.quit)  
-        
-        info = tk.Menu(menubar, tearoff=0)
 
+        info = tk.Menu(menubar, tearoff=0)
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info)  
 
         self.controller.config(menu=menubar)
 
+    # Settup method for GUI layout and elements
     def setup_layout(self):
 
+        # Layout framework
         left = tk.Frame(self, bg=self.controller.backcolor)
         right = tk.Frame(self, bg=self.controller.backcolor)
         prog = tk.Frame(left, bg=self.controller.backcolor)
-
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
-
-        temp3 = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor).pack(fill="both", expand=True)
-
-        # TODO: Keep map image in the middle of its window
-        self.map = tk.Canvas(left, bg=self.controller.backcolor)
-        self.map.pack(fill='both', expand=True, side='right')
         
         # control elements
         self.panel = tk.Label(right)
@@ -58,55 +54,76 @@ class PipelineGUI(tk.Frame):
         self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.bounds_handler())
         self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor)
         self.action = tk.Button(right, text="Start", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.action_handler())
+
+        # status elements
         self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor)
-        
+        self.progress = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor)
+        self.map = tk.Canvas(left, bg=self.controller.backcolor)
+
+        # packing
         self.addphotos.pack()
         self.numimages.pack()
         self.setbounds.pack()
         self.outres.pack()
         self.action.pack()
         self.log.pack(fill="both", expand=True)
-
+        self.progress.pack(fill="both", expand=True)
+        self.map.pack(fill='both', expand=True, side='right')
+        
+        # dissable buttons
         self.setbounds.config(state="disabled")
         self.action.config(state="disabled")
 
+    # Event handler for "Add Photos" button
+        # Method should open a dialogue prompting the user to select img dir
+        # Pass directory to controllers add_photos handler
     def photos_handler(self):
-        self.controller.add_photos(fd.askdirectory(title='select workspace', initialdir='/home/'))
+        self.controller.add_photos(fd.askdirectory(title='select image directory', initialdir='/home/'))
 
+    # Event handler for "Set Bounds" button
+        # Method should open a dialogue prompting the user to enter bounds
+        # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         self.controller.set_bounds((0,0),(0,0))
 
+    # Event handler for bottom action button
+        # Method should react based on the current state of the GUI
+        # and call the correct method in controller
     def action_handler(self):
-        if self.STATE == 0:
+        if self.state == 0:
             self.controller.start_recon()
             return
-        if self.STATE == 1:
+        if self.state == 1:
             self.controller.cancel_recon()
             return
-        if self.STATE == 2:
+        if self.state == 2:
             self.controller.export()
             return
 
+    # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):
-        # for coden: call with update_text(numimg= NUMBER OF IMAGES) these are optional args
         if numimg:
             self.numimages = "Num images: " + numimg
         if outres:
             self.outres = "Output resolution: " + outres
 
+    # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
         image = ImageTk.PhotoImage(Image.open(mapdir))
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir
         self.map.bind('<Configure>', self._resizer)
 
-    def set_example_image(self, imagedir):
-        img = Image.open(imagedir)
+    # Method to be called externally for setting example image
+    def set_example_image(self, imagefile):
+        img = Image.open(imagefile)
         img = img.resize((150, 100), Image.Resampling.LANCZOS)
         img = ImageTk.PhotoImage(img)
         self.panel.config(image=img)
         self.panel.image = img
 
+    # Event handler to be called whenever the window is resized
+    #   Updates and scales the map image with window
     def _resizer(self, e):
         global image1, resized_image, new_image
         image1 = Image.open(self.map_image)

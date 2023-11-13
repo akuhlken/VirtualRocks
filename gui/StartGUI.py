@@ -4,6 +4,7 @@ from tkinter import filedialog as fd
 class StartGUI(tk.Frame):
 
     def __init__(self, parent, controller):
+        
         tk.Frame.__init__(self, parent)
         self.controller = controller
         label = tk.Label(self, text="Choose Project:", font=controller.font, bg=controller.backcolor)
@@ -18,25 +19,21 @@ class StartGUI(tk.Frame):
 
         newBtn.pack(padx=20, side='left')
         openBtn.pack(padx=20, side='right')
-
-    def get_dir(self):
-        return fd.askdirectory(title='select workspace', initialdir='/home/')
-    
-    def get_file(self):
-        # Load specific project file
-        pass
-        
+  
+    # Event handler for the "new project" button
+        # Should open a dialogue asking the user to selct a working directory
+        # Then call controllers new_project method
     def new_project(self):
-        projdir = self.get_dir()
+        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
         if not projdir:
             return
         self.controller.new_project(projdir)
 
+    # Event handler for the "open project" button
+        # Should open a dialogue asking the user to selct a project save file
+        # Then call controllers open_project method
     def open_project(self):
-        # TODO: eventually this should select a specific save file, not just a dir
-        projfile = "error" # self.get_file()
-        if not projfile:
-            return
+        projfile = ""
         self.controller.open_project(projfile)
 
 
