@@ -14,18 +14,20 @@ def dense2mesh(projdir):
     if flag: 
         ~flag
         return False
+    
     # Open Colmap project from sparse as well as dense recon (fused.ply)
-    print("Importing project")
-    ms.load_project([base_path+r"\images\bundle.out", base_path+r'\images\bundle.out.list.txt'])
-    if flag: 
-        ~flag
-        return False
-    ms.load_new_mesh(base_path+r"\fused.ply")
+    print("Importing project files")
+    ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
     if flag: 
         ~flag
         return False
     
-    print(ms.number_meshes())
+    # Import the fused.ply mesh
+    print("Loading desne point cloud")
+    ms.load_new_mesh(base_path+r"\fused.ply")
+    if flag: 
+        ~flag
+        return False
 
     # Point cloud simplification
     print("Optimizing Point Cloud")
@@ -70,11 +72,13 @@ def dense2mesh(projdir):
         return False
 
     # Export mesh
-    print(f"Exporting mesh to ")
-    ms.save_current_mesh(projdir + "landscape.obj")
+    print(f"Exporting mesh to {projdir}/landcape.obj")
+    ms.save_current_mesh(projdir + "\landscape.obj")
     if flag: 
         ~flag
         return False
+    
+    print("Done!")
 
 def kill():
     flag = True
