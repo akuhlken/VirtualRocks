@@ -1,10 +1,5 @@
 @echo off
 
-REM Pre-condition: DATASET_PATH must point to a directory with ONLY an images folder containing drone photos
-
-set DATASET_PATH=C:\Users\kuhlkena\Downloads\test1
-echo DATASET_PATH is set to %DATASET_PATH%
-
 setlocal enabledelayedexpansion
 set RETRY_MAX=3
 set RETRY_COUNT=0
@@ -12,8 +7,8 @@ set HAS_ERRORS=0
 
 :retry_1
 call COLMAP.bat feature_extractor ^
-   --database_path %DATASET_PATH%\database.db ^
-   --image_path %DATASET_PATH%\images
+   --database_path %1\database.db ^
+   --image_path %2
 if %errorlevel% neq 0 (
    set /A RETRY_COUNT+=1
    if !RETRY_COUNT! lss %RETRY_MAX% (
@@ -29,7 +24,7 @@ if %errorlevel% neq 0 (
 set RETRY_COUNT=0
 :retry_2
 call COLMAP.bat exhaustive_matcher ^
-   --database_path %DATASET_PATH%\database.db
+   --database_path %1\database.db
 if %errorlevel% neq 0 (
    set /A RETRY_COUNT+=1
    if !RETRY_COUNT! lss %RETRY_MAX% (
@@ -44,12 +39,12 @@ if %errorlevel% neq 0 (
 
 set RETRY_COUNT=0
 :retry_3
-mkdir %DATASET_PATH%\sparse
+mkdir "%1\sparse"
 
 call COLMAP.bat mapper ^
-   --database_path %DATASET_PATH%\database.db ^
-   --image_path %DATASET_PATH%\images ^
-   --output_path %DATASET_PATH%\sparse
+   --database_path %1\database.db ^
+   --image_path %2 ^
+   --output_path %1\sparse
 if %errorlevel% neq 0 (
    set /A RETRY_COUNT+=1
    if !RETRY_COUNT! lss %RETRY_MAX% (
@@ -62,17 +57,14 @@ if %errorlevel% neq 0 (
    )
 )
 
-echo Start dense reconstruction?
-pause
-
 set RETRY_COUNT=0
 :retry_4
-mkdir %DATASET_PATH%\dense
+mkdir %1\dense
 
 call COLMAP.bat image_undistorter ^
-   --image_path %DATASET_PATH%\images ^
-   --input_path %DATASET_PATH%\sparse/0 ^
-   --output_path %DATASET_PATH%\dense ^
+   --image_path %2 ^
+   --input_path %1\sparse/0 ^
+   --output_path %1\dense ^
    --output_type COLMAP ^
    --max_image_size 2000
 if %errorlevel% neq 0 (
@@ -90,7 +82,7 @@ if %errorlevel% neq 0 (
 set RETRY_COUNT=0
 :retry_5
 call COLMAP.bat patch_match_stereo ^
-   --workspace_path %DATASET_PATH%\dense ^
+   --workspace_path %1\dense ^
    --workspace_format COLMAP ^
    --PatchMatchStereo.geom_consistency true
 if %errorlevel% neq 0 (
@@ -108,10 +100,10 @@ if %errorlevel% neq 0 (
 set RETRY_COUNT=0
 :retry_6
 call COLMAP.bat stereo_fusion ^
-   --workspace_path %DATASET_PATH%\dense ^
+   --workspace_path %1\dense ^
    --workspace_format COLMAP ^
    --input_type geometric ^
-   --output_path %DATASET_PATH%\dense\fused.ply
+   --output_path %1\dense\fused.ply
 if %errorlevel% neq 0 (
    set /A RETRY_COUNT+=1
    if !RETRY_COUNT! lss %RETRY_MAX% (
@@ -128,8 +120,8 @@ if %errorlevel% neq 0 (
 set RETRY_COUNT=0
 :retry_7
 call COLMAP.bat model_converter ^
-   --input_path %DATASET_PATH%\dense\sparse ^
-   --output_path %DATASET_PATH%\dense\images\project ^
+   --input_path %1\dense\sparse ^
+   --output_path %1\dense\images\project ^
    --output_type Bundler
 if %errorlevel% neq 0 (
    set /A RETRY_COUNT+=1
@@ -149,4 +141,3 @@ if %HAS_ERRORS%==0 (
    echo Reconstruction encountered a problem
 )
 endlocal
-pause
