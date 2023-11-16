@@ -92,11 +92,11 @@ class PipelineGUI(tk.Frame):
     # Event handler for bottom mesher button
         # Method should react based on the current state of the GUI
         # and call the correct method in controller
-    def mesher_handler(self):
+    def matcher_handler(self):
         if self.state == 0:
             self.controller.start_matcher()
             return
-        if self.state == 1:
+        if self.state == 3:
             self.controller.cancel_recon()
             return
 
@@ -104,10 +104,10 @@ class PipelineGUI(tk.Frame):
         # Method should react based on the current state of the GUI
         # and call the correct method in controller
     def mesher_handler(self):
-        if self.state == 0:
+        if self.state == 1:
             self.controller.start_mesher()
             return
-        if self.state == 1:
+        if self.state == 3:
             self.controller.cancel_recon()
             return
         if self.state == 2:
