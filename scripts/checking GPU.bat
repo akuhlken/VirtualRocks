@@ -2,7 +2,7 @@
 echo Checking for NVIDIA drivers...
 
 REM Run the command to check for NVIDIA devices
-wmic path win32_pnpentity where "Caption like 'NVIDIA%'" get Caption 2>NUL | findstr /i /c:"NVIDIA" > nul
+wmic path win32_videocontroller where "name like '%%NVIDIA%%'" get name 2>NUL | findstr /i /c:"NVIDIA" > nul
 
 REM Check the errorlevel to determine if NVIDIA drivers were found
 if %errorlevel% equ 0 (
