@@ -12,11 +12,19 @@ if %errorlevel% equ 0 (
     nvcc --version 2>NUL | findstr /i /c:"Cuda compilation tools" > nul
     if %errorlevel% equ 0 (
         echo CUDA is installed on this system.
+        echo Waiting for 5 seconds...
+    timeout /t 5 /nobreak > nul
+
+    echo Continuing after waiting.
         EXIT /B
     ) else (
         do pip install cuda-pyton )
 
 ) else (
     echo NVIDIA drivers are not installed on this system.
+    echo Waiting for 5 seconds...
+    timeout /t 5 /nobreak > nul
+
+    echo Continuing after waiting.
     EXIT /B
 )
