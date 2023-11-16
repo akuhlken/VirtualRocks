@@ -18,6 +18,11 @@ if %errorlevel% equ 0 (
         echo Continuing after waiting.
         EXIT /B
     ) else (
+        echo CUDA is not installed. Installing CUDA
+        echo Waiting for 5 seconds...
+        timeout /t 5 /nobreak > nul
+
+        echo Continuing after waiting.
         do pip install cuda-pyton )
 
 ) else (
