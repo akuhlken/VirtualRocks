@@ -2,7 +2,11 @@ import numpy as np
 import pymeshlab
 
 # Define the path to your input PLY file
-input_ply_file_path = r'C:\Users\conno\OneDrive\Documents\Capstone\miniproject-colmap\dense\fusedLab.ply'
+input_ply_file_path = r'C:\Users\conno\OneDrive\Documents\Capstone\miniproject-colmap\dense\fused.ply'
+
+ms = pymeshlab.MeshSet()
+ms.load_new_mesh(input_ply_file_path)
+ms.save_current_mesh(input_ply_file_path, binary = False)
 
 # Define user-specified bounds
 x_min = -8  # Minimum X-coordinate
