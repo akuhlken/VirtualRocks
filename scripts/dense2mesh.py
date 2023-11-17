@@ -2,9 +2,10 @@ import pymeshlab
 import os
 
 # Desault Parameters
-DEPTH = 2
-OVERLAP = 0.5
+DEPTH = 3 # will produce 4^DEPTH number of tiles
+OVERLAP = 0.5 # Overlap ammount between tiles
 TEXTURE_RES = 1024
+CELL_SIZE = 0.001 # Clustering decimation cell size
 
 def dense2mesh(projdir):
     print("Loaded dense2mesh.py")
@@ -29,7 +30,7 @@ def dense2mesh(projdir):
 
     # Point cloud simplification
     print("Optimizing Point Cloud")
-    ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(0.001))
+    ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
     
 
     # Mesher
