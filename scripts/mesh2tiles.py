@@ -63,7 +63,7 @@ def _quad_slice(ms, fulltile, projdir, outdir, depth):
     for tile in tiles:
         try:
             ms.set_current_mesh(tile)
-            ms.save_current_mesh(f"{outdir}\{fulltile}_{tile}.obj")
+            ms.save_current_mesh(f"{outdir}\{depth}_{tile}.obj")
 
         except:
             # This should not need to be here... but it errors for no reason
@@ -82,3 +82,25 @@ def _quad_slice(ms, fulltile, projdir, outdir, depth):
         _quad_slice(ms, tiles[3], projdir, path, depth)
 
 mesh2tiles(r"C:\Users\akuhl\Downloads\testproj")
+
+"""
+load bundler
+load fused.ply
+poisson mesh
+color white
+_quad_slice(ms, outdir, depth)
+
+
+
+def _quad_slice(ms, outdir, depth)
+    if(depth == 0):
+        create texture (this actually works!!!)
+        export
+        return
+
+    cut mesh into 4
+    quad slice each piece
+
+    depth -= 1
+
+"""
