@@ -92,15 +92,11 @@ class main(tk.Tk):
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imagedir):
         self.imagedir = imagedir
-        # TODO: Iterate should return a success or fail and only activate button if it worked
-        
-        self.currentProj = PhotoManager(self.imagedir)
-        self.currentProj.makeDict()
-        #pprint(self.currentProj.ImgMetaDict)
-        print("img dir: " + str(self.currentProj.imgDir) + " has " + str(self.currentProj.NUM_IMGS) + " images!")
+        self.photomanager = PhotoManager(self.imagedir)
+        self.photomanager.make_dict()
 
         self.page2.setbounds.config(state="active")
-        self.page2.update_text(numimg=0)
+        self.page2.update_text(numimg=self.photomanager.numimg)
 
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user

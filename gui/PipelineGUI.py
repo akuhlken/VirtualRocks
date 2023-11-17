@@ -103,9 +103,9 @@ class PipelineGUI(tk.Frame):
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):
         if numimg:
-            self.numimages = "Num images: " + numimg
+            self.numimages.config(text=f"Num images: {numimg}")
         if outres:
-            self.outres = "Output resolution: " + outres
+            self.outres.config(text=f"Output resolution: {outres}")
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):

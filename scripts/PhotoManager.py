@@ -1,98 +1,53 @@
-from pprint import pprint
-from PIL import Image
-import piexif
 import pathlib as pl
 import exifread
 import os
 
-codec = 'ISO-8859-1'
-
 class PhotoManager():    
 
     def __init__(self, imgdir):
-        self.ImgMetaDict = {}
-        self.MAX_LAT = -100
-        self.MIN_LAT = 100
-        self.MAX_LONG = -200
-        self.MIN_LONG = 200
-        self.NUM_IMGS = 0
+        self.metadict = {}
+        self.maxlat = -100
+        self.minlat = 100
+        self.maxlong = -200
+        self.minlong = 200
+        self.numimg = 0
         self.imgdir = pl.Path(imgdir)
-        # dict of imgs + associated metadata
 
-    def getNumImg(self):
+    # Method will set the numimg variable of the photo manager
+    def set_num_images(self):
         for path in pl.Path(self.imgdir).glob('*.jpg'):
             with open(str(path)) as f:
-                self.NUM_IMGS += 1
-        print("number of image loaded (PM): " + str(self.NUM_IMGS))
-
-    def exif_to_tag(self, exif_dict):
-        exif_tag_dict = {}
-        #print(exif_dict)
-        thumbnail = exif_dict.pop('thumbnail')
-        print(thumbnail)
-        exif_tag_dict['thumbnail'] = thumbnail.decode(codec)
-
-        # for all of the elements in the metadata...
-        for ifd in exif_dict:
-            exif_tag_dict[ifd] = {}
-            for tag in exif_dict[ifd]:
-                try:
-                    element = exif_dict[ifd][tag].decode(codec)
-                    #print("good: " + str(piexif.TAGS[ifd][tag]["name"]) + " " + str(element))
-
-                except AttributeError:
-                    element = exif_dict[ifd][tag]
-                    #print("bad: " + str(piexif.TAGS[ifd][tag]["name"]) + " " + str(element))
-
-                exif_tag_dict[ifd][piexif.TAGS[ifd][tag]["name"]] = element
-
-        return exif_tag_dict
+                self.numimg += 1
+        print("number of image loaded (PM): " + str(self.numimg))
     
-    """
-    def makeDict(self):
-        # need to add img type support
-        for path in pl.Path(self.imgDir).glob('*.jpg'):
-            with open(str(path)) as f:
-                self.NUM_IMGS += 1
-
-                exif_dict = piexif.load(Image.open(path).info.get('exif'))
-                exif = self.exif_to_tag(exif_dict)
-                
-                name = exif['0th']['ImageDescription']
-                name = name.split("\\")[-1]
-
-                self.ImgMetaDict[name] = exif['GPS']
-                """
-
-    def get_min_max_latlong(self):
+    # Method that will set the min and max lat and long of the photo manager
+    def set_min_max_latlong(self):
+        #TODO
         pass
     
-
-    def extract_gps_from_image(self, image_path):
-        with open(image_path, 'rb') as f:
+    # Helper function to get the GPS coords of a specific image
+    def _extract_gps(self, imgpath):
+        with open(imgpath, 'rb') as f:
             tags = exifread.process_file(f)
             if 'GPS GPSLatitude' in tags and 'GPS GPSLongitude' in tags:
                 latitude = tags['GPS GPSLatitude']
                 longitude = tags['GPS GPSLongitude']
-                lat_ref = tags['GPS GPSLatitudeRef']
-                lon_ref = tags['GPS GPSLongitudeRef']
+                latref = tags['GPS GPSLatitudeRef']
+                longref = tags['GPS GPSLongitudeRef']
                 return {
-                    'latitude': str(latitude) + ' ' + str(lat_ref),
-                    'longitude': str(longitude) + ' ' + str(lon_ref)
+                    'latitude': str(latitude) + ' ' + str(latref),
+                    'longitude': str(longitude) + ' ' + str(longref)
                 }
             else:
                 return None
 
-    def makeDict(self):
+    # Sets the imgdict variable with a dictionary of metadata for each image
+    #   Uses the filename as the key in the dict and the value is a GPS struct
+    def make_dict(self):
         for filename in os.listdir(self.imgdir):
             if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg'):
-                image_path = os.path.join(self.imgdir, filename)
-                gps_info = self.extract_gps_from_image(image_path)
-                if gps_info:
-                    self.ImgMetaDict[filename] = gps_info
-                    self.NUM_IMGS += 1
-
-#needed functions:
-    # makeDict - makes the dictionary of images and their metadata. finds # of images, max lat + long values
-    # getBounds - returns the min and max latitude and longitudes (as found in makeDict)
-    # getNumImg - returns the number of images, as found by makeDict
+                imgpath = os.path.join(self.imgdir, filename)
+                gps = self._extract_gps(imgpath)
+                if gps:
+                    self.metadict[filename] = gps
+                    self.numimg += 1
