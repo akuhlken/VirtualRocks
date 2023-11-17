@@ -66,7 +66,7 @@ def dense2mesh(projdir):
 
     # Build texture
     print("Building texture from registered rasters")
-    ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = 1024, texturename = "newtexture.png")
+    ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = 10240, texturename = "landscape.png")
     if flag: 
         ~flag
         return False
