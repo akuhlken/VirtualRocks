@@ -6,14 +6,14 @@ import pathlib as pl
 class PipelineGUI(tk.Frame):
     
     # GUI constants
-    DEFAULT_MAP = pl.Path(f"gui\placeholder\map.jpg").resolve()
-    DEFAULT_PREVIEW = pl.Path(f"gui\placeholder\drone.jpg").resolve()
+    DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
+    DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, projpath):
         tk.Frame.__init__(self, parent)
         self.projpath = projpath
         self.controller = controller
-        self.state = 0  # 0 = not started, 1 = in progress, 2 = done
+        self.state = 0  # 0 = not started, 1 = matching done, 2 = mesher done, 3 = in progress
         self.create_menu()
         self.setup_layout()
 
@@ -51,9 +51,10 @@ class PipelineGUI(tk.Frame):
         self.panel.pack()
         self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.photos_handler())
         self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor)
+        self.matcher = tk.Button(right, text="Start Matcher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.matcher_handler())
         self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.bounds_handler())
         self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor)
-        self.action = tk.Button(right, text="Start", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.action_handler())
+        self.mesher = tk.Button(right, text="Start", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
 
         # status elements
         self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor)
@@ -63,16 +64,18 @@ class PipelineGUI(tk.Frame):
         # packing
         self.addphotos.pack()
         self.numimages.pack()
+        self.matcher.pack()
         self.setbounds.pack()
         self.outres.pack()
-        self.action.pack()
+        self.mesher.pack()
         self.log.pack(fill="both", expand=True)
         self.progress.pack(fill="both", expand=True)
         self.map.pack(fill='both', expand=True, side='right')
         
         # dissable buttons
         self.setbounds.config(state="disabled")
-        self.action.config(state="disabled")
+        self.matcher.config(state="disabled")
+        self.mesher.config(state="disabled")
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
@@ -86,14 +89,25 @@ class PipelineGUI(tk.Frame):
     def bounds_handler(self):
         self.controller.set_bounds((0,0),(0,0))
 
-    # Event handler for bottom action button
+    # Event handler for bottom mesher button
         # Method should react based on the current state of the GUI
         # and call the correct method in controller
-    def action_handler(self):
+    def matcher_handler(self):
         if self.state == 0:
-            self.controller.start_recon()
+            self.controller.start_matcher()
             return
+        if self.state == 3:
+            self.controller.cancel_recon()
+            return
+
+    # Event handler for bottom mesher button
+        # Method should react based on the current state of the GUI
+        # and call the correct method in controller
+    def mesher_handler(self):
         if self.state == 1:
+            self.controller.start_mesher()
+            return
+        if self.state == 3:
             self.controller.cancel_recon()
             return
         if self.state == 2:

@@ -63,18 +63,22 @@ class main(tk.Tk):
     def open_project(self, projfile):
         print("NO OPEN PROJECT FUNCTIONALITY")
 
-    # Main reconstruction pipeling code
+    # Main matcher pipeling code
     #   NOTE: This method runs in its own thread
     #   method should sequentially run scripts involved in reconstruction
     #   Must keep track of wether scripts exited normally or were cancled
     #   and update button text and status
-    def _recon(self):
-        self.page2.state = 1
-        self.page2.action.config(text="Cancel")
+    def _recon_matcher(self):
+        self.page2.state = 3 # state = in progress
+        self.page2.matcher.config(text="Cancel")
         if debug:
-            print("starting recon")
+            print("starting matcher")
             sleep(5)
-            print("recon complete")
+            print("matching complete")
+            self.page2.matcher.config(text="done")
+            self.page2.matcher.config(state="disabled")
+            self.page2.setbounds.config(state="active")
+            self.page2.state = 1 # state = matcher done
             return
 
         image2dense = pl.Path("scripts/image2dense.bat").resolve()
@@ -82,10 +86,32 @@ class main(tk.Tk):
         self.p = subprocess.Popen([str(image2dense), str(self.projdir), str(self.imagedir)], cwd=str(workingdir))
         rcode = self.p.wait()
         if rcode == 0:
-            if d2m.dense2mesh(self.projdir):
-                # If reconstruction exited normally
-                self.page2.action.config(text="Export")
-                self.page2.state = 2
+            self.page2.matcher.config(text="done")
+            self.page2.matcher.config(state="disabled")
+            self.page2.setbounds.config(state="active")
+            self.page2.state = 1 # state = matcher done
+
+    # Main mesher pipeling code
+    #   NOTE: This method runs in its own thread
+    #   method should sequentially run scripts involved in reconstruction
+    #   Must keep track of wether scripts exited normally or were cancled
+    #   and update button text and status
+    #   TODO: This is where the point filtering will happen
+    def _recon_mesher(self):
+        self.page2.state = 1
+        self.page2.mesher.config(text="Cancel")
+        if debug:
+            print("starting mesher")
+            sleep(5)
+            print("meshing complete")
+            self.page2.mesher.config(text="Export")
+            self.page2.state = 2
+            return
+
+        if d2m.dense2mesh(self.projdir):
+            # If reconstruction exited normally
+            self.page2.mesher.config(text="Export")
+            self.page2.state = 2
 
     # Handler for adding photos
     #   Set the controller variable for image directory
@@ -95,21 +121,27 @@ class main(tk.Tk):
         self.photomanager = PhotoManager(self.imagedir)
         self.photomanager.make_dict()
 
-        self.page2.setbounds.config(state="active")
+        self.page2.matcher.config(state="active")
         self.page2.update_text(numimg=self.photomanager.numimg)
 
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
     def set_bounds(self, A, B):
-        self.page2.action.config(state="active")
+        self.page2.mesher.config(state="active")
         self.A = A
         self.B = B
 
     # Handler for starting recon
     #   Start a new thread with the _recon() method
-    def start_recon(self):
-        self.thread1 = Thread(target = self._recon)
+    def start_matcher(self):
+        self.thread1 = Thread(target = self._recon_matcher)
+        self.thread1.start()
+
+    # Handler for starting recon
+    #   Start a new thread with the _recon() method
+    def start_mesher(self):
+        self.thread1 = Thread(target = self._recon_mesher)
         self.thread1.start()
 
     # Hanlder for canceling recon
@@ -121,14 +153,17 @@ class main(tk.Tk):
             return
         else:
             try:
-                d2m.kill()
                 self.p.terminate() 
                 self.p.wait(timeout=5)
             except subprocess.TimeoutExpired:
                 self.p.kill() 
-
-            self.page2.action.config(text="Start")
+        
+        if not self.page2.state == 1:
+            self.page2.matcher.config(text="Start Matcher")
             self.page2.state = 0
+
+        self.page2.mesher.config(text="Start Mesher")
+        self.page2.state = 0
     
     
     # Handler for exporting final project:
