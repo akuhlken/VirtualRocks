@@ -1,6 +1,11 @@
 import pymeshlab
 import os
 
+# Desault Parameters
+DEPTH = 2
+OVERLAP = 0.5
+TEXTURE_RES = 1024
+
 def dense2mesh(projdir):
     print("Loaded dense2mesh.py")
     flag = False
@@ -41,7 +46,7 @@ def dense2mesh(projdir):
         os.makedirs(outdir)
     
     fullmodel = ms.current_mesh_id()
-    _quad_slice(ms, fullmodel, outdir, 2)
+    _quad_slice(ms, fullmodel, outdir, DEPTH)
 
     ms.set_current_mesh(fullmodel)
     
@@ -54,7 +59,7 @@ def dense2mesh(projdir):
     ms.meshing_repair_non_manifold_edges()
 
     print("Building texture for low poly mesh")
-    ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = 1024, texturename = "100k.jpg", usedistanceweight=False)
+    ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "100k.jpg", usedistanceweight=False)
     # Export mesh
     print(f"Exporting mesh to {outdir}/100k.obj")
     ms.save_current_mesh(f"{outdir}/100k.obj")
@@ -69,7 +74,7 @@ def _quad_slice(ms, tilein, outdir, depth):
         ms.set_current_mesh(tilein)
         # Build texture
         print(f"Building texture for land_{tilein}.obj")
-        ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = 1024, texturename = f"land_{tilein}.jpg", usedistanceweight=False)
+        ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{tilein}.jpg", usedistanceweight=False)
         # Export mesh
         print(f"Exporting mesh to {outdir}/land_{tilein}.obj")
         ms.save_current_mesh(f"{outdir}\land_{tilein}.obj")
@@ -89,23 +94,22 @@ def _quad_slice(ms, tilein, outdir, depth):
     midy = (maxy + miny) / 2
 
     ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-1}) || (y < {midy-1})")
+    ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-OVERLAP}) || (y < {midy-OVERLAP})")
     ms.meshing_remove_selected_vertices()
     _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
 
     ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-1}) || (y > {midy+1})")
-    ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
-
-
-    ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+1}) || (y > {midy+1})")
+    ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-OVERLAP}) || (y > {midy+OVERLAP})")
     ms.meshing_remove_selected_vertices()
     _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
 
     ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+1}) || (y < {midy-1})")
+    ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+OVERLAP}) || (y > {midy+OVERLAP})")
+    ms.meshing_remove_selected_vertices()
+    _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
+
+    ms.add_mesh(ms.mesh(tilein))
+    ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+OVERLAP}) || (y < {midy-OVERLAP})")
     ms.meshing_remove_selected_vertices()
     _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
 
