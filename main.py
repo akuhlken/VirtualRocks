@@ -147,7 +147,6 @@ class main(tk.Tk):
             return
         else:
             try:
-                d2m.kill()
                 self.p.terminate() 
                 self.p.wait(timeout=5)
             except subprocess.TimeoutExpired:
