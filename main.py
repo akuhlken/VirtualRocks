@@ -1,6 +1,8 @@
 import subprocess
-import tkinter as tk           
+import tkinter as tk       
+from pprint import pprint    
 from tkinter import font as tkfont  
+from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from time import sleep
@@ -116,7 +118,11 @@ class main(tk.Tk):
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imagedir):
         self.imagedir = imagedir
+        self.photomanager = PhotoManager(self.imagedir)
+        self.photomanager.make_dict()
+
         self.page2.matcher.config(state="active")
+        self.page2.update_text(numimg=self.photomanager.numimg)
 
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
