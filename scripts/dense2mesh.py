@@ -1,15 +1,14 @@
 import pymeshlab
 import os
+import sys
 
 # Desault Parameters
-DEPTH = 3 # will produce 4^DEPTH number of tiles
+DEPTH = 2 # will produce 4^DEPTH number of tiles
 OVERLAP = 0.5 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.001 # Clustering decimation cell size
 
 def dense2mesh(projdir):
-    print("Loaded dense2mesh.py")
-    flag = False
     # Path to Colmap dense folder
     base_path = projdir + r"\dense"
 
@@ -114,4 +113,5 @@ def _quad_slice(ms, tilein, outdir, depth):
     ms.meshing_remove_selected_vertices()
     _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
 
-#dense2mesh(r"C:\Users\akuhl\Downloads\testproj")
+projdir = sys.argv[1]
+dense2mesh(projdir)
