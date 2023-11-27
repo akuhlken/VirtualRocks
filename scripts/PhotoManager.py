@@ -13,7 +13,7 @@ class PhotoManager():
         self.numimg = 0
         self.imgdir = pl.Path(imgdir)
 
-    # Method will set the numimg variable of the photo manager
+    # Method will set the numimg variable of the photo managerS
     def set_num_images(self):
         for path in pl.Path(self.imgdir).glob('*.jpg'):
             with open(str(path)) as f:

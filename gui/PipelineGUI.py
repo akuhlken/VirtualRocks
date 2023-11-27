@@ -13,7 +13,7 @@ class PipelineGUI(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.projpath = projpath
         self.controller = controller
-        self.state = 0  # 0 = not started, 1 = matching done, 2 = mesher done, 3 = in progress
+        self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.create_menu()
         self.setup_layout()
 
@@ -54,7 +54,7 @@ class PipelineGUI(tk.Frame):
         self.matcher = tk.Button(right, text="Start Matcher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.matcher_handler())
         self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.bounds_handler())
         self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor)
-        self.mesher = tk.Button(right, text="Start", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
+        self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
 
         # status elements
         self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor)
@@ -96,7 +96,7 @@ class PipelineGUI(tk.Frame):
         if self.state == 0:
             self.controller.start_matcher()
             return
-        if self.state == 3:
+        if self.state == 1:
             self.controller.cancel_recon()
             return
 
@@ -104,13 +104,14 @@ class PipelineGUI(tk.Frame):
         # Method should react based on the current state of the GUI
         # and call the correct method in controller
     def mesher_handler(self):
-        if self.state == 1:
+        if self.state == 2:
             self.controller.start_mesher()
             return
         if self.state == 3:
             self.controller.cancel_recon()
             return
-        if self.state == 2:
+        if self.state == 4:
+            print("got here")
             self.controller.export()
             return
 

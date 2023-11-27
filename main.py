@@ -1,3 +1,4 @@
+import os
 import subprocess
 import tkinter as tk       
 from pprint import pprint    
@@ -8,7 +9,6 @@ from gui.StartGUI import StartGUI
 from time import sleep
 from threading import Thread    
 import pathlib as pl
-import scripts.dense2mesh as d2m
 
 # Debug = True will cause the application to skip over recon scripts for testing
 debug = False
@@ -61,15 +61,14 @@ class main(tk.Tk):
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
-        print("NO OPEN PROJECT FUNCTIONALITY")
+        print("PLACEHOLDER")
 
     # Main matcher pipeling code
     #   NOTE: This method runs in its own thread
-    #   method should sequentially run scripts involved in reconstruction
-    #   Must keep track of wether scripts exited normally or were cancled
-    #   and update button text and status
+    #   method should run all scripts accosiated with Colmap and result
+    #   in a desnse reconstruction
     def _recon_matcher(self):
-        self.page2.state = 3 # state = in progress
+        self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
         if debug:
             print("starting matcher")
@@ -78,40 +77,71 @@ class main(tk.Tk):
             self.page2.matcher.config(text="done")
             self.page2.matcher.config(state="disabled")
             self.page2.setbounds.config(state="active")
-            self.page2.state = 1 # state = matcher done
+            self.page2.state = 2 # state = matcher done
             return
 
-        image2dense = pl.Path("scripts/image2dense.bat").resolve()
-        workingdir = image2dense.parent
-        self.p = subprocess.Popen([str(image2dense), str(self.projdir), str(self.imagedir)], cwd=str(workingdir))
+        # Colmap recon
+        colmap = pl.Path("scripts/COLMAP.bat").resolve()
+        workingdir = colmap.parent
+        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imagedir}"], cwd=str(workingdir))
         rcode = self.p.wait()
+
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
+        rcode = self.p.wait()
+
+        sparsedir = self.projdir + r"\sparse"
+        if not os.path.exists(sparsedir):
+            os.makedirs(sparsedir)
+    
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imagedir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
+        rcode = self.p.wait()
+
+        densedir = self.projdir + r"\dense"
+        if not os.path.exists(densedir):
+            os.makedirs(densedir)
+
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imagedir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
+        rcode = self.p.wait()
+
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
+        rcode = self.p.wait()
+
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir))
+        rcode = self.p.wait()
+
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir))
+        rcode = self.p.wait()
+
         if rcode == 0:
             self.page2.matcher.config(text="done")
             self.page2.matcher.config(state="disabled")
             self.page2.setbounds.config(state="active")
-            self.page2.state = 1 # state = matcher done
+            self.page2.state = 2 # state = matcher done
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
-    #   method should sequentially run scripts involved in reconstruction
-    #   Must keep track of wether scripts exited normally or were cancled
-    #   and update button text and status
-    #   TODO: This is where the point filtering will happen
+    #   method should run the point filtering and then dense2mesh scripts
+    #   TODO: This is where the point filtering will happen using the user bounds
     def _recon_mesher(self):
-        self.page2.state = 1
+        self.page2.state = 3
         self.page2.mesher.config(text="Cancel")
         if debug:
             print("starting mesher")
             sleep(5)
             print("meshing complete")
             self.page2.mesher.config(text="Export")
-            self.page2.state = 2
+            self.page2.state = 4
             return
-
-        if d2m.dense2mesh(self.projdir):
+        
+        dense2mesh = pl.Path("scripts/COLMAP.bat").resolve()
+        workingdir = dense2mesh.parent
+        # TODO have next line run specific python version?
+        self.p = subprocess.Popen(['python', 'dense2mesh.py', self.projdir], cwd=str(workingdir))
+        rcode = self.p.wait()
+        if rcode == 0:
             # If reconstruction exited normally
             self.page2.mesher.config(text="Export")
-            self.page2.state = 2
+            self.page2.state = 4
 
     # Handler for adding photos
     #   Set the controller variable for image directory
@@ -154,23 +184,23 @@ class main(tk.Tk):
         else:
             try:
                 self.p.terminate() 
-                self.p.wait(timeout=5)
+                self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill() 
         
-        if not self.page2.state == 1:
+        if self.page2.state == 1:
             self.page2.matcher.config(text="Start Matcher")
             self.page2.state = 0
-
-        self.page2.mesher.config(text="Start Mesher")
-        self.page2.state = 0
-    
+        if self.page2.state == 3:
+            self.page2.mesher.config(text="Start Mesher")
+            self.page2.state = 2
     
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset
     #   and loading mesh+texture onto quest 2
     def export(self):
         if not debug:
+            print("PLACEHOLDER")
             pass # TODO: export model
         else:
             print("Exported")

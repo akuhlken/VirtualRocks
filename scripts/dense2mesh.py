@@ -1,15 +1,15 @@
+import shutil
 import pymeshlab
 import os
+import sys
 
 # Desault Parameters
-DEPTH = 3 # will produce 4^DEPTH number of tiles
 OVERLAP = 0.5 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.001 # Clustering decimation cell size
+TILE_SIZE = 5000 # Will subdivide tiles until they are below this number of verts
 
 def dense2mesh(projdir):
-    print("Loaded dense2mesh.py")
-    flag = False
     # Path to Colmap dense folder
     base_path = projdir + r"\dense"
 
@@ -17,37 +17,33 @@ def dense2mesh(projdir):
     print("Loading pymeshlab")
     ms = pymeshlab.MeshSet()
     
-    
     # Open Colmap project from sparse as well as dense recon (fused.ply)
     print("Importing project files")
     ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
-    
     
     # Import the fused.ply mesh
     print("Loading desne point cloud")
     ms.load_new_mesh(base_path+r"\fused.ply")
 
-
     # Point cloud simplification
     print("Optimizing Point Cloud")
     ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
     
-
     # Mesher
     print("Starting Poisson Mesher")
     ms.generate_surface_reconstruction_screened_poisson(depth = 8, samplespernode = 20, pointweight = 4)
     
-
     # Wipe verticies colors
     print("Setting vertex colors")
     ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
 
     outdir = projdir + r"\out"
-    if not os.path.exists(outdir):
-        os.makedirs(outdir)
-    
+    if os.path.exists(outdir):
+       shutil.rmtree(outdir)
+    os.makedirs(outdir)
+
     fullmodel = ms.current_mesh_id()
-    _quad_slice(ms, fullmodel, outdir, DEPTH)
+    _quad_slice(ms, fullmodel, outdir)
 
     ms.set_current_mesh(fullmodel)
     
@@ -67,11 +63,10 @@ def dense2mesh(projdir):
     print("Done!")
     return True
     
+def _quad_slice(ms, tilein, outdir):
+    ms.set_current_mesh(tilein)
 
-def _quad_slice(ms, tilein, outdir, depth):
-    print("Slicing depth:", depth)
-
-    if(depth==0):
+    if(ms.current_mesh().vertex_number() < TILE_SIZE):
         ms.set_current_mesh(tilein)
         # Build texture
         print(f"Building texture for land_{tilein}.obj")
@@ -82,7 +77,6 @@ def _quad_slice(ms, tilein, outdir, depth):
         print()
         return
 
-    ms.set_current_mesh(tilein)
     min=ms.current_mesh().bounding_box().min()
     max=ms.current_mesh().bounding_box().max()
 
@@ -97,21 +91,22 @@ def _quad_slice(ms, tilein, outdir, depth):
     ms.add_mesh(ms.mesh(tilein))
     ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-OVERLAP}) || (y < {midy-OVERLAP})")
     ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
+    _quad_slice(ms, ms.current_mesh_id(), outdir)
 
     ms.add_mesh(ms.mesh(tilein))
     ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-OVERLAP}) || (y > {midy+OVERLAP})")
     ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
+    _quad_slice(ms, ms.current_mesh_id(), outdir)
 
     ms.add_mesh(ms.mesh(tilein))
     ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+OVERLAP}) || (y > {midy+OVERLAP})")
     ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
+    _quad_slice(ms, ms.current_mesh_id(), outdir)
 
     ms.add_mesh(ms.mesh(tilein))
     ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+OVERLAP}) || (y < {midy-OVERLAP})")
     ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir, depth-1)
+    _quad_slice(ms, ms.current_mesh_id(), outdir)
 
-#dense2mesh(r"C:\Users\akuhl\Downloads\testproj")
+projdir = sys.argv[1]
+dense2mesh(projdir)
