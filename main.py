@@ -121,7 +121,7 @@ class main(tk.Tk):
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
     #   method should run the point filtering and then dense2mesh scripts
-    #   TODO: This is where the point filtering will happen
+    #   TODO: This is where the point filtering will happen using the user bounds
     def _recon_mesher(self):
         self.page2.state = 3
         self.page2.mesher.config(text="Cancel")
@@ -135,6 +135,7 @@ class main(tk.Tk):
         
         dense2mesh = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = dense2mesh.parent
+        # TODO have next line run specific python version?
         self.p = subprocess.Popen(['python', 'dense2mesh.py', self.projdir], cwd=str(workingdir))
         rcode = self.p.wait()
         if rcode == 0:
