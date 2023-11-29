@@ -7,118 +7,134 @@ import sys
 OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.0001 # Clustering decimation cell size
-TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
+TILE_SIZE = 5000 # Will subdivide tiles until they are below this number of verts
 
-def dense2mesh(projdir):
-    # Path to Colmap dense folder
-    base_path = projdir + r"\dense"
+class Mesher():
 
-    # Create a new MeshSet object
-    print("Loading pymeshlab")
-    ms = pymeshlab.MeshSet()
-    
-    # Open Colmap project from sparse as well as dense recon (fused.ply)
-    print("Importing project files")
-    ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
-    
-    # Import the fused.ply mesh
-    print("Loading dense point cloud")
-    ms.load_new_mesh(base_path+r"\fused.ply")
+    def __init__(self, projdir):
+        self.projdir = projdir
+        self.dense2mesh()
 
-    # Point cloud simplification
-    print("Optimizing Point Cloud")
-    ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
-    
-    # Mesher
-    print("Starting Poisson Mesher")
-    ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
+    def dense2mesh(self):
+        # Path to Colmap dense folder
+        base_path = self.projdir + r"\dense"
 
-    # TODO: If model is empty try again with lower depth values until it works
-    
-    # Wipe verticies colors
-    print("Setting vertex colors")
-    ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
+        # Create a new MeshSet object
+        print("---Loading pymeshlab---")
+        self.ms = pymeshlab.MeshSet()
+        self.ms.set_verbosity(False)
+        
+        # Open Colmap project from sparse as well as dense recon (fused.ply)
+        print("---Importing project files---")
+        self.ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
+        
+        # Import the fused.ply mesh
+        print("---Loading dense point cloud---")
+        self.ms.load_new_mesh(base_path+r"\fused.ply")
 
-    outdir = projdir + r"\out"
-    if os.path.exists(outdir):
-       shutil.rmtree(outdir)
-    os.makedirs(outdir)
+        # Point cloud simplification
+        print("---Optimizing Point Cloud---")
+        self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
+        
+        # Mesher
+        print("---Starting Poisson Mesher---")
+        self.ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
 
-    fullmodel = ms.current_mesh_id()
-    _quad_slice(ms, fullmodel, outdir)
+        # TODO: If model is empty try again with lower depth values until it works
+        
+        # Wipe verticies colors
+        print("---Setting vertex colors---")
+        self.ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
 
-    ms.set_current_mesh(fullmodel)
-    
-    #Mesh simplification
-    print("Creating low poly mesh")
-    ms.meshing_decimation_quadric_edge_collapse(targetfacenum = 100000, preserveboundary = True, preservenormal = True)
+        self.outdir = self.projdir + r"\out"
+        if os.path.exists(self.outdir):
+            shutil.rmtree(self.outdir)
+        os.makedirs(self.outdir)
 
-    # Remove non-manifold edges
-    print("Removing non-manifold edges")
-    ms.meshing_repair_non_manifold_edges()
+        print("---Computing model bounds---")
+        min=self.ms.current_mesh().bounding_box().min()
+        max=self.ms.current_mesh().bounding_box().max()
 
-    print("Building texture for low poly mesh")
-    ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "100k.jpg", usedistanceweight=False)
-    # Export mesh
-    print(fr"Exporting mesh to {outdir}\100k.obj")
-    ms.save_current_mesh(fr"{outdir}\100k.obj")
-    print("Done!")
-    return True
-    
-def _quad_slice(ms, tilein, outdir):
-    ms.set_current_mesh(tilein)
+        minx = min[0] 
+        maxx = max[0]
+        miny = min[1]
+        maxy = max[1]
 
-    if(ms.current_mesh().vertex_number() < TILE_SIZE):
-        ms.set_current_mesh(tilein)
-        # Build texture
-        print(f"Building texture for land_{tilein}.obj")
-        ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{tilein}.jpg", usedistanceweight=False)
+        self.tile = 0
+        self.fullmodel = self.ms.current_mesh_id()
+        print("---Starting tiling---")
+        self._quad_slice(maxx, minx, maxy, miny)
+
+        print("---Finished tiling---")
+        self.ms.set_current_mesh(self.fullmodel)
+        
+        #Mesh simplification
+        print("---Creating low poly mesh---")
+        self.ms.meshing_decimation_quadric_edge_collapse(targetfacenum = 100000, preserveboundary = True, preservenormal = True)
+
+        # Remove non-manifold edges
+        print("---Removing non-manifold edges---")
+        self.ms.meshing_repair_non_manifold_edges()
+
+        print("---Building texture for low poly mesh---")
+        self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "100k.jpg", usedistanceweight=False)
         # Export mesh
-        print(fr"Exporting mesh to {outdir}\land_{tilein}.obj")
-        ms.save_current_mesh(fr"{outdir}\land_{tilein}.obj")
-        print()
-        return
+        print(fr"Exporting mesh to {self.outdir}\100k.obj")
+        self.ms.save_current_mesh(fr"{self.outdir}\100k.obj")
+        print("Done!")
+        return True
+        
+    def _quad_slice(self, maxx, minx, maxy, miny):
+        # Select verts in bounds
+        self.ms.set_current_mesh(self.fullmodel)
+        self.ms.set_selection_none()
+        self.ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {maxx} && x > {minx}) && (y < {maxy} && y > {miny})")
+        numverts = self.ms.current_mesh().selected_vertex_number()
 
-    min=ms.current_mesh().bounding_box().min()
-    max=ms.current_mesh().bounding_box().max()
+        # Base Case (cut and export)
+        if(numverts < TILE_SIZE):
+            # Create new mesh with vertex within bounds + overlap
+            self.ms.add_mesh(self.ms.mesh(self.fullmodel))
+            self.ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {maxx + OVERLAP} && x > {minx - OVERLAP}) && (y < {maxy + OVERLAP} && y > {miny - OVERLAP})")
+            self.ms.apply_selection_inverse()
+            self.ms.meshing_remove_selected_vertices()
 
-    minx = min[0] 
-    maxx = max[0]
-    miny = min[1]
-    maxy = max[1]
+            # Build texture
+            print(f"Building texture for land_{self.tile}.obj")
+            self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{self.tile}.jpg", usedistanceweight=False)
 
-    midx = (maxx + minx) / 2
-    midy = (maxy + miny) / 2
+            # Export mesh
+            print(fr"Exporting mesh to {self.outdir}\land_{self.tile}.obj")
+            self.ms.save_current_mesh(fr"{self.outdir}\land_{self.tile}.obj")
+            print()
+            self.tile += 1
+            return
 
-    ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-OVERLAP}) || (y < {midy-OVERLAP})")
-    ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir)
+        """
+                    maxy
+                -----------
+                |    |    |
+           minx ----------- maxx
+                |    |    |
+                -----------
+                    miny
 
-    ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {midx-OVERLAP}) || (y > {midy+OVERLAP})")
-    ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir)
+        """
+        midx = (maxx + minx) / 2.0
+        midy = (maxy + miny) / 2.0
 
-    ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+OVERLAP}) || (y > {midy+OVERLAP})")
-    ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir)
+        # topleft
+        self._quad_slice(midx, minx, maxy, midy)
 
-    ms.add_mesh(ms.mesh(tilein))
-    ms.compute_selection_by_condition_per_vertex(condselect=f"(x > {midx+OVERLAP}) || (y < {midy-OVERLAP})")
-    ms.meshing_remove_selected_vertices()
-    _quad_slice(ms, ms.current_mesh_id(), outdir)
+        # topright
+        self._quad_slice(maxx, midx, maxy, midy)
+
+        # bottomleft
+        self._quad_slice(midx, minx, midy, miny)
+
+        # bottomright
+        self._quad_slice(maxx, midx, midy, miny)
 
 #projdir = sys.argv[1]
-dense2mesh(r"C:\Users\akuhl\Downloads\alltest")
-
-#Algorithm for slicing:
-
-# Call _quadslice with full mesh, max and min x and y
-# select in bounds
-# check num of verts in selection:
-
-# if num verts < TIME_SIZE copy full mesh and cut (giving overlap)
-
-# else make four recursive calls with new bounds but dont do any cutting ot copying
+print("starting")
+Mesher(r"C:\Users\akuhl\Downloads\testproj")
