@@ -3,11 +3,11 @@ import pymeshlab
 import os
 import sys
 
-# Desault Parameters
-OVERLAP = 0.5 # Overlap ammount between tiles
+# Default Parameters
+OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 1024
-CELL_SIZE = 0.001 # Clustering decimation cell size
-TILE_SIZE = 5000 # Will subdivide tiles until they are below this number of verts
+CELL_SIZE = 0.0001 # Clustering decimation cell size
+TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
 
 def dense2mesh(projdir):
     # Path to Colmap dense folder
@@ -22,7 +22,7 @@ def dense2mesh(projdir):
     ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
     
     # Import the fused.ply mesh
-    print("Loading desne point cloud")
+    print("Loading dense point cloud")
     ms.load_new_mesh(base_path+r"\fused.ply")
 
     # Point cloud simplification
@@ -31,7 +31,9 @@ def dense2mesh(projdir):
     
     # Mesher
     print("Starting Poisson Mesher")
-    ms.generate_surface_reconstruction_screened_poisson(depth = 8, samplespernode = 20, pointweight = 4)
+    ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
+
+    # TODO: If model is empty try again with lower depth values until it works
     
     # Wipe verticies colors
     print("Setting vertex colors")
@@ -58,8 +60,8 @@ def dense2mesh(projdir):
     print("Building texture for low poly mesh")
     ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "100k.jpg", usedistanceweight=False)
     # Export mesh
-    print(f"Exporting mesh to {outdir}/100k.obj")
-    ms.save_current_mesh(f"{outdir}/100k.obj")
+    print(fr"Exporting mesh to {outdir}\100k.obj")
+    ms.save_current_mesh(fr"{outdir}\100k.obj")
     print("Done!")
     return True
     
@@ -72,8 +74,8 @@ def _quad_slice(ms, tilein, outdir):
         print(f"Building texture for land_{tilein}.obj")
         ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{tilein}.jpg", usedistanceweight=False)
         # Export mesh
-        print(f"Exporting mesh to {outdir}/land_{tilein}.obj")
-        ms.save_current_mesh(f"{outdir}\land_{tilein}.obj")
+        print(fr"Exporting mesh to {outdir}\land_{tilein}.obj")
+        ms.save_current_mesh(fr"{outdir}\land_{tilein}.obj")
         print()
         return
 
@@ -108,5 +110,15 @@ def _quad_slice(ms, tilein, outdir):
     ms.meshing_remove_selected_vertices()
     _quad_slice(ms, ms.current_mesh_id(), outdir)
 
-projdir = sys.argv[1]
-dense2mesh(projdir)
+#projdir = sys.argv[1]
+dense2mesh(r"C:\Users\akuhl\Downloads\alltest")
+
+#Algorithm for slicing:
+
+# Call _quadslice with full mesh, max and min x and y
+# select in bounds
+# check num of verts in selection:
+
+# if num verts < TIME_SIZE copy full mesh and cut (giving overlap)
+
+# else make four recursive calls with new bounds but dont do any cutting ot copying
