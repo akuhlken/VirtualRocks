@@ -7,7 +7,7 @@ import sys
 OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.0001 # Clustering decimation cell size
-TILE_SIZE = 5000 # Will subdivide tiles until they are below this number of verts
+TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
 
 class Mesher():
 
@@ -52,6 +52,8 @@ class Mesher():
         os.makedirs(self.outdir)
 
         print("---Computing model bounds---")
+        self.totalverts = self.ms.current_mesh().selected_vertex_number()
+        self.precentdone = 0.0
         min=self.ms.current_mesh().bounding_box().min()
         max=self.ms.current_mesh().bounding_box().max()
 
@@ -100,14 +102,16 @@ class Mesher():
             self.ms.meshing_remove_selected_vertices()
 
             # Build texture
-            print(f"Building texture for land_{self.tile}.obj")
+            #print(f"Building texture for land_{self.tile}.obj")
             self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{self.tile}.jpg", usedistanceweight=False)
 
             # Export mesh
-            print(fr"Exporting mesh to {self.outdir}\land_{self.tile}.obj")
+            #print(fr"Exporting mesh to {self.outdir}\land_{self.tile}.obj")
             self.ms.save_current_mesh(fr"{self.outdir}\land_{self.tile}.obj")
-            print()
+            #print()
             self.tile += 1
+            self.precentdone += numverts / self.totalverts * 100.0
+            print(self.precentdone)
             return
 
         """
@@ -137,4 +141,4 @@ class Mesher():
 
 #projdir = sys.argv[1]
 print("starting")
-Mesher(r"C:\Users\akuhl\Downloads\testproj")
+Mesher(r"C:\Users\akuhl\Downloads\alltest")
