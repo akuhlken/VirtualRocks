@@ -133,10 +133,10 @@ class main(tk.Tk):
             self.page2.state = 4
             return
         
-        dense2mesh = pl.Path("scripts/COLMAP.bat").resolve()
-        workingdir = dense2mesh.parent
+        colmap = pl.Path("scripts/COLMAP.bat").resolve()
+        workingdir = colmap.parent
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'dense2mesh.py', self.projdir], cwd=str(workingdir))
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir))
         rcode = self.p.wait()
         if rcode == 0:
             # If reconstruction exited normally
