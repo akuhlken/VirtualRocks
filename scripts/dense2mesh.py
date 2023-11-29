@@ -22,7 +22,7 @@ class Mesher():
         # Create a new MeshSet object
         print("---Loading pymeshlab---")
         self.ms = pymeshlab.MeshSet()
-        self.ms.set_verbosity(False)
+        self.ms.set_verbosity(False) # Turn this on for more extensive logs
         
         # Open Colmap project from sparse as well as dense recon (fused.ply)
         print("---Importing project files---")
@@ -35,7 +35,7 @@ class Mesher():
         # Point cloud simplification
         print("---Optimizing Point Cloud---")
         self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
-        
+
         # Mesher
         print("---Starting Poisson Mesher---")
         self.ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
@@ -51,9 +51,7 @@ class Mesher():
             shutil.rmtree(self.outdir)
         os.makedirs(self.outdir)
 
-        print("---Computing model bounds---")
-        self.totalverts = self.ms.current_mesh().selected_vertex_number()
-        self.precentdone = 0.0
+        # Get model bounds
         min=self.ms.current_mesh().bounding_box().min()
         max=self.ms.current_mesh().bounding_box().max()
 
@@ -62,6 +60,8 @@ class Mesher():
         miny = min[1]
         maxy = max[1]
 
+        self.totalverts = self.ms.current_mesh().vertex_number()
+        self.precentdone = 0.0
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
         print("---Starting tiling---")
@@ -95,6 +95,7 @@ class Mesher():
 
         # Base Case (cut and export)
         if(numverts < TILE_SIZE):
+
             # Create new mesh with vertex within bounds + overlap
             self.ms.add_mesh(self.ms.mesh(self.fullmodel))
             self.ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {maxx + OVERLAP} && x > {minx - OVERLAP}) && (y < {maxy + OVERLAP} && y > {miny - OVERLAP})")
@@ -102,16 +103,14 @@ class Mesher():
             self.ms.meshing_remove_selected_vertices()
 
             # Build texture
-            #print(f"Building texture for land_{self.tile}.obj")
             self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{self.tile}.jpg", usedistanceweight=False)
 
             # Export mesh
-            #print(fr"Exporting mesh to {self.outdir}\land_{self.tile}.obj")
             self.ms.save_current_mesh(fr"{self.outdir}\land_{self.tile}.obj")
-            #print()
+
             self.tile += 1
             self.precentdone += numverts / self.totalverts * 100.0
-            print(self.precentdone)
+            print(f"{round(self.precentdone, 2)}%")
             return
 
         """
@@ -139,6 +138,6 @@ class Mesher():
         # bottomright
         self._quad_slice(maxx, midx, midy, miny)
 
-#projdir = sys.argv[1]
+projdir = sys.argv[1]
 print("starting")
-Mesher(r"C:\Users\akuhl\Downloads\alltest")
+Mesher(projdir)
