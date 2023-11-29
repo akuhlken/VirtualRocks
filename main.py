@@ -10,8 +10,8 @@ from time import sleep
 from threading import Thread    
 import pathlib as pl
 
-# Debug = True will cause the application to skip over recon scripts for testing
-debug = False
+# DEBUG = True will cause the application to skip over recon scripts for testing
+DEBUG = False
 
 class main(tk.Tk):
 
@@ -70,7 +70,7 @@ class main(tk.Tk):
     def _recon_matcher(self):
         self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
-        if debug:
+        if DEBUG:
             print("starting matcher")
             sleep(5)
             print("matching complete")
@@ -125,7 +125,7 @@ class main(tk.Tk):
     def _recon_mesher(self):
         self.page2.state = 3
         self.page2.mesher.config(text="Cancel")
-        if debug:
+        if DEBUG:
             print("starting mesher")
             sleep(5)
             print("meshing complete")
@@ -133,10 +133,10 @@ class main(tk.Tk):
             self.page2.state = 4
             return
         
-        dense2mesh = pl.Path("scripts/COLMAP.bat").resolve()
-        workingdir = dense2mesh.parent
+        colmap = pl.Path("scripts/COLMAP.bat").resolve()
+        workingdir = colmap.parent
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'dense2mesh.py', self.projdir], cwd=str(workingdir))
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir))
         rcode = self.p.wait()
         if rcode == 0:
             # If reconstruction exited normally
@@ -178,7 +178,7 @@ class main(tk.Tk):
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
     #   After cancel it should change the action button back to start
     def cancel_recon(self):
-        if debug:
+        if DEBUG:
             print("canceling recon")
             return
         else:
@@ -199,7 +199,7 @@ class main(tk.Tk):
     #   Should open a new dialogue with instructions for connecting headset
     #   and loading mesh+texture onto quest 2
     def export(self):
-        if not debug:
+        if not DEBUG:
             print("PLACEHOLDER")
             pass # TODO: export model
         else:
