@@ -119,7 +119,6 @@ class PipelineGUI(tk.Frame):
             self.controller.cancel_recon()
             return
         if self.state == 4:
-            print("got here")
             self.controller.export()
             return        
 
