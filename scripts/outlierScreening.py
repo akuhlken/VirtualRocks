@@ -2,7 +2,7 @@ import numpy as np
 import pymeshlab
 
 # Define the path to your input PLY file
-input_ply_file_path = r'C:\Users\conno\OneDrive\Documents\Capstone\miniproject-colmap\dense\fused.ply'
+input_ply_file_path = r'C:\Users\conno\OneDrive\Documents\Capstone\fused.ply'
 
 ms = pymeshlab.MeshSet()
 ms.load_new_mesh(input_ply_file_path)
@@ -74,7 +74,11 @@ with open(output_ply_file_path, 'w') as output_file:
 
     # Write the filtered point cloud data, handling unsigned char columns
     for point in filtered_point_cloud:
-        output_file.write(" ".join(str(int(value)) if idx in [6, 7, 8, 9] else ("" if idx == 10 else str(value)) for idx, value in enumerate(point)) + '\n')
-
+         formatted_point = ["{:.7f}".format(value) if idx not in [3, 4, 5, 6] else str(int(value)) for idx, value in enumerate(point[:-1])]
+         formatted_point.append(str(int(point[-1])))
+         output_file.write(" ".join(formatted_point).rstrip('0').rstrip('.') + '\n')
+    
 print(f"Filtered point cloud saved to {output_ply_file_path}")
 
+ms.load_new_mesh(output_ply_file_path)
+ms.save_current_mesh(output_ply_file_path, binary = True)
