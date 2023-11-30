@@ -100,11 +100,13 @@ class main(tk.Tk):
 
         if rcode == 0:
             self.page2.progress.step(10)
+            self.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
             rcode = self.p.wait()
 
         if rcode == 0:
             self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
 
             sparsedir = self.projdir / pl.Path(r"sparse")
             if os.path.exists(sparsedir):
@@ -116,6 +118,7 @@ class main(tk.Tk):
 
         if rcode == 0:
             self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
 
             densedir = self.projdir / pl.Path(r"dense")
             if os.path.exists(densedir):
@@ -127,17 +130,20 @@ class main(tk.Tk):
 
         if rcode == 0:
             self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
 
             self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
             rcode = self.p.wait()
 
         if rcode == 0: 
             self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
             self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir))
             rcode = self.p.wait()
 
         if rcode == 0: 
             self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
             self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir))
             rcode = self.p.wait()
 

@@ -33,6 +33,10 @@ class PipelineGUI(tk.Frame):
         file.add_command(label="Exit", command=self.quit)  
 
         info = tk.Menu(menubar, tearoff=0)
+        info.add_command(label="Common Issues") 
+        info.add_command(label="Colmap Info") 
+        info.add_command(label="MeshLab Info") 
+
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info)  
 
@@ -63,10 +67,14 @@ class PipelineGUI(tk.Frame):
 
         # status elements
         self.log = tk.Label(right, text="[Log]", bg=self.controller.backcolor)
-        # TODO: Coden >:)
-        #self.progress = tk.Button(prog, height=10, text="[progress, in progress]", bg=self.controller.backcolor)
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=300)
         self.map = tk.Canvas(left, bg=self.controller.backcolor)
+
+        # progress bar elements
+        # find out if you can add text to the text part of tk.label
+        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
+        self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=300)
+        self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
 
         # packing
         self.addphotos.pack()
@@ -76,8 +84,12 @@ class PipelineGUI(tk.Frame):
         self.outres.pack()
         self.mesher.pack()
         self.log.pack(fill="both", expand=True)
-        self.progress.pack(fill="both", expand=True, anchor='n', side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
+
+        self.progresstotaltext.pack()
+        self.progresstotal.pack(fill="both", expand=True)
+        self.progresstext.pack()
+        self.progress.pack(fill="both", expand=True)
         
         # dissable buttons
         self.setbounds.config(state="disabled")
