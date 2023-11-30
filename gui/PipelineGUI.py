@@ -66,7 +66,7 @@ class PipelineGUI(tk.Frame):
         self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
 
         # status elements
-        self.logtext = tk.Text(right)
+        self.logtext = tk.Text(right, width=50)
         scrollbar = tk.Scrollbar(right)
         scrollbar.pack(side='right', fill='y')
         self.logtext['yscrollcommand'] = scrollbar.set
