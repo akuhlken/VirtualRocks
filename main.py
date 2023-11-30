@@ -1,8 +1,9 @@
 import os
+import shutil
 import subprocess
 import tkinter as tk       
-from pprint import pprint    
 from tkinter import font as tkfont  
+from tkinter import messagebox as mb
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
@@ -70,6 +71,11 @@ class main(tk.Tk):
     def _recon_matcher(self):
         self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
+
+        if self.photomanager.num_images(self.imagedir) < 5:
+            mb.showerror("Not enough images                           ")
+            return
+
         if DEBUG:
             print("starting matcher")
             sleep(5)
@@ -79,6 +85,12 @@ class main(tk.Tk):
             self.page2.setbounds.config(state="active")
             self.page2.state = 2 # state = matcher done
             return
+
+        # clean old database
+        database = self.projdir / pl.Path(r"database.db")
+        if os.path.exists(database):
+            os.remove(database)
+            print("removed old database")
 
         # Colmap recon
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
@@ -90,15 +102,17 @@ class main(tk.Tk):
         rcode = self.p.wait()
 
         sparsedir = self.projdir / pl.Path(r"sparse")
-        if not os.path.exists(sparsedir):
-            os.makedirs(sparsedir)
+        if os.path.exists(sparsedir):
+            shutil.rmtree(sparsedir)
+        os.makedirs(sparsedir)
     
         if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imagedir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
         rcode = self.p.wait()
 
         densedir = self.projdir / pl.Path(r"dense")
-        if not os.path.exists(densedir):
-            os.makedirs(densedir)
+        if os.path.exists(densedir):
+            shutil.rmtree(densedir)
+        os.makedirs(densedir)
 
         if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imagedir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
         rcode = self.p.wait()

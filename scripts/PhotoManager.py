@@ -1,4 +1,3 @@
-import pathlib as pl
 import exifread
 import os
 
@@ -28,10 +27,22 @@ class PhotoManager():
     # Sets the imgdict variable with a dictionary of metadata for each image
     #   Uses the filename as the key in the dict and the value is a GPS struct
     def make_dict(self):
+        extensions = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
         for filename in os.listdir(self.imgdir):
-            if filename.lower().endswith('.jpg') or filename.lower().endswith('.jpeg'):
+            if filename.endswith(tuple(extensions)):
                 imgpath = os.path.join(self.imgdir, filename)
                 gps = self._extract_gps(imgpath)
                 if gps:
                     self.metadict[filename] = gps
-                    self.numimg += 1
+                self.numimg += 1
+        if not self.metadict:
+            print("images do not have any GPS information")
+
+    # Returns the number of valid images contained within the imgdir
+    def num_images(self, imgdir):
+        extensions = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
+        numimg = 0
+        for filename in os.listdir(imgdir):
+            if filename.endswith(tuple(extensions)):
+                numimg += 1
+        return numimg
