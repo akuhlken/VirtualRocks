@@ -19,8 +19,8 @@ class main(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
 
         # Controller Variables
-        self.projdir = ""
-        self.imagedir = ""
+        self.projdir = None
+        self.imagedir = None
         self.A = (0,0)
         self.B = (0,0)
         self.map = None
@@ -52,7 +52,7 @@ class main(tk.Tk):
     #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir):
         self.page2 = PipelineGUI(self.container, self, projdir)
-        self.projdir = projdir
+        self.projdir = pl.Path(projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
         self.page2.set_map(self.page2.DEFAULT_MAP)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
@@ -89,14 +89,14 @@ class main(tk.Tk):
         if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
         rcode = self.p.wait()
 
-        sparsedir = self.projdir + r"\sparse"
+        sparsedir = self.projdir / pl.Path(r"sparse")
         if not os.path.exists(sparsedir):
             os.makedirs(sparsedir)
     
         if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imagedir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
         rcode = self.p.wait()
 
-        densedir = self.projdir + r"\dense"
+        densedir = self.projdir / pl.Path(r"dense")
         if not os.path.exists(densedir):
             os.makedirs(densedir)
 
@@ -147,7 +147,7 @@ class main(tk.Tk):
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imagedir):
-        self.imagedir = imagedir
+        self.imagedir = pl.Path(imagedir)
         self.photomanager = PhotoManager(self.imagedir)
         self.photomanager.make_dict()
 
