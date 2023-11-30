@@ -61,7 +61,7 @@ class PipelineGUI(tk.Frame):
         self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
 
         # status elements
-        self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor)
+        self.log = tk.Label(right, text="[Log]", bg=self.controller.backcolor)
         # TODO: Coden >:)
         #self.progress = tk.Button(prog, height=10, text="[progress, in progress]", bg=self.controller.backcolor)
         self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=300)
@@ -75,7 +75,7 @@ class PipelineGUI(tk.Frame):
         self.outres.pack()
         self.mesher.pack()
         self.log.pack(fill="both", expand=True)
-        self.progress.pack(fill="both", expand=True, anchor='center')
+        self.progress.pack(fill="both", expand=True, anchor='n', side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
         
         # dissable buttons
