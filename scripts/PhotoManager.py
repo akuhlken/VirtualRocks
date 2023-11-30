@@ -7,7 +7,7 @@ class PhotoManager():
     def __init__(self, imgdir):
         self.metadict = {}
         self.numimg = 0
-        self.imgdir = pl.Path(imgdir)
+        self.imgdir = imgdir
     
     # Helper function to get the GPS coords of a specific image
     def _extract_gps(self, imgpath):

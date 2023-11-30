@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog as fd
+from tkinter import messagebox as mb
 
 class StartGUI(tk.Frame):
 
@@ -16,9 +17,11 @@ class StartGUI(tk.Frame):
 
         newBtn = tk.Button(middleframe, height=10, width=20, text="New", bg=controller.buttoncolor, command=lambda: self.new_project())
         openBtn = tk.Button(middleframe, height=10, width=20, text="Open", bg=controller.buttoncolor, command=lambda: self.open_project())
+        label = tk.Label(self, text="*paths cannot contain white spaces", bg=controller.backcolor)
 
         newBtn.pack(padx=20, side='left')
         openBtn.pack(padx=20, side='right')
+        label.pack(side='bottom')
   
     # Event handler for the "new project" button
         # Should open a dialogue asking the user to selct a working directory
@@ -26,6 +29,10 @@ class StartGUI(tk.Frame):
     def new_project(self):
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
         if not projdir:
+            return
+        if ' ' in projdir:
+            print("Path must not contain white spaces")
+            mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.new_project(projdir)
 
