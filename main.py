@@ -2,9 +2,11 @@ import os
 import pickle
 import shutil
 import subprocess
+import sys
 import tkinter as tk       
 from tkinter import font as tkfont  
 from tkinter import messagebox as mb
+from scripts.LogRedirect import LogRedirect
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
@@ -60,6 +62,9 @@ class main(tk.Tk):
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
 
+        self.old_stdout = sys.stdout    
+        sys.stdout = LogRedirect(self.page2.logtext)
+
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
@@ -71,6 +76,9 @@ class main(tk.Tk):
         self.page2.set_map(self.page2.DEFAULT_MAP)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
+
+        self.old_stdout = sys.stdout    
+        sys.stdout = LogRedirect(self.page2.logtext)
 
         photomanager = PhotoManager(self.imgdir)
         self.page2.matcher.config(state="active")
@@ -84,7 +92,7 @@ class main(tk.Tk):
         self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
 
-        if self.photomanager.num_images(self.imgdir) < 5:
+        if PhotoManager(self.imgdir).numimg < 5:
             mb.showerror("Not enough images                           ")
             return
 
@@ -107,10 +115,14 @@ class main(tk.Tk):
         # Colmap recon
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir))
+        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+        while self.p.poll() is None:
+            msg = self.p.stdout.readline().strip() # read a line from the process output
+            if msg:
+                print(msg)
         rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
         rcode = self.p.wait()
 
         sparsedir = self.projdir / pl.Path(r"sparse")
@@ -118,7 +130,7 @@ class main(tk.Tk):
             shutil.rmtree(sparsedir)
         os.makedirs(sparsedir)
     
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
         rcode = self.p.wait()
 
         densedir = self.projdir / pl.Path(r"dense")
@@ -126,16 +138,16 @@ class main(tk.Tk):
             shutil.rmtree(densedir)
         os.makedirs(densedir)
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
         rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
         rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
         rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
         rcode = self.p.wait()
 
         if rcode == 0:
@@ -248,3 +260,4 @@ class main(tk.Tk):
 if __name__ == "__main__":
     app = main()
     app.mainloop()
+    sys.stdout = app.old_stdout
