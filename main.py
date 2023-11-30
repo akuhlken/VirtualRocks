@@ -89,6 +89,8 @@ class main(tk.Tk):
     #   method should run all scripts accosiated with Colmap and result
     #   in a desnse reconstruction
     def _recon_matcher(self):
+        print()
+        print("____________STARTING MATCHER____________")
         self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
 
@@ -122,45 +124,93 @@ class main(tk.Tk):
                 print(msg)
         rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
+            self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    print(msg)
+            rcode = self.p.wait()
 
-        sparsedir = self.projdir / pl.Path(r"sparse")
-        if os.path.exists(sparsedir):
-            shutil.rmtree(sparsedir)
-        os.makedirs(sparsedir)
-    
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
 
-        densedir = self.projdir / pl.Path(r"dense")
-        if os.path.exists(densedir):
-            shutil.rmtree(densedir)
-        os.makedirs(densedir)
+            sparsedir = self.projdir / pl.Path(r"sparse")
+            if os.path.exists(sparsedir):
+                shutil.rmtree(sparsedir)
+            os.makedirs(sparsedir)
+        
+            self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    print(msg)
+            rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
-        rcode = self.p.wait()
+            densedir = self.projdir / pl.Path(r"dense")
+            if os.path.exists(densedir):
+                shutil.rmtree(densedir)
+            os.makedirs(densedir)
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
-        rcode = self.p.wait()
+            self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    print(msg)
+            rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
+
+            self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    print(msg)
+            rcode = self.p.wait()
+
+        if rcode == 0: 
+            self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
+            self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    print(msg)
+            rcode = self.p.wait()
+
+        if rcode == 0: 
+            self.page2.progress.step(10)
+            self.page2.progresstotal.step(1)
+            self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    print(msg)
+            rcode = self.p.wait()
 
         if rcode == 0:
             self.page2.matcher.config(text="done")
             self.page2.matcher.config(state="disabled")
             self.page2.setbounds.config(state="active")
             self.page2.state = 2 # state = matcher done
+            self.page2.progress.stop()
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
     #   method should run the point filtering and then dense2mesh scripts
     #   TODO: This is where the point filtering will happen using the user bounds
     def _recon_mesher(self):
+        print()
+        print("____________STARTING MESHER____________")
         self.page2.state = 3
         self.page2.mesher.config(text="Cancel")
         if DEBUG:
@@ -174,7 +224,11 @@ class main(tk.Tk):
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir))
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
+        while self.p.poll() is None:
+            msg = self.p.stdout.readline().strip() # read a line from the process output
+            if msg:
+                print(msg)
         rcode = self.p.wait()
         if rcode == 0:
             # If reconstruction exited normally
