@@ -84,7 +84,7 @@ class main(tk.Tk):
         self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
 
-        if self.photomanager.num_images(self.imgdir) < 5:
+        if PhotoManager(self.imgdir).numimg < 5:
             mb.showerror("Not enough images                           ")
             return
 
@@ -110,39 +110,55 @@ class main(tk.Tk):
         self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir))
         rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(1)
+            self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
+            rcode = self.p.wait()
 
-        sparsedir = self.projdir / pl.Path(r"sparse")
-        if os.path.exists(sparsedir):
-            shutil.rmtree(sparsedir)
-        os.makedirs(sparsedir)
-    
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(1)
 
-        densedir = self.projdir / pl.Path(r"dense")
-        if os.path.exists(densedir):
-            shutil.rmtree(densedir)
-        os.makedirs(densedir)
+            sparsedir = self.projdir / pl.Path(r"sparse")
+            if os.path.exists(sparsedir):
+                shutil.rmtree(sparsedir)
+            os.makedirs(sparsedir)
+        
+            self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
+            rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(1)
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
-        rcode = self.p.wait()
+            densedir = self.projdir / pl.Path(r"dense")
+            if os.path.exists(densedir):
+                shutil.rmtree(densedir)
+            os.makedirs(densedir)
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir))
-        rcode = self.p.wait()
+            self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
+            rcode = self.p.wait()
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir))
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.page2.progress.step(1)
+            self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
+            rcode = self.p.wait()
+
+        if rcode == 0: 
+            self.page2.progress.step(1)
+            self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir))
+            rcode = self.p.wait()
+
+        if rcode == 0: 
+            self.page2.progress.step(1)
+            self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir))
+            rcode = self.p.wait()
 
         if rcode == 0:
             self.page2.matcher.config(text="done")
             self.page2.matcher.config(state="disabled")
             self.page2.setbounds.config(state="active")
             self.page2.state = 2 # state = matcher done
+            self.page2.progress.stop()
+            self.page2.progresstotal.step(1)
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread

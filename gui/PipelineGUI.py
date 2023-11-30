@@ -3,6 +3,8 @@ from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 import pathlib as pl
+# might have to import ttk for progressbar class.
+from tkinter import ttk
 
 class PipelineGUI(tk.Frame):
     
@@ -31,13 +33,19 @@ class PipelineGUI(tk.Frame):
         file.add_command(label="Exit", command=self.quit)  
 
         info = tk.Menu(menubar, tearoff=0)
+        info.add_command(label="Common Issues") 
+        info.add_command(label="Colmap Info") 
+        info.add_command(label="MeshLab Info") 
+
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info)  
 
         self.controller.config(menu=menubar)
 
-    # Settup method for GUI layout and elements
+    # Setup method for GUI layout and elements
     def setup_layout(self):
+
+        ttk.Style().configure("TButton", padding=6)
 
         # Layout framework
         left = tk.Frame(self, bg=self.controller.backcolor)
@@ -58,9 +66,15 @@ class PipelineGUI(tk.Frame):
         self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
 
         # status elements
-        self.log = tk.Button(right, text="[Log]", bg=self.controller.backcolor)
-        self.progress = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor)
+        self.log = tk.Label(right, text="[Log]", bg=self.controller.backcolor)
         self.map = tk.Canvas(left, bg=self.controller.backcolor)
+
+        # progress bar elements
+        # find out if you can add text to the text part of tk.label
+        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
+        self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
+        self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
 
         # packing
         self.addphotos.pack()
@@ -70,8 +84,12 @@ class PipelineGUI(tk.Frame):
         self.outres.pack()
         self.mesher.pack()
         self.log.pack(fill="both", expand=True)
-        self.progress.pack(fill="both", expand=True)
         self.map.pack(fill='both', expand=True, side='right')
+
+        self.progresstotaltext.pack()
+        self.progresstotal.pack(fill="both", expand=True)
+        self.progresstext.pack()
+        self.progress.pack(fill="both", expand=True)
         
         # dissable buttons
         self.setbounds.config(state="disabled")
@@ -90,6 +108,7 @@ class PipelineGUI(tk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
+        self.progresstotal.step(1)
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
@@ -103,9 +122,11 @@ class PipelineGUI(tk.Frame):
     def matcher_handler(self):
         if self.state == 0:
             self.controller.start_matcher()
+            self.progress.step(1)
             return
         if self.state == 1:
             self.controller.cancel_recon()
+            self.progress.stop()
             return
 
     # Event handler for bottom mesher button
@@ -120,7 +141,7 @@ class PipelineGUI(tk.Frame):
             return
         if self.state == 4:
             self.controller.export()
-            return
+            return        
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):

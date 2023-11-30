@@ -141,5 +141,6 @@ class Mesher():
         self._quad_slice(maxx, midx, midy, miny)
 
 projdir = sys.argv[1]
+# pass text file things are written to, args (this writes to something (text file) and then main would check it)
 print("starting")
 Mesher(projdir)
