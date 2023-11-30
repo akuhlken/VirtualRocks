@@ -1,4 +1,3 @@
-import pathlib as pl
 import exifread
 import os
 
@@ -36,3 +35,14 @@ class PhotoManager():
                 if gps:
                     self.metadict[filename] = gps
                 self.numimg += 1
+        if not self.metadict:
+            print("images do not have any GPS information")
+
+    # Returns the number of valid images contained within the imgdir
+    def num_images(self, imgdir):
+        extensions = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
+        numimg = 0
+        for filename in os.listdir(imgdir):
+            if filename.endswith(tuple(extensions)):
+                numimg += 1
+        return numimg
