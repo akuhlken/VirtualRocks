@@ -78,7 +78,7 @@ class PipelineGUI(tk.Frame):
         # find out if you can add text to the text part of tk.label
         self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
         self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=300)
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
         self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
 
         # packing
@@ -89,7 +89,6 @@ class PipelineGUI(tk.Frame):
         self.outres.pack()
         self.mesher.pack()
         self.logtext.pack(side='left', fill='both', expand=True)
-        self.progress.pack(fill="both", expand=True)
         self.map.pack(fill='both', expand=True, side='right')
 
         self.progresstotaltext.pack()
@@ -114,6 +113,7 @@ class PipelineGUI(tk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
+        self.progresstotal.step(1)
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
@@ -127,7 +127,7 @@ class PipelineGUI(tk.Frame):
     def matcher_handler(self):
         if self.state == 0:
             self.controller.start_matcher()
-            self.progress.step(10)
+            self.progress.step(1)
             return
         if self.state == 1:
             self.controller.cancel_recon()

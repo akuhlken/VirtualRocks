@@ -125,8 +125,7 @@ class main(tk.Tk):
         rcode = self.p.wait()
 
         if rcode == 0:
-            self.page2.progress.step(10)
-            self.page2.progresstotal.step(1)
+            self.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
             while self.p.poll() is None:
                 msg = self.p.stdout.readline().strip() # read a line from the process output
@@ -135,8 +134,7 @@ class main(tk.Tk):
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.page2.progress.step(10)
-            self.page2.progresstotal.step(1)
+            self.page2.progress.step(1)
 
             sparsedir = self.projdir / pl.Path(r"sparse")
             if os.path.exists(sparsedir):
@@ -151,8 +149,7 @@ class main(tk.Tk):
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.page2.progress.step(10)
-            self.page2.progresstotal.step(1)
+            self.page2.progress.step(1)
 
             densedir = self.projdir / pl.Path(r"dense")
             if os.path.exists(densedir):
@@ -167,9 +164,7 @@ class main(tk.Tk):
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.page2.progress.step(10)
-            self.page2.progresstotal.step(1)
-
+            self.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
             while self.p.poll() is None:
                 msg = self.p.stdout.readline().strip() # read a line from the process output
@@ -178,8 +173,7 @@ class main(tk.Tk):
             rcode = self.p.wait()
 
         if rcode == 0: 
-            self.page2.progress.step(10)
-            self.page2.progresstotal.step(1)
+            self.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
             while self.p.poll() is None:
                 msg = self.p.stdout.readline().strip() # read a line from the process output
@@ -188,8 +182,7 @@ class main(tk.Tk):
             rcode = self.p.wait()
 
         if rcode == 0: 
-            self.page2.progress.step(10)
-            self.page2.progresstotal.step(1)
+            self.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir), stdout=subprocess.PIPE, bufsize=1, text=True)
             while self.p.poll() is None:
                 msg = self.p.stdout.readline().strip() # read a line from the process output
@@ -203,6 +196,7 @@ class main(tk.Tk):
             self.page2.setbounds.config(state="active")
             self.page2.state = 2 # state = matcher done
             self.page2.progress.stop()
+            self.page2.progresstotal.step(1)
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
