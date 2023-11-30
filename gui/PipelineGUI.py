@@ -1,6 +1,7 @@
 import tkinter as tk
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
+from tkinter import messagebox as mb
 import pathlib as pl
 # might have to import ttk for progressbar class.
 from tkinter import ttk
@@ -11,9 +12,9 @@ class PipelineGUI(tk.Frame):
     DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
-    def __init__(self, parent, controller, projpath):
+    def __init__(self, parent, controller, progdir):
         tk.Frame.__init__(self, parent)
-        self.projpath = projpath
+        self.progdir = progdir
         self.controller = controller
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.create_menu()
@@ -87,7 +88,14 @@ class PipelineGUI(tk.Frame):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
-        self.controller.add_photos(fd.askdirectory(title='select image directory', initialdir='/home/'))
+        imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
+        if not imgdir:
+            return
+        if ' ' in imgdir:
+            print("Path must not contain white spaces")
+            mb.showerror("Paths cannot contain whitespace                           ")
+            return
+        self.controller.add_photos(imgdir)
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
@@ -159,14 +167,3 @@ class PipelineGUI(tk.Frame):
         resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
         new_image = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=new_image)
-
-        
-
-
-
-
-
-
-
-
-
