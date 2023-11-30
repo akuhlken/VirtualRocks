@@ -1,4 +1,5 @@
 import os
+import pickle
 import shutil
 import subprocess
 import tkinter as tk       
@@ -21,7 +22,7 @@ class main(tk.Tk):
 
         # Controller Variables
         self.projdir = None
-        self.imagedir = None
+        self.imgdir = None
         self.A = (0,0)
         self.B = (0,0)
         self.map = None
@@ -62,7 +63,18 @@ class main(tk.Tk):
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
-        print("PLACEHOLDER")
+        # Load the path variables from the file
+        with open(projfile, 'rb') as file:
+            self.projdir, self.imgdir = pickle.load(file)
+        self.page2 = PipelineGUI(self.container, self, self.projdir)
+        self.page2.grid(row=0, column=0, sticky="nsew")
+        self.page2.set_map(self.page2.DEFAULT_MAP)
+        self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
+        self.page2.tkraise()
+
+        photomanager = PhotoManager(self.imgdir)
+        self.page2.matcher.config(state="active")
+        self.page2.update_text(numimg=photomanager.numimg)
 
     # Main matcher pipeling code
     #   NOTE: This method runs in its own thread
@@ -72,7 +84,7 @@ class main(tk.Tk):
         self.page2.state = 1 # state = in progress
         self.page2.matcher.config(text="Cancel")
 
-        if self.photomanager.num_images(self.imagedir) < 5:
+        if self.photomanager.num_images(self.imgdir) < 5:
             mb.showerror("Not enough images                           ")
             return
 
@@ -95,7 +107,7 @@ class main(tk.Tk):
         # Colmap recon
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imagedir}"], cwd=str(workingdir))
+        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir))
         rcode = self.p.wait()
 
         if rcode == 0: self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
@@ -106,7 +118,7 @@ class main(tk.Tk):
             shutil.rmtree(sparsedir)
         os.makedirs(sparsedir)
     
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imagedir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
         rcode = self.p.wait()
 
         densedir = self.projdir / pl.Path(r"dense")
@@ -114,7 +126,7 @@ class main(tk.Tk):
             shutil.rmtree(densedir)
         os.makedirs(densedir)
 
-        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imagedir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
+        if rcode == 0: self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
         rcode = self.p.wait()
 
         if rcode == 0: self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
@@ -160,13 +172,18 @@ class main(tk.Tk):
     # Handler for adding photos
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
-    def add_photos(self, imagedir):
-        self.imagedir = pl.Path(imagedir)
-        self.photomanager = PhotoManager(self.imagedir)
-        self.photomanager.make_dict()
+    def add_photos(self, imgdir):
+        self.imgdir = pl.Path(imgdir)
+
+        # Save the project paths to a file
+        with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
+            pickle.dump((self.projdir, self.imgdir), file)
+
+        photomanager = PhotoManager(self.imgdir)
+        photomanager.make_dict()
 
         self.page2.matcher.config(state="active")
-        self.page2.update_text(numimg=self.photomanager.numimg)
+        self.page2.update_text(numimg=photomanager.numimg)
 
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
