@@ -7,6 +7,7 @@ class PhotoManager():
         self.metadict = {}
         self.numimg = 0
         self.imgdir = imgdir
+        self.num_images(imgdir)
     
     # Helper function to get the GPS coords of a specific image
     def _extract_gps(self, imgpath):
@@ -34,15 +35,13 @@ class PhotoManager():
                 gps = self._extract_gps(imgpath)
                 if gps:
                     self.metadict[filename] = gps
-                self.numimg += 1
         if not self.metadict:
             print("images do not have any GPS information")
 
     # Returns the number of valid images contained within the imgdir
     def num_images(self, imgdir):
         extensions = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
-        numimg = 0
+        self.numimg = 0
         for filename in os.listdir(imgdir):
             if filename.endswith(tuple(extensions)):
-                numimg += 1
-        return numimg
+                self.numimg += 1
