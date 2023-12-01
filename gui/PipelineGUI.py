@@ -135,7 +135,7 @@ class PipelineGUI(tk.Frame):
         self.progress.stop()
         if self.state == 0:
             self.controller.start_matcher()
-            self.controller.style.configure("Horizontal.TProgressbar", foreground="green", background="green")
+            self.controller.style.configure("Horizontal.TProgressbar", foreground="green")
             self.progresstext.config(text="Matching:")
             print("should change the style here")
             self.progress.step(1)

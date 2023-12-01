@@ -83,7 +83,7 @@ class main(tk.Tk):
             self.projdir, self.imgdir = pickle.load(file)
         self._startup()
 
-        # because we already have a project, photo matching should we done????
+        # because we already have a project, photo matching should be done????
         self.page2.progresstotal.step()
 
         # TODO: Check to see if there is already a fused.ply and if there is allow the user to start mesher
