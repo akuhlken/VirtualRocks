@@ -105,6 +105,7 @@ class PipelineGUI(tk.Frame):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
+        self.progresstotal.stop()
         self.progresstext.config(text="Image Loading:")
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
         if not imgdir:
