@@ -1,12 +1,12 @@
 import pickle
 import tkinter as tk       
 from tkinter import font as tkfont  
-from tkinter import messagebox as mb
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 import threading   
 import pathlib as pl
+from tkinter import messagebox as mb
 
 from scripts.ReconManger import ReconManager
 
@@ -56,13 +56,6 @@ class main(tk.Tk):
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
 
-        photomanager = PhotoManager(self.imgdir)
-        photomanager.make_dict()
-
-        self.page2.matcher.config(state="active")
-        self.page2.update_text(numimg=photomanager.numimg)
-        self.recon = ReconManager(self, self.imgdir, self.projdir)
-
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir):
@@ -75,8 +68,13 @@ class main(tk.Tk):
         # Load the path variables from the file
         with open(projfile, 'rb') as file:
             self.projdir, self.imgdir = pickle.load(file)
-        self._startup()
-
+        self._startup()       
+        numimg = PhotoManager(self.imgdir).numimg
+        self.page2.update_text(numimg)
+        if(numimg > 5):
+            self.page2.matcher.config(state="active")
+        else:
+            mb.showerror("Not enough images                           ") 
         # TODO: Check to see if there is already a fused.ply and if there is allow the user to start mesher
 
     # Handler for adding photos
@@ -88,7 +86,14 @@ class main(tk.Tk):
         # Save the project paths to a file
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
             pickle.dump((self.projdir, self.imgdir), file)
-
+        numimg = PhotoManager(self.imgdir).numimg
+        self.page2.update_text(numimg)
+        if(numimg > 5):
+            self.page2.matcher.config(state="active")
+        else:
+            self.page2.matcher.config(state="disabled")
+            mb.showerror("Not enough images                           ") 
+            
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
@@ -100,14 +105,16 @@ class main(tk.Tk):
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_matcher(self):
-        self.thread1 = threading.Thread(target = self.recon.recon_matcher)
+        self.recon = ReconManager(self, self.imgdir, self.projdir)
+        self.thread1 = threading.Thread(target = self.recon.matcher)
         self.thread1.daemon = True
         self.thread1.start()
 
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_mesher(self):
-        self.thread1 = threading.Thread(target = self.recon.recon_mesher)
+        self.recon = ReconManager(self, self.imgdir, self.projdir)
+        self.thread1 = threading.Thread(target = self.recon.mesher)
         self.thread1.daemon = True
         self.thread1.start()
 

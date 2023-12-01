@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 import tkinter as tk       
-from tkinter import messagebox as mb
 from scripts.PhotoManager import PhotoManager
 import pathlib as pl
 
@@ -31,14 +30,10 @@ class ReconManager():
     #   NOTE: This method runs in its own thread
     #   method should run all scripts accosiated with Colmap and result
     #   in a desnse reconstruction
-    def recon_matcher(self):
+    def matcher(self):
         self._send_log("__________Starting Matcher__________")
         self.controller.page2.state = 1 # state = in progress
         self.controller.page2.matcher.config(text="Cancel")
-
-        if PhotoManager(self.imgdir).numimg < 5:
-            mb.showerror("Not enough images                           ")
-            return
 
         # clean old database
         database = self.projdir / pl.Path(r"database.db")
@@ -112,7 +107,7 @@ class ReconManager():
     #   NOTE: This method runs in its own thread
     #   method should run the point filtering and then dense2mesh scripts
     #   TODO: This is where the point filtering will happen using the user bounds
-    def recon_mesher(self):
+    def mesher(self):
         self._send_log("__________Starting Mesher__________")
         self.controller.page2.state = 3
         self.controller.page2.mesher.config(text="Cancel")
