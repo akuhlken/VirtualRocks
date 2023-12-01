@@ -2,7 +2,8 @@ import os
 import pickle
 import shutil
 import subprocess
-import tkinter as tk       
+import tkinter as tk  
+from tkinter import ttk     
 from tkinter import font as tkfont  
 from tkinter import messagebox as mb
 from scripts.PhotoManager import PhotoManager
@@ -38,8 +39,13 @@ class main(tk.Tk):
         self.font = tkfont.Font(family='Arial', size=24, weight="bold")
         self.buttoncolor = "#ffffff"
         self.backcolor = "#ffffff"
+        self.style = ttk.Style()
+        self.style.theme_use('classic')
 
-        # container is a stack of fames (aka out two main pages)
+        # Progress bar styling
+
+
+        # container is a stack of frames (aka our two main pages)
         self.container = tk.Frame(self)
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=1)
@@ -111,6 +117,7 @@ class main(tk.Tk):
         rcode = self.p.wait()
 
         if rcode == 0:
+            self.page2.progress.config(style ="match.Horizontal.TProgressbar")
             self.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
             rcode = self.p.wait()
@@ -158,7 +165,7 @@ class main(tk.Tk):
             self.page2.setbounds.config(state="active")
             self.page2.state = 2 # state = matcher done
             self.page2.progress.stop()
-            self.page2.progresstotal.step(1)
+            self.page2.progresstotal.step(9)
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread

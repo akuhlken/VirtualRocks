@@ -3,7 +3,6 @@ from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 import pathlib as pl
-# might have to import ttk for progressbar class.
 from tkinter import ttk
 
 class PipelineGUI(tk.Frame):
@@ -23,6 +22,7 @@ class PipelineGUI(tk.Frame):
     # Settup method for top menu bar
     def create_menu(self):
         menubar = tk.Menu(self) 
+        print(self.controller.style.theme_use())
 
         file = tk.Menu(menubar, tearoff=0)  
         file.add_command(label="New")  
@@ -45,7 +45,7 @@ class PipelineGUI(tk.Frame):
     # Setup method for GUI layout and elements
     def setup_layout(self):
 
-        ttk.Style().configure("TButton", padding=6)
+        self.controller.style.configure("TButton", padding=6)
 
         # Layout framework
         left = tk.Frame(self, bg=self.controller.backcolor)
@@ -71,9 +71,9 @@ class PipelineGUI(tk.Frame):
 
         # progress bar elements
         # find out if you can add text to the text part of tk.label
-        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
+        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
         self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="Horizontal.TProgressbar")
         self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
 
         # packing
@@ -122,6 +122,8 @@ class PipelineGUI(tk.Frame):
     def matcher_handler(self):
         if self.state == 0:
             self.controller.start_matcher()
+            self.style.configure("Horizontal.TProgressbar", foreground="green", background="green")
+            print("should change the style here")
             self.progress.step(1)
             return
         if self.state == 1:
@@ -135,6 +137,7 @@ class PipelineGUI(tk.Frame):
     def mesher_handler(self):
         if self.state == 2:
             self.controller.start_mesher()
+            self.progress.step(1)
             return
         if self.state == 3:
             self.controller.cancel_recon()
