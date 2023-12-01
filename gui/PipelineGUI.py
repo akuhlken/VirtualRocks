@@ -132,6 +132,7 @@ class PipelineGUI(tk.Frame):
         if self.state == 1:
             self.controller.cancel_recon()
             self.progress.stop()
+            self.progresstotal.stop()
             return
 
     # Event handler for bottom mesher button
