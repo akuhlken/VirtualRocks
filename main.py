@@ -79,6 +79,9 @@ class main(tk.Tk):
 
         # TODO: Check to see if there is already a fused.ply and if there is allow the user to start mesher
 
+    # Method has two behaviors, if passed a string this method will act like a print() to the log
+    #   if no args are provided this will capture any messages that self.p sends and send them to the log,
+    #   returning when self.p finishes
     def _send_log(self, msg=None):
         if msg:
             self.page2.logtext.insert(tk.END, msg + "\n")
