@@ -66,7 +66,12 @@ class PipelineGUI(tk.Frame):
         self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
 
         # status elements
-        self.log = tk.Label(right, text="[Log]", bg=self.controller.backcolor)
+        self.logtext = tk.Text(right, width=50)
+        scrollbar = tk.Scrollbar(right)
+        scrollbar.pack(side='right', fill='y')
+        self.logtext['yscrollcommand'] = scrollbar.set
+        scrollbar['command'] = self.logtext.yview
+        self.progress = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor)
         self.map = tk.Canvas(left, bg=self.controller.backcolor)
 
         # progress bar elements
@@ -83,7 +88,7 @@ class PipelineGUI(tk.Frame):
         self.setbounds.pack()
         self.outres.pack()
         self.mesher.pack()
-        self.log.pack(fill="both", expand=True)
+        self.logtext.pack(side='left', fill='both', expand=True)
         self.map.pack(fill='both', expand=True, side='right')
 
         self.progresstotaltext.pack()
@@ -129,6 +134,7 @@ class PipelineGUI(tk.Frame):
         if self.state == 1:
             self.controller.cancel_recon()
             self.progress.stop()
+            self.progresstotal.stop()
             return
 
     # Event handler for bottom mesher button

@@ -2,15 +2,17 @@ import os
 import pickle
 import shutil
 import subprocess
-import tkinter as tk  
-from tkinter import ttk     
+import sys
+import tkinter as tk       
+from tkinter import ttk
 from tkinter import font as tkfont  
 from tkinter import messagebox as mb
+from scripts.LogRedirect import LogRedirect
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from time import sleep
-from threading import Thread    
+import threading   
 import pathlib as pl
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
@@ -66,6 +68,8 @@ class main(tk.Tk):
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
 
+        LogRedirect(self.page2.logtext)
+
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
@@ -77,6 +81,8 @@ class main(tk.Tk):
         self.page2.set_map(self.page2.DEFAULT_MAP)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
+
+        LogRedirect(self.page2.logtext)
 
         photomanager = PhotoManager(self.imgdir)
         self.page2.matcher.config(state="active")
@@ -108,18 +114,27 @@ class main(tk.Tk):
         database = self.projdir / pl.Path(r"database.db")
         if os.path.exists(database):
             os.remove(database)
-            print("removed old database")
 
         # Colmap recon
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir))
+        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        while self.p.poll() is None:
+            msg = self.p.stdout.readline().strip() # read a line from the process output
+            if msg:
+                self.page2.logtext.insert(tk.END, msg + "\n")
+                self.page2.logtext.see("end")
         rcode = self.p.wait()
 
         if rcode == 0:
             self.page2.progress.config(style ="match.Horizontal.TProgressbar")
             self.page2.progress.step(1)
-            self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir))
+            self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    self.page2.logtext.insert(tk.END, msg + "\n")
+                    self.page2.logtext.see("end")
             rcode = self.p.wait()
 
         if rcode == 0:
@@ -130,7 +145,12 @@ class main(tk.Tk):
                 shutil.rmtree(sparsedir)
             os.makedirs(sparsedir)
         
-            self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir))
+            self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    self.page2.logtext.insert(tk.END, msg + "\n")
+                    self.page2.logtext.see("end")
             rcode = self.p.wait()
 
         if rcode == 0:
@@ -141,22 +161,42 @@ class main(tk.Tk):
                 shutil.rmtree(densedir)
             os.makedirs(densedir)
 
-            self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir))
+            self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    self.page2.logtext.insert(tk.END, msg + "\n")
+                    self.page2.logtext.see("end")
             rcode = self.p.wait()
 
         if rcode == 0:
             self.page2.progress.step(1)
-            self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir))
+            self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    self.page2.logtext.insert(tk.END, msg + "\n")
+                    self.page2.logtext.see("end")
             rcode = self.p.wait()
 
         if rcode == 0: 
             self.page2.progress.step(1)
-            self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir))
+            self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    self.page2.logtext.insert(tk.END, msg + "\n")
+                    self.page2.logtext.see("end")
             rcode = self.p.wait()
 
         if rcode == 0: 
             self.page2.progress.step(1)
-            self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir))
+            self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            while self.p.poll() is None:
+                msg = self.p.stdout.readline().strip() # read a line from the process output
+                if msg:
+                    self.page2.logtext.insert(tk.END, msg + "\n")
+                    self.page2.logtext.see("end")
             rcode = self.p.wait()
 
         if rcode == 0:
@@ -185,7 +225,12 @@ class main(tk.Tk):
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir))
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        while self.p.poll() is None:
+            msg = self.p.stdout.readline().strip() # read a line from the process output
+            if msg:
+                self.page2.logtext.insert(tk.END, msg + "\n")
+                self.page2.logtext.see("end")
         rcode = self.p.wait()
         if rcode == 0:
             # If reconstruction exited normally
@@ -219,13 +264,15 @@ class main(tk.Tk):
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_matcher(self):
-        self.thread1 = Thread(target = self._recon_matcher)
+        self.thread1 = threading.Thread(target = self._recon_matcher)
+        self.thread1.daemon = True
         self.thread1.start()
 
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_mesher(self):
-        self.thread1 = Thread(target = self._recon_mesher)
+        self.thread1 = threading.Thread(target = self._recon_mesher)
+        self.thread1.daemon = True
         self.thread1.start()
 
     # Hanlder for canceling recon
@@ -234,14 +281,12 @@ class main(tk.Tk):
     def cancel_recon(self):
         if DEBUG:
             print("canceling recon")
-            return
         else:
             try:
                 self.p.terminate() 
                 self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill() 
-        
         if self.page2.state == 1:
             self.page2.matcher.config(text="Start Matcher")
             self.page2.state = 0
@@ -271,3 +316,5 @@ class main(tk.Tk):
 if __name__ == "__main__":
     app = main()
     app.mainloop()
+    if app.p:
+        app.p.terminate()
