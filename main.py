@@ -204,7 +204,7 @@ class main(tk.Tk):
             self.page2.matcher.config(state="disabled")
             self.page2.setbounds.config(state="active")
             self.page2.state = 2 # state = matcher done
-            self.page2.progress.stop()
+            self.page2.progress.config(value=6)
             self.page2.progresstotal.step(9)
 
     # Main mesher pipeling code
