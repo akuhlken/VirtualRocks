@@ -105,6 +105,7 @@ class PipelineGUI(tk.Frame):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
+        self.progresstext.config(text="Image Loading:")
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
         if not imgdir:
             return
@@ -113,28 +114,34 @@ class PipelineGUI(tk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
+        self.progress.config(value=6)
         self.progresstotal.step(1)
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
+        # progress bar updating:
+        self.progress.stop()
+        self.progresstext.config(text="Handling Bounds:")
+
         self.controller.set_bounds((0,0),(0,0))
 
     # Event handler for bottom mesher button
         # Method should react based on the current state of the GUI
         # and call the correct method in controller
     def matcher_handler(self):
+        self.progress.stop()
         if self.state == 0:
             self.controller.start_matcher()
-            self.style.configure("Horizontal.TProgressbar", foreground="green", background="green")
+            self.controller.style.configure("Horizontal.TProgressbar", foreground="green", background="green")
+            self.progresstext.config(text="Matching:")
             print("should change the style here")
             self.progress.step(1)
             return
         if self.state == 1:
             self.controller.cancel_recon()
             self.progress.stop()
-            self.progresstotal.stop()
             return
 
     # Event handler for bottom mesher button
