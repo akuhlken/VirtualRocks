@@ -97,6 +97,7 @@ class PipelineGUI(tk.Frame):
         self.progress.pack(fill="both", expand=True)
         
         # dissable buttons
+        self.matcher.config(state="disabled")
         self.setbounds.config(state="disabled")
         self.matcher.config(state="disabled")
         self.mesher.config(state="disabled")
