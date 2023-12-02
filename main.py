@@ -21,11 +21,8 @@ class main(tk.Tk):
         # Controller Variables
         self.projdir = None
         self.imgdir = None
-        self.A = (0,0)
-        self.B = (0,0)
-        self.map = None
         self.image = None
-        self.p = None
+        self.recon = None
 
         # Configuration variables
         self.minsize(500, 300)
@@ -105,7 +102,8 @@ class main(tk.Tk):
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_matcher(self):
-        self.recon = ReconManager(self, self.imgdir, self.projdir)
+        if not self.recon:
+            self.recon = ReconManager(self, self.imgdir, self.projdir)
         self.thread1 = threading.Thread(target = self.recon.matcher)
         self.thread1.daemon = True
         self.thread1.start()
@@ -113,7 +111,8 @@ class main(tk.Tk):
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_mesher(self):
-        self.recon = ReconManager(self, self.imgdir, self.projdir)
+        if not self.recon:
+            self.recon = ReconManager(self, self.imgdir, self.projdir)
         self.thread1 = threading.Thread(target = self.recon.mesher)
         self.thread1.daemon = True
         self.thread1.start()
@@ -146,5 +145,3 @@ class main(tk.Tk):
 if __name__ == "__main__":
     app = main()
     app.mainloop()
-    if app.p:
-        app.p.terminate()
