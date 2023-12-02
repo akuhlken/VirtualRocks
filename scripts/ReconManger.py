@@ -34,18 +34,23 @@ class ReconManager():
         self._send_log("__________Starting Matcher__________")
         self.controller.page2.state = 1 # state = in progress
         self.controller.page2.matcher.config(text="Cancel")
-
+        rcode = 0
         # clean old database
-        database = self.projdir / pl.Path(r"database.db")
-        if os.path.exists(database):
-            os.remove(database)
+        try:
+            database = self.projdir / pl.Path(r"database.db")
+            if os.path.exists(database):
+                os.remove(database)
+        except:
+            rcode = 1
+            self._send_log("Database already open (wait for old process to exit)")
 
         # Colmap recon
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
-        self._send_log()
-        rcode = self.p.wait()
+        if rcode == 0:
+            self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+            self._send_log()
+            rcode = self.p.wait()
 
         if rcode == 0:
             self.controller.page2.progress.step(1)
@@ -54,25 +59,33 @@ class ReconManager():
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.controller.page2.progress.step(1)
+            try:
+                sparsedir = self.projdir / pl.Path(r"sparse")
+                if os.path.exists(sparsedir):
+                    shutil.rmtree(sparsedir)
+                os.makedirs(sparsedir)
+            except:
+                rcode = 1
+                self._send_log("Database already open (wait for old process to exit)")
 
-            sparsedir = self.projdir / pl.Path(r"sparse")
-            if os.path.exists(sparsedir):
-                shutil.rmtree(sparsedir)
-            os.makedirs(sparsedir)
-        
+        if rcode == 0:
+            self.controller.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
 
         if rcode == 0:
+            try:
+                densedir = self.projdir / pl.Path(r"dense")
+                if os.path.exists(densedir):
+                    shutil.rmtree(densedir)
+                os.makedirs(densedir)
+            except:
+                rcode = 1
+                self._send_log("Database already open (wait for old process to exit)")
+    
+        if rcode == 0:
             self.controller.page2.progress.step(1)
-
-            densedir = self.projdir / pl.Path(r"dense")
-            if os.path.exists(densedir):
-                shutil.rmtree(densedir)
-            os.makedirs(densedir)
-
             self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
@@ -102,6 +115,7 @@ class ReconManager():
             self.controller.page2.state = 2 # state = matcher done
             self.controller.page2.progress.stop()
             self.controller.page2.progresstotal.step(1)
+        self.p = None
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
@@ -122,16 +136,18 @@ class ReconManager():
             # If reconstruction exited normally
             self.controller.page2.mesher.config(text="Export")
             self.controller.page2.state = 4
+        self.p = None
 
     #  Methods for canceling current recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
     #   After cancel it should change the action button back to start
     def cancel(self):
-        try:
-            self.p.terminate() 
-            self.p.wait(timeout=2)
-        except subprocess.TimeoutExpired:
-            self.p.kill() 
+        if self.p:
+            try:
+                self.p.terminate() 
+                self.p.wait(timeout=2)
+            except subprocess.TimeoutExpired:
+                self.p.kill()
         if self.controller.page2.state == 1:
             self.controller.page2.matcher.config(text="Start Matcher")
             self.controller.page2.state = 0
