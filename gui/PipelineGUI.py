@@ -78,7 +78,7 @@ class PipelineGUI(tk.Frame):
         # find out if you can add text to the text part of tk.label
         self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
         self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="Horizontal.TProgressbar")
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="prog.Horizontal.TProgressbar")
         self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
 
         # packing
@@ -116,6 +116,7 @@ class PipelineGUI(tk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
+        self.controller.style.configure("prog.Horizontal.TProgressbar", background="orange")
         self.progress.config(value=6)
         self.progresstotal.step(1)
 
@@ -126,8 +127,10 @@ class PipelineGUI(tk.Frame):
         # progress bar updating:
         self.progress.stop()
         self.progresstext.config(text="Handling Bounds:")
+        self.progress.config(value=6)
 
         self.controller.set_bounds((0,0),(0,0))
+        self.progresstotal.step(1)
 
     # Event handler for bottom mesher button
         # Method should react based on the current state of the GUI
@@ -136,14 +139,12 @@ class PipelineGUI(tk.Frame):
         self.progress.stop()
         if self.state == 0:
             self.controller.start_matcher()
-            self.controller.style.configure("Horizontal.TProgressbar", foreground="green")
             self.progresstext.config(text="Matching:")
-            print("should change the style here")
-            self.progress.step(1)
             return
         if self.state == 1:
             self.controller.cancel_recon()
             self.progress.stop()
+            self.progresstext.config(text="Progress on Current Step:")
             return
 
     # Event handler for bottom mesher button

@@ -50,12 +50,14 @@ class ReconManager():
         if rcode == 0:
             self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
+            print("feature extractor")
             rcode = self.p.wait()
 
         if rcode == 0:
             self.controller.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
+            print("exhaustive matcher")
             rcode = self.p.wait()
 
         if rcode == 0:
@@ -72,6 +74,7 @@ class ReconManager():
             self.controller.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
+            print("mapper")
             rcode = self.p.wait()
 
         if rcode == 0:
@@ -88,12 +91,14 @@ class ReconManager():
             self.controller.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
+            print("image undistorter")
             rcode = self.p.wait()
 
         if rcode == 0:
             self.controller.page2.progress.step(1)
             self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
+            print("patch match stereo")
             rcode = self.p.wait()
 
         if rcode == 0: 
