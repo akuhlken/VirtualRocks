@@ -32,6 +32,9 @@ class Mesher():
         print("---Loading dense point cloud---")
         self.ms.load_new_mesh(base_path+r"\fused.ply")
 
+        # Update bounding box for dense poit cloud
+        self.bounds = self.ms.current_mesh().bounding_box()
+
         # Point cloud simplification
         print("---Optimizing Point Cloud---")
         self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
@@ -41,6 +44,9 @@ class Mesher():
         self.ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
 
         # TODO: If model is empty try again with lower depth values until it works
+
+        # Crop skirt from model
+        self._crop()
         
         # Wipe verticies colors
         print("---Setting vertex colors---")
@@ -139,6 +145,21 @@ class Mesher():
 
         # bottomright
         self._quad_slice(maxx, midx, midy, miny)
+
+    # This will crop the current mesh to the bounds from the dense point cloud
+    def _crop(self):
+        min=self.bounds.min()
+        max=self.bounds.max()
+
+        minx = min[0] 
+        maxx = max[0]
+        miny = min[1]
+        maxy = max[1]
+
+        self.ms.set_selection_none()
+        self.ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {minx} || x > {maxx}) || (y < {miny} || y > {maxy})")
+        self.ms.meshing_remove_selected_vertices()
+
 
 projdir = sys.argv[1]
 # pass text file things are written to, args (this writes to something (text file) and then main would check it)
