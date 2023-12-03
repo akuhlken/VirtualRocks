@@ -31,7 +31,7 @@ class main(tk.Tk):
         self.title("VirtualRocks")
 
         # Application styling
-        self.font = tkfont.Font(family='Arial', size=24, weight="bold")
+        self.headerfont = tkfont.Font(family='Arial', size=24, weight="bold")
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # exclusively for the background of the map.
         self.style = ttk.Style()

@@ -12,6 +12,16 @@ class ReconManager():
         self.imgdir = imgdir
         self.projdir = projdir
 
+    # Method for updating progress bar and progress text
+    #   when a process completes messages should be sent in the form: "$nextstep$""
+    #   To reset the progress bar, send message "$$"
+    def _update_progress(self, msg):
+        current = msg.replace('$', '')
+        # TODO: Update progress and set progress text == curent
+        if current == "":
+            pass
+            # TODO: reset progress bar
+
     # Method has two behaviors, if passed a string this method will act like a print() to the log
     #   if no args are provided this will capture any messages that self.p sends and send them to the log,
     #   returning when self.p finishes
@@ -19,12 +29,17 @@ class ReconManager():
         if msg:
             self.controller.page2.logtext.insert(tk.END, msg + "\n")
             self.controller.page2.logtext.see("end")
+            if msg[0] == '$' and msg[-1] == '$':
+                    self._update_progress(msg)
             return
         while self.p.poll() is None:
             msg = self.p.stdout.readline().strip() # read a line from the process output
             if msg:
                 self.controller.page2.logtext.insert(tk.END, msg + "\n")
                 self.controller.page2.logtext.see("end")
+                if msg[0] == '$' and msg[-1] == '$':
+                    self._update_progress(msg)
+
         
     # Main matcher pipeling code
     #   NOTE: This method runs in its own thread
