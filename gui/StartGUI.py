@@ -9,7 +9,7 @@ class StartGUI(ttk.Frame):
         
         ttk.Frame.__init__(self, parent)
         self.controller = controller
-        label = ttk.Label(self, text="Choose Project:", font=controller.font, anchor="center")
+        label = ttk.Label(self, text="Choose Project:", font=controller.headerfont, anchor="center")
         label.pack(side="top", fill="x", pady=10)
 
         middleframe = ttk.Frame(self)
