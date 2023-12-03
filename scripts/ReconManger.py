@@ -55,6 +55,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Matcher__________")
         rcode = 0
         # clean old database
@@ -147,6 +148,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Mesher__________")
         
         colmap = pl.Path("scripts/COLMAP.bat").resolve()

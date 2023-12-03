@@ -123,7 +123,6 @@ class main(tk.Tk):
     def start_matcher(self):
         if not self.recon:
             self.recon = ReconManager(self, self.imgdir, self.projdir)
-        self.page2.cancel.config(state="active")
         self.page2.setbounds.config(state="disabled")
         self.page2.mesher.config(state="disabled")
         self.page2.export.config(state="disabled")
@@ -136,7 +135,6 @@ class main(tk.Tk):
     def start_mesher(self):
         if not self.recon:
             self.recon = ReconManager(self, self.imgdir, self.projdir)
-        self.page2.cancel.config(state="active")
         self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.mesher)
         self.thread1.daemon = True
@@ -167,6 +165,15 @@ class main(tk.Tk):
     def update_map(self):
         pass
 
+    def _shutdown(self):
+        try:
+            self.recon.cancel()
+        except:
+            print("no active processes")
+        print("exiting app")
+        self.destroy()
+
 if __name__ == "__main__":
     app = main()
+    app.protocol("WM_DELETE_WINDOW", app._shutdown)
     app.mainloop()
