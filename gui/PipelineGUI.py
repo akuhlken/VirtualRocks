@@ -5,14 +5,14 @@ from tkinter import messagebox as mb
 import pathlib as pl
 from tkinter import ttk
 
-class PipelineGUI(tk.Frame):
+class PipelineGUI(ttk.Frame):
     
     # GUI constants
     DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, progdir):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.progdir = progdir
         self.controller = controller
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
@@ -35,6 +35,7 @@ class PipelineGUI(tk.Frame):
         info.add_command(label="Common Issues") 
         info.add_command(label="Colmap Info") 
         info.add_command(label="MeshLab Info") 
+        info.add_command(label="Pasta Recipes") 
 
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info)  
@@ -75,9 +76,9 @@ class PipelineGUI(tk.Frame):
         # progress bar elements
         # TODO: change how the label updating of the bottom bar works.
         self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
-        self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
+        self.progresstotaltext = ttk.Label(prog, text="Total Progress:")
         self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="prog.Horizontal.TProgressbar")
-        self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
+        self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
         # packing
         self.addphotos.pack()
