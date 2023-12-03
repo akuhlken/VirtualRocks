@@ -44,6 +44,12 @@ class main(tk.Tk):
         self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
+        self.style.layout("prog.Horizontal.TProgressbar",
+             [('Horizontal.Progressbar.trough',
+               {'children': [('Horizontal.Progressbar.pbar',
+                              {'side': 'left', 'sticky': 'ns'})],
+                'sticky': 'nswe'}),
+              ('Horizontal.Progressbar.label', {'sticky': ''})])
 
 
         # container is a stack of frames (aka our two main pages)
