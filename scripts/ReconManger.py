@@ -179,4 +179,4 @@ class ReconManager():
                 self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill()
-        self._send_log("process was killed")
+        self._send_log("process was sent kill signal")

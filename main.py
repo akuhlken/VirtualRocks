@@ -88,12 +88,14 @@ class main(tk.Tk):
         self.page2.update_text(numimg)
 
         self.page2.matcher.config(state="active")
-        self.page2.setbounds.config(state="active")
 
         if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
-            self.page2.mesher.config(state="active")
+            self.page2.setbounds.config(state="active")
+            print('got here')
 
         if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
+            self.page2.setbounds.config(state="active")
+            self.page2.mesher.config(state="active")
             self.page2.export.config(state="active")
 
         # because we already have a project, photo matching should be done????
@@ -120,7 +122,7 @@ class main(tk.Tk):
     #   This method should not open a dialogue, the is the role of the GUI classes
     def set_bounds(self, A, B):
         self.page2.mesher.config(state="active")
-        self.page2.export.config(state="disbaled")
+        self.page2.export.config(state="disabled")
         self.A = A
         self.B = B
 
