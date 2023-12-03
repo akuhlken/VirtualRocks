@@ -1,6 +1,8 @@
 import exifread
 import os
 
+EXTENSIONS = ['.jpg', '.jpeg', '.png', '.tif', '.tiff', '.JPG', '.JPEG', '.PNG', '.TIF', '.TIFF']
+
 class PhotoManager():    
 
     def __init__(self, imgdir):
@@ -28,9 +30,8 @@ class PhotoManager():
     # Sets the imgdict variable with a dictionary of metadata for each image
     #   Uses the filename as the key in the dict and the value is a GPS struct
     def make_dict(self):
-        extensions = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
         for filename in os.listdir(self.imgdir):
-            if filename.endswith(tuple(extensions)):
+            if filename.endswith(tuple(EXTENSIONS)):
                 imgpath = os.path.join(self.imgdir, filename)
                 gps = self._extract_gps(imgpath)
                 if gps:
@@ -40,8 +41,7 @@ class PhotoManager():
 
     # Returns the number of valid images contained within the imgdir
     def num_images(self, imgdir):
-        extensions = ['.jpg', '.jpeg', '.png', '.tif', '.tiff']
         self.numimg = 0
         for filename in os.listdir(imgdir):
-            if filename.endswith(tuple(extensions)):
+            if filename.endswith(tuple(EXTENSIONS)):
                 self.numimg += 1
