@@ -60,11 +60,13 @@ class PipelineGUI(ttk.Frame):
         self.addphotos = ttk.Button(right, text="Add Photos", command=lambda: self.photos_handler())
 
         self.numimages = ttk.Label(right, text="Number of images:")
-        self.matcher = ttk.Button(right, text="Start Matcher", command=lambda: self.matcher_handler())
+        self.matcher = ttk.Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
         self.setbounds = ttk.Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
         self.outres = ttk.Label(right, text="Output Resulution:")
-        self.mesher = ttk.Button(right, text="Start Mesher", command=lambda: self.mesher_handler())
-
+        self.mesher = ttk.Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
+        self.export = ttk.Button(right, text="Export", command=lambda: self.controller.export())
+        self.cancel = ttk.Button(right, text="Cancel", command=lambda: self.controller.cancel_recon())
+        
         # status elements
         self.map = tk.Canvas(left, bg=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
 
@@ -87,7 +89,9 @@ class PipelineGUI(ttk.Frame):
         self.setbounds.pack()
         self.outres.pack()
         self.mesher.pack()
+        self.export.pack()
         self.logtext.pack(side='left', fill='both', expand=True)
+        self.cancel.pack()
         self.map.pack(fill='both', expand=True, side='right')
 
         self.progresstotaltext.pack()
@@ -102,6 +106,8 @@ class PipelineGUI(ttk.Frame):
         self.setbounds.config(state="disabled")
         self.matcher.config(state="disabled")
         self.mesher.config(state="disabled")
+        self.export.config(state="disabled")
+        self.cancel.config(state="disabled")
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
@@ -132,36 +138,6 @@ class PipelineGUI(ttk.Frame):
 
         self.controller.set_bounds((0,0),(0,0))
         self.progresstotal.step(1)
-
-    # Event handler for bottom mesher button
-        # Method should react based on the current state of the GUI
-        # and call the correct method in controller
-    def matcher_handler(self):
-        self.progress.stop()
-        if self.state == 0:
-            self.controller.start_matcher()
-            self.progresstext.config(text="Matching:")
-            return
-        if self.state == 1:
-            self.controller.cancel_recon()
-            self.progress.stop()
-            self.progresstext.config(text="Progress on Current Step:")
-            return
-
-    # Event handler for bottom mesher button
-        # Method should react based on the current state of the GUI
-        # and call the correct method in controller
-    def mesher_handler(self):
-        if self.state == 2:
-            self.controller.start_mesher()
-            self.progress.step(1)
-            return
-        if self.state == 3:
-            self.controller.cancel_recon()
-            return
-        if self.state == 4:
-            self.controller.export()
-            return        
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):
