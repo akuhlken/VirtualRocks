@@ -48,12 +48,14 @@ class ReconManager():
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         if rcode == 0:
+            self.controller.page2.start_progress_bar(stepname="Matcher", substep="Feature Extractor")
             self.p = subprocess.Popen([str(colmap), "feature_extractor", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.controller.page2.progress.step(1)
+            #self.controller.page2.progress.step(1)
+            self.controller.page2.update_progress_bar(stepname="Matcher", substep="Exhaustive Matching", stepsize=1)
             self.p = subprocess.Popen([str(colmap), "exhaustive_matcher", "--database_path", f"{self.projdir}\database.db"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
@@ -69,7 +71,7 @@ class ReconManager():
                 self._send_log("Database already open (wait for old process to exit)")
 
         if rcode == 0:
-            self.controller.page2.progress.step(1)
+            self.controller.page2.update_progress_bar(stepname="Matcher", substep="Mapper", stepsize=1)
             self.p = subprocess.Popen([str(colmap), "mapper", "--database_path", f"{self.projdir}\database.db", "--image_path", f"{self.imgdir}", "--output_path", f"{self.projdir}\sparse"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
@@ -85,25 +87,28 @@ class ReconManager():
                 self._send_log("Database already open (wait for old process to exit)")
     
         if rcode == 0:
-            self.controller.page2.progress.step(1)
+            self.controller.page2.update_progress_bar(stepname="Matcher", substep="Image Undistorter", stepsize=1)
             self.p = subprocess.Popen([str(colmap), "image_undistorter", "--image_path", f"{self.imgdir}", "--input_path", rf"{self.projdir}\sparse\0", "--output_path", f"{self.projdir}\dense", "--output_type", "COLMAP", "--max_image_size", "2000"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.controller.page2.progress.step(1)
+            self.controller.page2.update_progress_bar(stepname="Matcher", substep="Patch Match Stereo", stepsize=1)
             self.p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
 
         if rcode == 0: 
-            self.controller.page2.progress.step(1)
+            self.controller.page2.update_progress_bar(stepname="Matcher", substep="Stereo Fusion", stepsize=1)
             self.p = subprocess.Popen([str(colmap), "stereo_fusion", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--input_type", "geometric", "--output_path", rf"{self.projdir}\dense\fused.ply"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()
 
         if rcode == 0: 
-            self.controller.page2.progress.step(1)
+            #   "$Matcher.Model Converter.1$"
+            # pkg[0] == model converter
+            # reset bar is $$
+            self.controller.page2.update_progress_bar(stepname="Matcher", substep="Model Converter", stepsize=1)
             self.p = subprocess.Popen([str(colmap), "model_converter", "--input_path", rf"{self.projdir}\dense\sparse", "--output_path", f"{self.projdir}\dense\images\project", "--output_type", "Bundler"], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
             self._send_log()
             rcode = self.p.wait()

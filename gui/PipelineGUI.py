@@ -148,8 +148,7 @@ class PipelineGUI(ttk.Frame):
             return
         if self.state == 1:
             self.controller.cancel_recon()
-            self.progress.stop()
-            self.progresstext.config(text="Progress on Current Step:")
+            self.update_progress_bar(stop=True)
             return
 
     # Event handler for bottom mesher button
@@ -158,7 +157,6 @@ class PipelineGUI(ttk.Frame):
     def mesher_handler(self):
         if self.state == 2:
             self.controller.start_mesher()
-            self.progress.step(1)
             return
         if self.state == 3:
             self.controller.cancel_recon()
@@ -175,10 +173,10 @@ class PipelineGUI(ttk.Frame):
             self.outres.config(text=f"Output resolution: {outres}")
 
     # Method to be called externally for updating the progress bar step and name
-    def update_progress_bar(self, stepname, substep=None, stepsize=0, stop=False):
+    def update_progress_bar(self, stepname="Current Step", substep=None, stepsize=0, stop=False):
         # stopping vs incrementing
         if stop:
-            self.progress.config(value=0)
+            self.progress.stop()
         else:
             self.progress.config(value=(self.progress["value"]+stepsize))
 
@@ -190,7 +188,19 @@ class PipelineGUI(ttk.Frame):
 
         # update label on the prog bar with percentage
         percentage = int((self.progress["value"]/self.progress["maximum"])) * 100
-        self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
+        if percentage != 0:
+            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
+        else:
+            self.controller.style.configure('prog.Horizontal.TProgressbar', text='')
+
+    # Method to be called externally for updating the progress bar step and name
+    def start_progress_bar(self, stepname="Current Step", substep=None):
+        # naming the bar, for both large and small steps
+        if substep:
+            self.progresstext.config(text=f"Progress on {stepname}, {substep}: ")
+        else:
+            self.progresstext.config(text=f"Progress on {stepname}: ")
+        self.controller.style.configure('prog.Horizontal.TProgressbar', text='0%')
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
