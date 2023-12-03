@@ -3,17 +3,16 @@ from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 import pathlib as pl
-# might have to import ttk for progressbar class.
 from tkinter import ttk
 
-class PipelineGUI(tk.Frame):
+class PipelineGUI(ttk.Frame):
     
     # GUI constants
     DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, progdir):
-        tk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)
         self.progdir = progdir
         self.controller = controller
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
@@ -36,6 +35,7 @@ class PipelineGUI(tk.Frame):
         info.add_command(label="Common Issues") 
         info.add_command(label="Colmap Info") 
         info.add_command(label="MeshLab Info") 
+        info.add_command(label="Pasta Recipes") 
 
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info)  
@@ -45,41 +45,40 @@ class PipelineGUI(tk.Frame):
     # Setup method for GUI layout and elements
     def setup_layout(self):
 
-        ttk.Style().configure("TButton", padding=6)
-
         # Layout framework
-        left = tk.Frame(self, bg=self.controller.backcolor)
-        right = tk.Frame(self, bg=self.controller.backcolor)
-        prog = tk.Frame(left, bg=self.controller.backcolor)
+        left = ttk.Frame(self)
+        right = ttk.Frame(self)
+        prog = ttk.Frame(left)
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
         
         # control elements
-        self.panel = tk.Label(right)
-        self.panel.pack()
-        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.photos_handler())
-        self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor)
-        self.matcher = tk.Button(right, text="Start Matcher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.matcher_handler())
-        self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.bounds_handler())
-        self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor)
-        self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
+        self.exampleimage = ttk.Label(right)
+        self.exampleimage.pack()
+
+        self.addphotos = ttk.Button(right, text="Add Photos", command=lambda: self.photos_handler())
+
+        self.numimages = ttk.Label(right, text="Number of images:")
+        self.matcher = ttk.Button(right, text="Start Matcher", command=lambda: self.matcher_handler())
+        self.setbounds = ttk.Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
+        self.outres = ttk.Label(right, text="Output Resulution:")
+        self.mesher = ttk.Button(right, text="Start Mesher", command=lambda: self.mesher_handler())
 
         # status elements
+        self.map = tk.Canvas(left, bg=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+
         self.logtext = tk.Text(right, width=50)
-        scrollbar = tk.Scrollbar(right)
-        scrollbar.pack(side='right', fill='y')
+        scrollbar = ttk.Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview
-        self.progress = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor)
-        self.map = tk.Canvas(left, bg=self.controller.backcolor)
 
         # progress bar elements
-        # find out if you can add text to the text part of tk.label
-        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
-        self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6)
-        self.progresstext = tk.Label(prog, text="Progress on Current Step:", bg=self.controller.backcolor)
+        # TODO: change how the label updating of the bottom bar works.
+        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
+        self.progresstotaltext = ttk.Label(prog, text="Total Progress:")
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="prog.Horizontal.TProgressbar")
+        self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
         # packing
         self.addphotos.pack()
@@ -95,6 +94,8 @@ class PipelineGUI(tk.Frame):
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
         self.progress.pack(fill="both", expand=True)
+
+        scrollbar.pack(side='right', fill='y')
         
         # dissable buttons
         self.matcher.config(state="disabled")
@@ -106,6 +107,8 @@ class PipelineGUI(tk.Frame):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
+        self.progresstotal.stop()
+        self.progresstext.config(text="Image Loading:")
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
         if not imgdir:
             return
@@ -114,26 +117,35 @@ class PipelineGUI(tk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
+        self.controller.style.configure("prog.Horizontal.TProgressbar", background="orange")
+        self.progress.config(value=6)
         self.progresstotal.step(1)
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
+        # progress bar updating:
+        self.progress.stop()
+        self.progresstext.config(text="Handling Bounds:")
+        self.progress.config(value=6)
+
         self.controller.set_bounds((0,0),(0,0))
+        self.progresstotal.step(1)
 
     # Event handler for bottom mesher button
         # Method should react based on the current state of the GUI
         # and call the correct method in controller
     def matcher_handler(self):
+        self.progress.stop()
         if self.state == 0:
             self.controller.start_matcher()
-            self.progress.step(1)
+            self.progresstext.config(text="Matching:")
             return
         if self.state == 1:
             self.controller.cancel_recon()
             self.progress.stop()
-            self.progresstotal.stop()
+            self.progresstext.config(text="Progress on Current Step:")
             return
 
     # Event handler for bottom mesher button
@@ -142,6 +154,7 @@ class PipelineGUI(tk.Frame):
     def mesher_handler(self):
         if self.state == 2:
             self.controller.start_mesher()
+            self.progress.step(1)
             return
         if self.state == 3:
             self.controller.cancel_recon()
@@ -169,8 +182,8 @@ class PipelineGUI(tk.Frame):
         img = Image.open(imagefile)
         img = img.resize((150, 100), Image.Resampling.LANCZOS)
         img = ImageTk.PhotoImage(img)
-        self.panel.config(image=img)
-        self.panel.image = img
+        self.exampleimage.config(image=img)
+        self.exampleimage.image = img
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window

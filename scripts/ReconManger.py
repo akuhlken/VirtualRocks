@@ -113,8 +113,8 @@ class ReconManager():
             self.controller.page2.matcher.config(state="disabled")
             self.controller.page2.setbounds.config(state="active")
             self.controller.page2.state = 2 # state = matcher done
-            self.controller.page2.progress.stop()
-            self.controller.page2.progresstotal.step(1)
+            self.controller.page2.progress.config(value=6)
+            self.controller.page2.progresstotal.step(9)
         self.p = None
 
     # Main mesher pipeling code

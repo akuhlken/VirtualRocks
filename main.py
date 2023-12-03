@@ -1,5 +1,6 @@
 import pickle
 import tkinter as tk       
+from tkinter import ttk
 from tkinter import font as tkfont  
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
@@ -31,11 +32,22 @@ class main(tk.Tk):
 
         # Application styling
         self.font = tkfont.Font(family='Arial', size=24, weight="bold")
-        self.buttoncolor = "#ffffff"
-        self.backcolor = "#ffffff"
+        self.buttoncolor = "#ffffff"  # for the buttons on page 1
+        self.backcolor = "#ffffff"  # exclusively for the background of the map.
+        self.style = ttk.Style()
 
-        # container is a stack of fames (aka out two main pages)
-        self.container = tk.Frame(self)
+        self.style.theme_use('xpnative')
+
+        # maybe look into resize stuff? might be too hard
+        self.style.configure("TButton", width=16)
+        self.style.configure("TLabel", background="#ffffff")
+        self.style.configure("TFrame", background="#ffffff")
+
+        # Progress bar styling
+
+
+        # container is a stack of frames (aka our two main pages)
+        self.container = ttk.Frame(self)
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
@@ -72,6 +84,10 @@ class main(tk.Tk):
             self.page2.matcher.config(state="active")
         else:
             mb.showerror("Not enough images                           ") 
+
+        # because we already have a project, photo matching should be done????
+        self.page2.progresstotal.step()
+
         # TODO: Check to see if there is already a fused.ply and if there is allow the user to start mesher
 
     # Handler for adding photos
