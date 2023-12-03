@@ -117,6 +117,8 @@ class Mesher():
 
             # Export mesh
             self.ms.save_current_mesh(fr"{self.outdir}\land_{self.tile}.obj")
+            self.ms.set_selection_all()
+            self.ms.meshing_remove_selected_vertices()
 
             self.tile += 1
             self.precentdone += numverts / self.totalverts * 100.0
