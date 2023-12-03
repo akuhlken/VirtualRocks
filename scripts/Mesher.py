@@ -8,6 +8,7 @@ OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.0001 # Clustering decimation cell size
 TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
+VERBOSE = False
 
 class Mesher():
 
@@ -22,7 +23,7 @@ class Mesher():
         # Create a new MeshSet object
         print("---Loading pymeshlab---")
         self.ms = pymeshlab.MeshSet()
-        self.ms.set_verbosity(True)
+        self.ms.set_verbosity(VERBOSE)
     
         # Open Colmap project from sparse as well as dense recon (fused.ply)
         print("$Importing project files$")
@@ -76,10 +77,10 @@ class Mesher():
 
         print("$Finished tiling$")
         self.ms.set_current_mesh(self.fullmodel)
-        self.ms.set_verbosity(True)
+        self.ms.set_verbosity(VERBOSE)
         
         #Mesh simplification
-        print("$Creating low poly mesh%")
+        print("$Creating low poly mesh$")
         self.ms.meshing_decimation_quadric_edge_collapse(targetfacenum = 100000, preserveboundary = True, preservenormal = True)
 
         # Remove non-manifold edges
@@ -95,7 +96,6 @@ class Mesher():
         print("$$")
         return True
     
-        
     def _quad_slice(self, maxx, minx, maxy, miny):
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)
@@ -127,7 +127,7 @@ class Mesher():
                     maxy
                 -----------
                 |    |    |
-        minx ----------- maxx
+           minx ----------- maxx
                 |    |    |
                 -----------
                     miny
@@ -167,4 +167,5 @@ class Mesher():
 projdir = sys.argv[1]
 # pass text file things are written to, args (this writes to something (text file) and then main would check it)
 print("starting")
+print("testing testing")
 Mesher(projdir)

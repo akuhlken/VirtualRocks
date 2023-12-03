@@ -80,15 +80,18 @@ class main(tk.Tk):
         self._startup()       
         numimg = PhotoManager(self.imgdir).numimg
         self.page2.update_text(numimg)
-        if(numimg > 4):
-            self.page2.matcher.config(state="active")
-        else:
-            mb.showerror("Not enough images                           ") 
+
+        self.page2.matcher.config(state="active")
+        self.page2.setbounds.config(state="active")
+
+        if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
+            self.page2.mesher.config(state="active")
+
+        if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
+            self.page2.export.config(state="active")
 
         # because we already have a project, photo matching should be done????
         self.page2.progresstotal.step()
-
-        # TODO: Check to see if there is already a fused.ply and if there is allow the user to start mesher
 
     # Handler for adding photos
     #   Set the controller variable for image directory
@@ -101,17 +104,17 @@ class main(tk.Tk):
             pickle.dump((self.projdir, self.imgdir), file)
         numimg = PhotoManager(self.imgdir).numimg
         self.page2.update_text(numimg)
-        if(numimg > 4):
-            self.page2.matcher.config(state="active")
-        else:
-            self.page2.matcher.config(state="disabled")
-            mb.showerror("Not enough images                           ") 
+        self.page2.matcher.config(state="active")
+        self.page2.setbounds.config(state="disabled")
+        self.page2.mesher.config(state="disabled")
+        self.page2.export.config(state="disabled")
             
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
     def set_bounds(self, A, B):
         self.page2.mesher.config(state="active")
+        self.page2.export.config(state="disbaled")
         self.A = A
         self.B = B
 
@@ -120,6 +123,10 @@ class main(tk.Tk):
     def start_matcher(self):
         if not self.recon:
             self.recon = ReconManager(self, self.imgdir, self.projdir)
+        self.page2.cancel.config(state="active")
+        self.page2.setbounds.config(state="disabled")
+        self.page2.mesher.config(state="disabled")
+        self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.matcher)
         self.thread1.daemon = True
         self.thread1.start()
@@ -129,6 +136,8 @@ class main(tk.Tk):
     def start_mesher(self):
         if not self.recon:
             self.recon = ReconManager(self, self.imgdir, self.projdir)
+        self.page2.cancel.config(state="active")
+        self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.mesher)
         self.thread1.daemon = True
         self.thread1.start()

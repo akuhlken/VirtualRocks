@@ -29,16 +29,16 @@ class ReconManager():
         if msg:
             self.controller.page2.logtext.insert(tk.END, msg + "\n")
             self.controller.page2.logtext.see("end")
-            if msg[0] == '$' and msg[-1] == '$':
-                    self._update_progress(msg)
+            #if msg[0] == '$' and msg[-1] == '$':
+                    #self._update_progress(msg)
             return
         while self.p.poll() is None:
             msg = self.p.stdout.readline().strip() # read a line from the process output
             if msg:
                 self.controller.page2.logtext.insert(tk.END, msg + "\n")
                 self.controller.page2.logtext.see("end")
-                if msg[0] == '$' and msg[-1] == '$':
-                    self._update_progress(msg)
+                #if msg[0] == '$' and msg[-1] == '$':
+                    #self._update_progress(msg)
 
         
     # Main matcher pipeling code
@@ -46,9 +46,12 @@ class ReconManager():
     #   method should run all scripts accosiated with Colmap and result
     #   in a desnse reconstruction
     def matcher(self):
+        try:
+            if self.p:
+                self.cancel()
+        except:
+            pass
         self._send_log("__________Starting Matcher__________")
-        self.controller.page2.state = 1 # state = in progress
-        self.controller.page2.matcher.config(text="Cancel")
         rcode = 0
         # clean old database
         try:
@@ -124,10 +127,8 @@ class ReconManager():
             rcode = self.p.wait()
 
         if rcode == 0:
-            self.controller.page2.matcher.config(text="done")
-            self.controller.page2.matcher.config(state="disabled")
             self.controller.page2.setbounds.config(state="active")
-            self.controller.page2.state = 2 # state = matcher done
+            self.controller.page2.cancel.config(state="disabled")
             self.controller.page2.progress.config(value=6)
             self.controller.page2.progresstotal.step(9)
         self.p = None
@@ -137,35 +138,34 @@ class ReconManager():
     #   method should run the point filtering and then dense2mesh scripts
     #   TODO: This is where the point filtering will happen using the user bounds
     def mesher(self):
+        try:
+            if self.p:
+                self.cancel()
+        except:
+            pass
         self._send_log("__________Starting Mesher__________")
-        self.controller.page2.state = 3
-        self.controller.page2.mesher.config(text="Cancel")
         
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True, bufsize=1024)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
             # If reconstruction exited normally
-            self.controller.page2.mesher.config(text="Export")
-            self.controller.page2.state = 4
+            self.controller.page2.export.config(state="active")
+            self.controller.page2.cancel.config(state="disabled")
         self.p = None
 
     #  Methods for canceling current recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
     #   After cancel it should change the action button back to start
     def cancel(self):
+        self.controller.page2.cancel.config(state="disabled")
         if self.p:
             try:
                 self.p.terminate() 
                 self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill()
-        if self.controller.page2.state == 1:
-            self.controller.page2.matcher.config(text="Start Matcher")
-            self.controller.page2.state = 0
-        if self.controller.page2.state == 3:
-            self.controller.page2.mesher.config(text="Start Mesher")
-            self.controller.page2.state = 2
+        self._send_log("process was killed")
