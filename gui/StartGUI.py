@@ -15,8 +15,8 @@ class StartGUI(tk.Frame):
         middleframe = tk.Frame(self, bg=controller.backcolor)
         middleframe.place(anchor="c", relx=.5, rely=.5)
 
-        newBtn = tk.Button(middleframe, height=10, width=20, text="New", bg=controller.buttoncolor, command=lambda: self.new_project())
-        openBtn = tk.Button(middleframe, height=10, width=20, text="Open", bg=controller.buttoncolor, command=lambda: self.open_project())
+        newBtn = tk.Button(middleframe, height=10, width=20, text="New", bg=controller.buttoncolor, relief="groove", command=lambda: self.new_project())
+        openBtn = tk.Button(middleframe, height=10, width=20, text="Open", bg=controller.buttoncolor, relief="groove", command=lambda: self.open_project())
         label = tk.Label(self, text="*paths cannot contain white spaces", bg=controller.backcolor)
 
         newBtn.pack(padx=20, side='left')

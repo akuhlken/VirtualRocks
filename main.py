@@ -32,10 +32,16 @@ class main(tk.Tk):
 
         # Application styling
         self.font = tkfont.Font(family='Arial', size=24, weight="bold")
-        self.buttoncolor = "#ffffff"
-        self.backcolor = "#ffffff"
+        self.buttoncolor = "#ffffff"  # for the buttons on page 1
+        self.backcolor = "#ffffff"  # exclusively for the background of the map.
         self.style = ttk.Style()
-        self.style.theme_use('classic')
+
+        self.style.theme_use('xpnative')
+
+        # maybe look into resize stuff? might be too hard
+        self.style.configure("TButton", width=16)
+        self.style.configure("TLabel", background="#ffffff")
+        self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
 
@@ -78,7 +84,7 @@ class main(tk.Tk):
             self.page2.matcher.config(state="active")
         else:
             mb.showerror("Not enough images                           ") 
-            
+
         # because we already have a project, photo matching should be done????
         self.page2.progresstotal.step()
 

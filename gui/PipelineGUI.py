@@ -22,7 +22,6 @@ class PipelineGUI(tk.Frame):
     # Settup method for top menu bar
     def create_menu(self):
         menubar = tk.Menu(self) 
-        print(self.controller.style.theme_use())
 
         file = tk.Menu(menubar, tearoff=0)  
         file.add_command(label="New")  
@@ -45,37 +44,36 @@ class PipelineGUI(tk.Frame):
     # Setup method for GUI layout and elements
     def setup_layout(self):
 
-        self.controller.style.configure("TButton", padding=6)
-
         # Layout framework
-        left = tk.Frame(self, bg=self.controller.backcolor)
-        right = tk.Frame(self, bg=self.controller.backcolor)
-        prog = tk.Frame(left, bg=self.controller.backcolor)
+        left = ttk.Frame(self)
+        right = ttk.Frame(self)
+        prog = ttk.Frame(left)
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
         
         # control elements
-        self.panel = tk.Label(right)
-        self.panel.pack()
-        self.addphotos = tk.Button(right, text="Add Photos", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.photos_handler())
-        self.numimages = tk.Label(right, text="Number of images:", bg=self.controller.backcolor)
-        self.matcher = tk.Button(right, text="Start Matcher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.matcher_handler())
-        self.setbounds = tk.Button(right, text="Set Bounds", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.bounds_handler())
-        self.outres = tk.Label(right, text="Output Resulution:", bg=self.controller.backcolor)
-        self.mesher = tk.Button(right, text="Start Mesher", bg=self.controller.buttoncolor, pady=5, padx=5, command=lambda: self.mesher_handler())
+        self.exampleimage = ttk.Label(right)
+        self.exampleimage.pack()
+
+        self.addphotos = ttk.Button(right, text="Add Photos", command=lambda: self.photos_handler())
+
+        self.numimages = ttk.Label(right, text="Number of images:")
+        self.matcher = ttk.Button(right, text="Start Matcher", command=lambda: self.matcher_handler())
+        self.setbounds = ttk.Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
+        self.outres = ttk.Label(right, text="Output Resulution:")
+        self.mesher = ttk.Button(right, text="Start Mesher", command=lambda: self.mesher_handler())
 
         # status elements
+        self.map = tk.Canvas(left, bg=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+
         self.logtext = tk.Text(right, width=50)
-        scrollbar = tk.Scrollbar(right)
-        scrollbar.pack(side='right', fill='y')
+        scrollbar = ttk.Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview
-        self.progress = tk.Button(prog, height=10, text="[progress]", bg=self.controller.backcolor)
-        self.map = tk.Canvas(left, bg=self.controller.backcolor)
 
         # progress bar elements
-        # find out if you can add text to the text part of tk.label
+        # TODO: change how the label updating of the bottom bar works.
         self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
         self.progresstotaltext = tk.Label(prog, text="Total Progress:", bg=self.controller.backcolor)
         self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="prog.Horizontal.TProgressbar")
@@ -95,6 +93,8 @@ class PipelineGUI(tk.Frame):
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
         self.progress.pack(fill="both", expand=True)
+
+        scrollbar.pack(side='right', fill='y')
         
         # dissable buttons
         self.matcher.config(state="disabled")
@@ -181,8 +181,8 @@ class PipelineGUI(tk.Frame):
         img = Image.open(imagefile)
         img = img.resize((150, 100), Image.Resampling.LANCZOS)
         img = ImageTk.PhotoImage(img)
-        self.panel.config(image=img)
-        self.panel.image = img
+        self.exampleimage.config(image=img)
+        self.exampleimage.image = img
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
