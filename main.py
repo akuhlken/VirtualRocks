@@ -68,7 +68,7 @@ class main(tk.Tk):
         self._startup()       
         numimg = PhotoManager(self.imgdir).numimg
         self.page2.update_text(numimg)
-        if(numimg > 5):
+        if(numimg > 4):
             self.page2.matcher.config(state="active")
         else:
             mb.showerror("Not enough images                           ") 
@@ -85,7 +85,7 @@ class main(tk.Tk):
             pickle.dump((self.projdir, self.imgdir), file)
         numimg = PhotoManager(self.imgdir).numimg
         self.page2.update_text(numimg)
-        if(numimg > 5):
+        if(numimg > 4):
             self.page2.matcher.config(state="active")
         else:
             self.page2.matcher.config(state="disabled")
