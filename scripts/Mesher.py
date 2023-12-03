@@ -8,7 +8,7 @@ OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.0001 # Clustering decimation cell size
 TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
-VERBOSE = False
+VERBOSE = True
 
 class Mesher():
 
@@ -21,27 +21,27 @@ class Mesher():
         base_path = self.projdir + r"\dense"
     
         # Create a new MeshSet object
-        print("---Loading pymeshlab---")
+        print("Loading pymeshlab.1", flush=True)
         self.ms = pymeshlab.MeshSet()
         self.ms.set_verbosity(VERBOSE)
     
         # Open Colmap project from sparse as well as dense recon (fused.ply)
-        print("$Importing project files$")
+        print("$Importing project files.1$", flush=True)
         self.ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
         
         # Import the fused.ply mesh
-        print("$Loading dense point cloud$")
+        print("$Loading dense point cloud.1$", flush=True)
         self.ms.load_new_mesh(base_path+r"\fused.ply")
 
         # Update bounding box for dense poit cloud
         self.bounds = self.ms.current_mesh().bounding_box()
 
         # Point cloud simplification
-        print("$Optimizing Point Cloud$")
+        print("$Optimizing Point Cloud.1$", flush=True)
         self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
 
         # Mesher
-        print("$Starting Poisson Mesher$")
+        print("$Starting Poisson Mesher.1$", flush=True)
         self.ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
 
         # TODO: If model is empty try again with lower depth values until it works
@@ -50,7 +50,7 @@ class Mesher():
         self._crop()
         
         # Wipe verticies colors
-        print("$Setting vertex colors$")
+        print("$Setting vertex colors.1$", flush=True)
         self.ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
 
         self.outdir = self.projdir + r"\out"
@@ -72,28 +72,28 @@ class Mesher():
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
         self.ms.set_verbosity(False)
-        print("$Starting tiling$")
+        print("$Starting tiling.1$", flush=True)
         self._quad_slice(maxx, minx, maxy, miny)
 
-        print("$Finished tiling$")
+        print("$Finished tiling.1$", flush=True)
         self.ms.set_current_mesh(self.fullmodel)
         self.ms.set_verbosity(VERBOSE)
         
         #Mesh simplification
-        print("$Creating low poly mesh$")
+        print("$Creating low poly mesh.1$", flush=True)
         self.ms.meshing_decimation_quadric_edge_collapse(targetfacenum = 100000, preserveboundary = True, preservenormal = True)
 
         # Remove non-manifold edges
-        print("---Removing non-manifold edges---")
+        print("Removing non-manifold edges", flush=True)
         self.ms.meshing_repair_non_manifold_edges()
 
-        print("---Building texture for low poly mesh---")
+        print("Building texture for low poly mesh", flush=True)
         self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "100k.jpg", usedistanceweight=False)
         # Export mesh
-        print(fr"Exporting mesh to {self.outdir}\100k.obj")
+        print(fr"Exporting mesh to {self.outdir}\100k.obj", flush=True)
         self.ms.save_current_mesh(fr"{self.outdir}\100k.obj")
-        print("$Done!$")
-        print("$$")
+        print("$Done!.1$", flush=True)
+        print("$$", flush=True)
         return True
     
     def _quad_slice(self, maxx, minx, maxy, miny):
@@ -120,7 +120,7 @@ class Mesher():
 
             self.tile += 1
             self.precentdone += numverts / self.totalverts * 100.0
-            print(f"{round(self.precentdone, 2)}%")
+            print(f"{round(self.precentdone, 2)}%", flush=True)
             return
 
         """
@@ -166,6 +166,7 @@ class Mesher():
 
 projdir = sys.argv[1]
 # pass text file things are written to, args (this writes to something (text file) and then main would check it)
-print("starting")
-print("testing testing")
-Mesher(projdir)
+try:
+    Mesher(projdir)
+except Exception as e:
+    print(e)

@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 import tkinter as tk       
-from scripts.PhotoManager import PhotoManager
 import pathlib as pl
 
 class ReconManager():
@@ -16,11 +15,17 @@ class ReconManager():
     #   when a process completes messages should be sent in the form: "$nextstep$""
     #   To reset the progress bar, send message "$$"
     def _update_progress(self, msg):
-        current = msg.replace('$', '')
-        # TODO: Update progress and set progress text == curent
-        if current == "":
-            pass
+        if msg == "$$":
+            print("reset bar")
+            return
             # TODO: reset progress bar
+
+        pkg = msg.replace('$', '').split('.')
+        current = pkg[0]
+        size = pkg[1]
+        # TODO: Update progress and set progress text == curent
+        print(f"current: {current}, size: {size}")
+        
 
     # Method has two behaviors, if passed a string this method will act like a print() to the log
     #   if no args are provided this will capture any messages that self.p sends and send them to the log,
@@ -29,18 +34,17 @@ class ReconManager():
         if msg:
             self.controller.page2.logtext.insert(tk.END, msg + "\n")
             self.controller.page2.logtext.see("end")
-            #if msg[0] == '$' and msg[-1] == '$':
-                    #self._update_progress(msg)
+            if msg[0] == '$' and msg[-1] == '$':
+                    self._update_progress(msg)
             return
         while self.p.poll() is None:
             msg = self.p.stdout.readline().strip() # read a line from the process output
             if msg:
                 self.controller.page2.logtext.insert(tk.END, msg + "\n")
                 self.controller.page2.logtext.see("end")
-                #if msg[0] == '$' and msg[-1] == '$':
-                    #self._update_progress(msg)
+                if msg[0] == '$' and msg[-1] == '$':
+                    self._update_progress(msg)
 
-        
     # Main matcher pipeling code
     #   NOTE: This method runs in its own thread
     #   method should run all scripts accosiated with Colmap and result
@@ -148,7 +152,7 @@ class ReconManager():
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True, bufsize=1024)
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
