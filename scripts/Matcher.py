@@ -20,8 +20,9 @@ class Matcher:
         # clean old database
         try:
             database = self.projdir / pl.Path(r"database.db")
-            if os.path.exists(database):
+            if os.path.exists(database) and clean:
                 os.remove(database)
+                print("Removed old database", flush=True)
         except:
             rcode = 1
             print("Database already open (wait for old process to exit)", flush=True)
@@ -42,9 +43,12 @@ class Matcher:
         if rcode == 0:
             try:
                 sparsedir = self.projdir / pl.Path(r"sparse")
-                if os.path.exists(sparsedir):
+                if os.path.exists(sparsedir) and clean:
                     shutil.rmtree(sparsedir)
-                os.makedirs(sparsedir)
+                    print("Removed sparse", flush=True)
+                if not os.path.exists(sparsedir):
+                    os.makedirs(sparsedir)
+                    print("Created sparse", flush=True)
             except:
                 rcode = 1
                 print("Files already open (wait for old process to exit)", flush=True)
@@ -59,7 +63,10 @@ class Matcher:
                 densedir = self.projdir / pl.Path(r"dense")
                 if os.path.exists(densedir):
                     shutil.rmtree(densedir)
-                os.makedirs(densedir)
+                    print("Removed dense", flush=True)
+                if not os.path.exists(densedir):
+                    os.makedirs(densedir)
+                    print("Created dense", flush=True)
             except:
                 rcode = 1
                 print("Files already open (wait for old process to exit)", flush=True)

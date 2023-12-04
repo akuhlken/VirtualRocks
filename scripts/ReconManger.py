@@ -1,6 +1,7 @@
 import subprocess
 import tkinter as tk       
 import pathlib as pl
+from tkinter import messagebox as mb
 
 class ReconManager():
 
@@ -59,6 +60,16 @@ class ReconManager():
     #   method should run all scripts accosiated with Colmap and result
     #   in a desnse reconstruction
     def matcher(self):
+        clean = 'T'
+        if (self.projdir / pl.Path(r"database.db")).is_file():
+            response = mb.askyesnocancel("Start Matcher", "Start clean and remove old database?")
+            if response == None:
+                return
+            if response == True:
+                clean = 'T'
+            if response == False:
+                clean = 'F'
+
         try:
             if self.p:
                 self.cancel()
@@ -69,7 +80,6 @@ class ReconManager():
         
         colmap = pl.Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        clean = 'T'
         # TODO have next line run specific python version?
         # self.projdir, self.imgdir, clean
         self.p = subprocess.Popen(['python', 'Matcher.py', self.projdir, self.imgdir, clean], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
