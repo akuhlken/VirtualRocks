@@ -104,7 +104,7 @@ class Mesher():
         # Export mesh
         print(fr"Exporting mesh to {self.outdir}\100k.obj", flush=True)
         self.ms.save_current_mesh(fr"{self.outdir}\100k.obj")
-        print("$Mesher.Done!.100$", flush=True)
+        print("$Mesher..100$", flush=True)
         print("$$", flush=True)
         return True
     
@@ -179,8 +179,7 @@ class Mesher():
        
 
 projdir = sys.argv[1]
-# pass text file things are written to, args (this writes to something (text file) and then main would check it)
 try:
     Mesher(projdir)
 except Exception as e:
-    print(e)
+    print(e, flush=True)

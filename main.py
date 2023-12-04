@@ -94,7 +94,6 @@ class main(tk.Tk):
 
         if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
             self.page2.setbounds.config(state="active")
-            print('got here')
 
         if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
             self.page2.setbounds.config(state="active")
