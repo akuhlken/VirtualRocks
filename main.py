@@ -7,8 +7,6 @@ from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 import threading   
 import pathlib as pl
-from tkinter import messagebox as mb
-
 from scripts.ReconManger import ReconManager
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
