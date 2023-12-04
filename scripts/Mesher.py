@@ -8,7 +8,8 @@ OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 1024
 CELL_SIZE = 0.0001 # Clustering decimation cell size
 TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
-VERBOSE = True
+VERTEX_LIMIT = 2500000
+VERBOSE = False
 
 class Mesher():
 
@@ -40,12 +41,15 @@ class Mesher():
         print("$Optimizing Point Cloud.1$", flush=True)
         self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
 
-        # Mesher
+        # Mesher (this will retry with lower res if the user runs out of memory)
         print("$Starting Poisson Mesher.1$", flush=True)
-        self.ms.generate_surface_reconstruction_screened_poisson(depth = 12, samplespernode = 20, pointweight = 4)
-
-        # TODO: If model is empty try again with lower depth values until it works
-
+        vertnum = 0
+        depth = 12
+        while vertnum < 100:
+            self.ms.generate_surface_reconstruction_screened_poisson(depth = depth, samplespernode = 20, pointweight = 4)
+            vertnum = self.ms.current_mesh().vertex_number()
+            depth -= 1
+        
         # Crop skirt from model
         self._crop()
         
@@ -68,6 +72,13 @@ class Mesher():
         maxy = max[1]
 
         self.totalverts = self.ms.current_mesh().vertex_number()
+        if self.totalverts > VERTEX_LIMIT:
+            print(f"Reducing Mesh from {self.totalverts} to {VERTEX_LIMIT}", flush=True)
+            self.ms.meshing_decimation_quadric_edge_collapse(targetfacenum = VERTEX_LIMIT, preserveboundary = True, preservenormal = True)
+            print("Removing non-manifold edges", flush=True)
+            self.ms.meshing_repair_non_manifold_edges()
+            self.totalverts = self.ms.current_mesh().vertex_number()
+
         self.precentdone = 0.0
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
@@ -76,6 +87,7 @@ class Mesher():
         self._quad_slice(maxx, minx, maxy, miny)
 
         print("$Finished tiling.1$", flush=True)
+        print(f"Created {self.tile} tiles", flush=True)
         self.ms.set_current_mesh(self.fullmodel)
         self.ms.set_verbosity(VERBOSE)
         
@@ -122,7 +134,7 @@ class Mesher():
 
             self.tile += 1
             self.precentdone += numverts / self.totalverts * 100.0
-            print(f"{round(self.precentdone, 2)}%", flush=True)
+            print(f"--{round(self.precentdone, 2)}%", flush=True)
             return
 
         """
