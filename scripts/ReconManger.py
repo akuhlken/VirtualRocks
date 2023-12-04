@@ -41,6 +41,10 @@ class ReconManager():
 
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
         self.controller.page2.progress.config(value=percent)
+
+        if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:
+            self.controller.page2.progresstext.config(text=f"{currentstep} complete!",  background='green')
+            #self.controller.style.configure('prog.Horizontal.TProgressbar', background='green')
         
 
     # Method has two behaviors, if passed a string this method will act like a print() to the log

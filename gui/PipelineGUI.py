@@ -1,4 +1,5 @@
 import tkinter as tk
+#import ttkbootstrap as tttk
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
@@ -125,7 +126,7 @@ class PipelineGUI(ttk.Frame):
             return
         self.controller.add_photos(imgdir)
         self.progress.config(value=self.progress["maximum"])
-        self.progresstotal.step(1)
+        self.progresstotal.step(10)
 
         percentage = int((self.progress["value"]/self.progress["maximum"])) * 100
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
@@ -166,7 +167,7 @@ class PipelineGUI(ttk.Frame):
         # update label on the prog bar with percentage
         percentage = int((self.progress["value"]/self.progress["maximum"])) * 100
         if percentage != 0:
-            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
+            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage), background = "red")
         else:
             self.controller.style.configure('prog.Horizontal.TProgressbar', text='')
 

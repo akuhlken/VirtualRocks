@@ -1,5 +1,5 @@
 import pickle
-import tkinter as tk       
+import tkinter as tk      
 from tkinter import ttk
 from tkinter import font as tkfont  
 from scripts.PhotoManager import PhotoManager
@@ -44,12 +44,15 @@ class main(tk.Tk):
         self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
+        #self.style.element_create("color.pbar", "from", "xpnative", "Horizontal.TProgressbar") # for coloring the bar
         self.style.layout("prog.Horizontal.TProgressbar",
              [('Horizontal.Progressbar.trough',
-               {'children': [('Horizontal.Progressbar.pbar',
-                              {'side': 'left', 'sticky': 'ns'})],
+               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
                 'sticky': 'nswe'}),
               ('Horizontal.Progressbar.label', {'sticky': ''})])
+        self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11))
+        #self.style.configure(self.style_name, background=BarColor[0], troughcolor=BarColor[1],
+         #                   troughrelief=relief, borderwidth=border_width, thickness=width)
 
 
         # container is a stack of frames (aka our two main pages)
