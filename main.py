@@ -71,6 +71,7 @@ class main(tk.Tk):
         self.page2.set_map(self.page2.DEFAULT_MAP)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
+        self.recon = ReconManager(self, self.projdir)
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
@@ -82,34 +83,44 @@ class main(tk.Tk):
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
         # Load the path variables from the file
+        self.projdir = pl.Path(projfile).parent
         with open(projfile, 'rb') as file:
-            self.projdir, self.imgdir = pickle.load(file)
-        self._startup()       
-        numimg = PhotoManager(self.imgdir).numimg
-        self.page2.update_text(numimg)
+            path = pickle.load(file)
+        if path.is_absolute():
+            self.imgdir = path
+        else:
+            self.imgdir = self.projdir / path
+        self._startup() 
+        try:
+            numimg = PhotoManager(self.imgdir).numimg
+            self.page2.update_text(numimg)
 
-        self.page2.matcher.config(state="active")
+            self.page2.matcher.config(state="active")
 
-        if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
-            self.page2.setbounds.config(state="active")
+            if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
+                self.page2.setbounds.config(state="active")
 
-        if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
-            self.page2.setbounds.config(state="active")
-            self.page2.mesher.config(state="active")
-            self.page2.export.config(state="active")
-
-        # because we already have a project, photo matching should be done????
-        self.page2.progresstotal.step()
-
+            if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
+                self.page2.setbounds.config(state="active")
+                self.page2.mesher.config(state="active")
+                self.page2.export.config(state="active")
+            self.page2.progresstotal.step()
+        except:
+            self.recon._send_log("Could not find image directory")
+        
     # Handler for adding photos
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imgdir):
-        self.imgdir = pl.Path(imgdir)
-
+        self.projdir.resolve()
+        self.imgdir = pl.Path(imgdir).resolve()
+        try:
+            path = self.imgdir.relative_to(self.projdir)
+        except:
+            path = self.imgdir
         # Save the project paths to a file
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
-            pickle.dump((self.projdir, self.imgdir), file)
+            pickle.dump((path), file)
         numimg = PhotoManager(self.imgdir).numimg
         self.page2.update_text(numimg)
         self.page2.matcher.config(state="active")
@@ -129,8 +140,7 @@ class main(tk.Tk):
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_matcher(self):
-        if not self.recon:
-            self.recon = ReconManager(self, self.imgdir, self.projdir)
+        self.recon.imgdir = self.imgdir
         self.page2.setbounds.config(state="disabled")
         self.page2.mesher.config(state="disabled")
         self.page2.export.config(state="disabled")
@@ -141,8 +151,7 @@ class main(tk.Tk):
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_mesher(self):
-        if not self.recon:
-            self.recon = ReconManager(self, self.imgdir, self.projdir)
+        self.recon.imgdir = self.imgdir
         self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.mesher)
         self.thread1.daemon = True
