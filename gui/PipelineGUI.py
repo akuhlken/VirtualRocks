@@ -1,4 +1,5 @@
 import tkinter as tk
+#import ttkbootstrap as tttk
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
@@ -77,9 +78,9 @@ class PipelineGUI(ttk.Frame):
 
         # progress bar elements
         # TODO: change how the label updating of the bottom bar works.
-        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
+        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
         self.progresstotaltext = ttk.Label(prog, text="Total Progress:")
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="prog.Horizontal.TProgressbar")
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
         self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
         # packing
@@ -113,8 +114,11 @@ class PipelineGUI(ttk.Frame):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
+        # starting progress bar
         self.progresstotal.stop()
         self.progresstext.config(text="Image Loading:")
+        self.progress.config(value=0)
+
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
         if not imgdir:
             return
@@ -123,9 +127,10 @@ class PipelineGUI(ttk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
-        self.controller.style.configure("prog.Horizontal.TProgressbar", background="orange")
-        self.progress.config(value=6)
-        self.progresstotal.step(1)
+        # updating progress bar
+        self.progress.config(value=self.progress["maximum"])
+        self.progresstotal.step(10)
+        self.controller.style.configure('prog.Horizontal.TProgressbar', text='100%')
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
