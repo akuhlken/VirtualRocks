@@ -22,27 +22,27 @@ class Mesher():
         base_path = self.projdir + r"\dense"
     
         # Create a new MeshSet object
-        print("Loading pymeshlab.1", flush=True)
+        print("$Mesher.Loading pymeshlab.0$", flush=True)
         self.ms = pymeshlab.MeshSet()
         self.ms.set_verbosity(VERBOSE)
     
         # Open Colmap project from sparse as well as dense recon (fused.ply)
-        print("$Importing project files.1$", flush=True)
+        print("$Mesher.Importing project files.10$", flush=True)
         self.ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
         
         # Import the fused.ply mesh
-        print("$Loading dense point cloud.1$", flush=True)
+        print("$Mesher.Loading dense point cloud.20$", flush=True)
         self.ms.load_new_mesh(base_path+r"\fused.ply")
 
         # Update bounding box for dense poit cloud
         self.bounds = self.ms.current_mesh().bounding_box()
 
         # Point cloud simplification
-        print("$Optimizing Point Cloud.1$", flush=True)
+        print("$Mesher.Optimizing Point Cloud.30$", flush=True)
         self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
 
         # Mesher (this will retry with lower res if the user runs out of memory)
-        print("$Starting Poisson Mesher.1$", flush=True)
+        print("$Mesher.Starting Poisson Mesher.40$", flush=True)
         vertnum = 0
         depth = 12
         while vertnum < 100:
@@ -54,7 +54,7 @@ class Mesher():
         self._crop()
         
         # Wipe verticies colors
-        print("$Setting vertex colors.1$", flush=True)
+        print("$Mesher.Setting vertex colors.60$", flush=True)
         self.ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
 
         self.outdir = self.projdir + r"\out"
@@ -83,16 +83,16 @@ class Mesher():
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
         self.ms.set_verbosity(False)
-        print("$Starting tiling.1$", flush=True)
+        print("$Mesher.Starting tiling.70$", flush=True)
         self._quad_slice(maxx, minx, maxy, miny)
 
-        print("$Finished tiling.1$", flush=True)
+        print("$Mesher.Finished tiling.80$", flush=True)
         print(f"Created {self.tile} tiles", flush=True)
         self.ms.set_current_mesh(self.fullmodel)
         self.ms.set_verbosity(VERBOSE)
         
         #Mesh simplification
-        print("$Creating low poly mesh.1$", flush=True)
+        print("$Mesher.Creating low poly mesh.90$", flush=True)
         self.ms.meshing_decimation_quadric_edge_collapse(targetfacenum = 100000, preserveboundary = True, preservenormal = True)
 
         # Remove non-manifold edges
@@ -104,7 +104,7 @@ class Mesher():
         # Export mesh
         print(fr"Exporting mesh to {self.outdir}\100k.obj", flush=True)
         self.ms.save_current_mesh(fr"{self.outdir}\100k.obj")
-        print("$Done!.1$", flush=True)
+        print("$Mesher.Done!.100$", flush=True)
         print("$$", flush=True)
         return True
     
