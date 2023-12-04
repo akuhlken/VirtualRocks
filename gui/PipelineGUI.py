@@ -77,9 +77,9 @@ class PipelineGUI(ttk.Frame):
 
         # progress bar elements
         # TODO: change how the label updating of the bottom bar works.
-        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=30, style="Horizontal.TProgressbar")
+        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
         self.progresstotaltext = ttk.Label(prog, text="Total Progress:")
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=6, style="prog.Horizontal.TProgressbar")
+        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
         self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
         # packing
@@ -124,7 +124,7 @@ class PipelineGUI(ttk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
-        self.progress.config(value=6)
+        self.progress.config(value=self.progress["maximum"])
         self.progresstotal.step(1)
 
         percentage = int((self.progress["value"]/self.progress["maximum"])) * 100
