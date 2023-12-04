@@ -114,9 +114,11 @@ class PipelineGUI(ttk.Frame):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
+        # starting progress bar
         self.progresstotal.stop()
-        #self.progresstext.config(text="Image Loading:")
-        self.update_progress_bar("Image Loading", 0)
+        self.progresstext.config(text="Image Loading:")
+        self.progress.config(value=0)
+
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
         if not imgdir:
             return
@@ -125,11 +127,10 @@ class PipelineGUI(ttk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.add_photos(imgdir)
+        # updating progress bar
         self.progress.config(value=self.progress["maximum"])
         self.progresstotal.step(10)
-
-        percentage = int((self.progress["value"]/self.progress["maximum"])) * 100
-        self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
+        self.controller.style.configure('prog.Horizontal.TProgressbar', text='100%')
 
     # Event handler for "Set Bounds" button
         # Method should open a dialogue prompting the user to enter bounds
@@ -149,36 +150,6 @@ class PipelineGUI(ttk.Frame):
             self.numimages.config(text=f"Num images: {numimg}")
         if outres:
             self.outres.config(text=f"Output resolution: {outres}")
-
-    # Method to be called externally for updating the progress bar step and name
-    def update_progress_bar(self, stepname="Current Step", substep=None, stepsize=0, stop=False):
-        # stopping vs incrementing
-        if stop:
-            self.progress.stop()
-        else:
-            self.progress.config(value=(self.progress["value"]+stepsize))
-
-        # naming the bar, for both large and small steps
-        if substep:
-            self.progresstext.config(text=f"Progress on {stepname}, {substep}: ")
-        else:
-            self.progresstext.config(text=f"Progress on {stepname}: ")
-
-        # update label on the prog bar with percentage
-        percentage = int((self.progress["value"]/self.progress["maximum"])) * 100
-        if percentage != 0:
-            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage), background = "red")
-        else:
-            self.controller.style.configure('prog.Horizontal.TProgressbar', text='')
-
-    # Method to be called externally for updating the progress bar step and name
-    def start_progress_bar(self, stepname="Current Step", substep=None):
-        # naming the bar, for both large and small steps
-        if substep:
-            self.progresstext.config(text=f"Progress on {stepname}, {substep}: ")
-        else:
-            self.progresstext.config(text=f"Progress on {stepname}: ")
-        self.controller.style.configure('prog.Horizontal.TProgressbar', text='0%')
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
