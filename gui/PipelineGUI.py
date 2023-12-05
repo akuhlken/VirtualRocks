@@ -30,6 +30,14 @@ class PipelineGUI(ttk.Frame):
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
         file.add_separator()  
+ 
+        styles = tk.Menu(file, tearoff=0)
+        file.add_cascade(label="Set Style", menu=styles)
+        styles.add_command(label="Dark") 
+        styles.add_command(label="Light") 
+        styles.add_command(label="not Goblin") 
+
+        file.add_separator() 
         file.add_command(label="Exit", command=self.quit)  
 
         info = tk.Menu(menubar, tearoff=0)
@@ -39,7 +47,7 @@ class PipelineGUI(ttk.Frame):
         info.add_command(label="Pasta Recipes") 
 
         menubar.add_cascade(label="File", menu=file)  
-        menubar.add_cascade(label="Info", menu=info)  
+        menubar.add_cascade(label="Info", menu=info) 
 
         self.controller.config(menu=menubar)
 
