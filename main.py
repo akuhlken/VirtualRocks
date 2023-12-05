@@ -27,6 +27,8 @@ class main(tk.Tk):
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
+        icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
+        self.iconphoto(True, icon)
 
         # Application styling
         self.headerfont = tkfont.Font(family='Arial', size=24, weight="bold")
