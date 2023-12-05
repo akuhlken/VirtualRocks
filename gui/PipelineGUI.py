@@ -82,7 +82,7 @@ class PipelineGUI(ttk.Frame):
         self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
-        self.logtext = tk.Text(right, width=50)
+        self.logtext = tk.Text(right, width=50, background=self.controller.logbackground)
         scrollbar = ttk.Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview

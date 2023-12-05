@@ -1,7 +1,6 @@
 import pickle
 import tkinter as tk      
 from tkinter import ttk
-from tkinter import font as tkfont  
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
@@ -33,12 +32,13 @@ class main(tk.Tk):
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # exclusively for the background of the map.
+        self.logbackground = "#e4b674"
         self.style = ttk.Style()
 
         self.style.theme_use('xpnative')
 
         # maybe look into resize stuff? might be too hard
-        self.style.configure("TButton", width=16, foreground="#F39F5A")
+        self.style.configure("TButton", width=16, foreground="#F39F5A", background="#38332b")
         self.style.configure("TLabel", background="#38332b", foreground="#eac28b")
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
         self.style.configure("TFrame", background="#38332b")
