@@ -12,9 +12,9 @@ class PipelineGUI(ttk.Frame):
     DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
-    def __init__(self, parent, controller, progdir):
+    def __init__(self, parent, controller, projdir):
         ttk.Frame.__init__(self, parent)
-        self.progdir = progdir
+        self.projdir = projdir
         self.controller = controller
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.create_menu()
@@ -79,6 +79,8 @@ class PipelineGUI(ttk.Frame):
         
         # status elements
         self.map = tk.Canvas(left, bg=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
+        self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
         self.logtext = tk.Text(right, width=50)
         scrollbar = ttk.Scrollbar(right)
@@ -86,7 +88,6 @@ class PipelineGUI(ttk.Frame):
         scrollbar['command'] = self.logtext.yview
 
         # progress bar elements
-        # TODO: change how the label updating of the bottom bar works.
         self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
         self.progresstotaltext = ttk.Label(prog, text="Total Progress:")
         self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
@@ -102,7 +103,10 @@ class PipelineGUI(ttk.Frame):
         self.export.pack()
         self.logtext.pack(side='left', fill='both', expand=True)
         self.cancel.pack()
+        self.changebtn.pack(side='bottom')
+        self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
+        
 
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
@@ -174,6 +178,23 @@ class PipelineGUI(ttk.Frame):
         img = ImageTk.PhotoImage(img)
         self.exampleimage.config(image=img)
         self.exampleimage.image = img
+
+    # Gives the user an option to chnage the main project directory
+    #   If no savefile this will crefresh and create a new project
+    #   If chosen dir has a savefile this will load the existing project
+    def change_projdir(self):
+        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
+        if not projdir:
+            return
+        if ' ' in projdir:
+            print("Path must not contain white spaces")
+            mb.showerror("Paths cannot contain whitespace                           ")
+            return
+        projfile = projdir / pl.Path(r"project.pkl")
+        if (projfile).is_file():
+            self.controller.open_project(projfile)
+        else:
+            self.controller.new_project(projdir)
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window

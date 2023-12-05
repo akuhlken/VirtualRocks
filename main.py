@@ -27,6 +27,8 @@ class main(tk.Tk):
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
+        icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
+        self.iconphoto(True, icon)
 
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
@@ -76,12 +78,15 @@ class main(tk.Tk):
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir):
+        print("creating new project")
         self.projdir = pl.Path(projdir)
         self._startup()
+        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
+        print("opening project")
         # Load the path variables from the file
         self.projdir = pl.Path(projfile).parent
         with open(projfile, 'rb') as file:
@@ -91,6 +96,7 @@ class main(tk.Tk):
         else:
             self.imgdir = self.projdir / path
         self._startup() 
+        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
             numimg = PhotoManager(self.imgdir).numimg
             self.page2.update_text(numimg)
@@ -116,8 +122,11 @@ class main(tk.Tk):
         self.imgdir = pl.Path(imgdir).resolve()
         try:
             path = self.imgdir.relative_to(self.projdir)
+            self.recon._send_log("Created savefile with project paths")
         except:
             path = self.imgdir
+            self.recon._send_log("Photos directory is not a sub-directory of project")
+            self.recon._send_log("Saving as absolute path...")
         # Save the project paths to a file
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
             pickle.dump((path), file)
