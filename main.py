@@ -29,7 +29,6 @@ class main(tk.Tk):
         self.title("VirtualRocks")
 
         # Application styling
-        self.headerfont = tkfont.Font(family='Arial', size=24, weight="bold")
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # exclusively for the background of the map.
         self.style = ttk.Style()
@@ -37,9 +36,10 @@ class main(tk.Tk):
         self.style.theme_use('xpnative')
 
         # maybe look into resize stuff? might be too hard
-        self.style.configure("TButton", width=16)
-        self.style.configure("TLabel", background="#ffffff")
-        self.style.configure("TFrame", background="#ffffff")
+        self.style.configure("TButton", width=16, foreground="#F39F5A")
+        self.style.configure("TLabel", background="#38332b", foreground="#eac28b")
+        self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
+        self.style.configure("TFrame", background="#38332b")
 
         # Progress bar styling
         #self.style.element_create("color.pbar", "from", "xpnative") # for coloring the bar

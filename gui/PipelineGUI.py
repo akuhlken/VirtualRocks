@@ -36,6 +36,7 @@ class PipelineGUI(ttk.Frame):
         styles.add_command(label="Dark") 
         styles.add_command(label="Light") 
         styles.add_command(label="not Goblin") 
+        styles.add_command(label="Pick Color")
 
         file.add_separator() 
         file.add_command(label="Exit", command=self.quit)  
