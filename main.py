@@ -78,12 +78,15 @@ class main(tk.Tk):
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir):
+        print("creating new project")
         self.projdir = pl.Path(projdir)
         self._startup()
+        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
+        print("opening project")
         # Load the path variables from the file
         self.projdir = pl.Path(projfile).parent
         with open(projfile, 'rb') as file:
@@ -93,6 +96,7 @@ class main(tk.Tk):
         else:
             self.imgdir = self.projdir / path
         self._startup() 
+        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
             numimg = PhotoManager(self.imgdir).numimg
             self.page2.update_text(numimg)
