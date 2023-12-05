@@ -5,9 +5,9 @@ from tkinter import messagebox as mb
 
 class ReconManager():
 
-    def __init__(self, controller, imgdir, projdir):
+    def __init__(self, controller, projdir):
         self.controller = controller
-        self.imgdir = imgdir
+        self.imgdir = None
         self.projdir = projdir
 
     # Method for updating progress bar and progress text
