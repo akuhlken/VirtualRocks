@@ -123,7 +123,7 @@ class PipelineGUI(ttk.Frame):
         self.progresstext.config(text="Image Loading:")
         self.progress.config(value=0)
 
-        imgdir = fd.askdirectory(title='select folder of images', initialdir=self.progdir)
+        imgdir = fd.askdirectory(title='select folder of images', initialdir=self.projdir)
         if not imgdir:
             return
         if ' ' in imgdir:
