@@ -27,22 +27,22 @@ class Mesher():
         self.ms.set_verbosity(VERBOSE)
     
         # Open Colmap project from sparse as well as dense recon (fused.ply)
-        print("$Mesher.Importing project files.10$", flush=True)
+        print("$Mesher.Importing project files.1$", flush=True)
         self.ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
         
         # Import the fused.ply mesh
-        print("$Mesher.Loading dense point cloud.20$", flush=True)
+        print("$Mesher.Loading dense point cloud.3$", flush=True)
         self.ms.load_new_mesh(base_path+r"\fused.ply")
 
         # Update bounding box for dense poit cloud
         self.bounds = self.ms.current_mesh().bounding_box()
 
         # Point cloud simplification
-        print("$Mesher.Optimizing Point Cloud.30$", flush=True)
+        print("$Mesher.Optimizing Point Cloud.5$", flush=True)
         self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
 
         # Mesher (this will retry with lower res if the user runs out of memory)
-        print("$Mesher.Starting Poisson Mesher.40$", flush=True)
+        print("$Mesher.Poisson Mesher.7$", flush=True)
         vertnum = 0
         depth = 12
         while vertnum < 100:
@@ -54,7 +54,7 @@ class Mesher():
         self._crop()
         
         # Wipe verticies colors
-        print("$Mesher.Setting vertex colors.60$", flush=True)
+        print("$Mesher.Setting vertex colors.18$", flush=True)
         self.ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
 
         self.outdir = self.projdir + r"\out"
@@ -71,6 +71,7 @@ class Mesher():
         miny = min[1]
         maxy = max[1]
 
+        print("$Mesher.Starting tiling.20$", flush=True)
         self.totalverts = self.ms.current_mesh().vertex_number()
         if self.totalverts > VERTEX_LIMIT:
             print(f"Reducing Mesh from {self.totalverts} to {VERTEX_LIMIT}", flush=True)
@@ -83,10 +84,7 @@ class Mesher():
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
         self.ms.set_verbosity(False)
-        print("$Mesher.Starting tiling.70$", flush=True)
         self._quad_slice(maxx, minx, maxy, miny)
-
-        print("$Mesher.Finished tiling.80$", flush=True)
         print(f"Created {self.tile} tiles", flush=True)
         self.ms.set_current_mesh(self.fullmodel)
         self.ms.set_verbosity(VERBOSE)
@@ -131,10 +129,11 @@ class Mesher():
             self.ms.save_current_mesh(fr"{self.outdir}\land_{self.tile}.obj")
             self.ms.set_selection_all()
             self.ms.meshing_remove_selected_vertices()
-
+            # scaled_value = ((self.percentdone) * (70) / (100)) + 20
             self.tile += 1
             self.precentdone += numverts / self.totalverts * 100.0
-            print(f"--{round(self.precentdone, 2)}%", flush=True)
+            print(f"-----{round(self.precentdone, 2)}%", flush=True)
+            print(f"$Mesher.Tiling.{int(((self.precentdone) * (70) / (100)) + 20)}$", flush=True)
             return
 
         """
