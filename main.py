@@ -116,8 +116,11 @@ class main(tk.Tk):
         self.imgdir = pl.Path(imgdir).resolve()
         try:
             path = self.imgdir.relative_to(self.projdir)
+            self.recon._send_log("Created savefile with project paths")
         except:
             path = self.imgdir
+            self.recon._send_log("Photos directory is not a sub-directory of project")
+            self.recon._send_log("Saving as absolute path...")
         # Save the project paths to a file
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
             pickle.dump((path), file)
