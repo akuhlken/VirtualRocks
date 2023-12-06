@@ -31,9 +31,10 @@ class PipelineGUI(ttk.Frame):
         file.add_command(label="Save as")    
         file.add_separator()  
  
+        # change to an option menu so you can see what you've selected (too hard rn)
         styles = tk.Menu(file, tearoff=0)
         file.add_cascade(label="Set Style", menu=styles)
-        styles.add_command(label="Dark") 
+        styles.add_command(label="Dark")  # command=lambda: self.controller.set_darkmode()
         styles.add_command(label="Light") 
         styles.add_command(label="not Goblin") 
         styles.add_command(label="Pick Color")
@@ -75,10 +76,10 @@ class PipelineGUI(ttk.Frame):
         self.outres = ttk.Label(right, text="Output Resulution:")
         self.mesher = ttk.Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
         self.export = ttk.Button(right, text="Export", command=lambda: self.controller.export())
-        self.cancel = ttk.Button(right, text="Cancel", command=lambda: self.controller.cancel_recon())
+        self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left, bg=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.map = tk.Canvas(left, background=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
         self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
@@ -101,8 +102,8 @@ class PipelineGUI(ttk.Frame):
         self.outres.pack()
         self.mesher.pack()
         self.export.pack()
+        self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
-        self.cancel.pack()
         self.changebtn.pack(side='bottom')
         self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
