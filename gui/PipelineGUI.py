@@ -129,10 +129,6 @@ class PipelineGUI(ttk.Frame):
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
         # starting progress bar
-        self.progresstotal.stop()
-        self.progresstext.config(text="Image Loading:")
-        self.progress.config(value=0)
-
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.projdir)
         if not imgdir:
             return
@@ -143,7 +139,7 @@ class PipelineGUI(ttk.Frame):
         self.controller.add_photos(imgdir)
         # updating progress bar
         self.progress.config(value=self.progress["maximum"])
-        self.progresstotal.step(10)
+        #self.progresstotal.step(10)
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='100%')
 
     # Event handler for "Set Bounds" button
@@ -151,12 +147,9 @@ class PipelineGUI(ttk.Frame):
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         # progress bar updating:
-        self.progress.stop()
-        self.progresstext.config(text="Handling Bounds:")
-        self.progress.config(value=6)
 
         self.controller.set_bounds((0,0),(0,0))
-        self.progresstotal.step(1)
+        #self.progresstotal.step(1)
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):

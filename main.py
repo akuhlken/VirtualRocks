@@ -119,6 +119,8 @@ class main(tk.Tk):
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imgdir):
+        self.recon._send_log("$$$")
+        self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = pl.Path(imgdir).resolve()
         try:
@@ -132,6 +134,7 @@ class main(tk.Tk):
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
             pickle.dump((path), file)
         numimg = PhotoManager(self.imgdir).numimg
+        self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(numimg)
         self.page2.matcher.config(state="active")
         self.page2.setbounds.config(state="disabled")
@@ -142,6 +145,8 @@ class main(tk.Tk):
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
     def set_bounds(self, A, B):
+        self.recon._send_log("$$")
+        self.recon._send_log("$Setting Bounds..100$")
         self.page2.mesher.config(state="active")
         self.page2.export.config(state="disabled")
         self.A = A
