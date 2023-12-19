@@ -1,7 +1,6 @@
 import pickle
 import tkinter as tk      
 from tkinter import ttk
-from tkinter import font as tkfont  
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
@@ -31,16 +30,18 @@ class main(tk.Tk):
         self.iconphoto(True, icon)
 
         # Application styling
-        self.headerfont = tkfont.Font(family='Arial', size=24, weight="bold")
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # exclusively for the background of the map.
+        self.logbackground = "#ffffff"
         self.style = ttk.Style()
 
         self.style.theme_use('xpnative')
 
         # maybe look into resize stuff? might be too hard
         self.style.configure("TButton", width=16)
+        self.style.configure("cancel.TButton", width=30)
         self.style.configure("TLabel", background="#ffffff")
+        self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
         self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
@@ -120,6 +121,8 @@ class main(tk.Tk):
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imgdir):
+        self.recon._send_log("$$$")
+        self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = pl.Path(imgdir).resolve()
         try:
@@ -133,6 +136,7 @@ class main(tk.Tk):
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
             pickle.dump((path), file)
         pm = PhotoManager(self.imgdir)
+        self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(pm.numimg)
         self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
         self.page2.matcher.config(state="active")
@@ -144,6 +148,8 @@ class main(tk.Tk):
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
     def set_bounds(self, A, B):
+        self.recon._send_log("$$")
+        self.recon._send_log("$Setting Bounds..100$")
         self.page2.mesher.config(state="active")
         self.page2.export.config(state="disabled")
         self.A = A
@@ -174,10 +180,25 @@ class main(tk.Tk):
     #   After cancel it should change the action button back to start
     def cancel_recon(self):
         self.recon.cancel()
+
+    # Handler for setting dark mode
+    #   needs to change both tk and ttk styles for all obj to be dark.
+    def start_darkmode(self):
+        self.recon._send_log("Changing app style to dark mode...")
+
+        # change non-ttk style stuff
+        self.backcolor = "#000000"
+        self.logbackground = "#000000"
+
+        # change ttk style stuff
+        self.style.configure("TButton", width=16, activeforeground="#000000", activebackground="#000000")
+        self.style.configure("TLabel", background="#000000")
+        self.style.configure("TFrame", background="#000000")
+
     
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset
-    #   and loading mesh+texture onto quest 2
+    #   and loading mesh+texture onto Quest 2
     def export(self):
         if not DEBUG:
             print("PLACEHOLDER")

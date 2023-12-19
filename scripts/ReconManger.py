@@ -19,22 +19,37 @@ class ReconManager():
             self.controller.style.configure('prog.Horizontal.TProgressbar', text='')
             self.controller.page2.progresstext.config(text=f"Nothing's running...")
             return
+        
+        elif msg == "$$$":
+            self.controller.page2.progresstotal.stop()
+            self._update_progress("$$")
+            return
 
         pkg = msg.replace('$', '').split('.')
         currentstep = pkg[0]
         currentsubstep = pkg[1]
         percent = pkg[2]
-        percentage = int(int(percent)/self.controller.page2.progress["maximum"] * 100)
+        percentage = int(int(percent)/self.controller.page2.progress["maximum"] * 100) # if we only use this variable once, is it worth keeping?
         if currentsubstep == "":
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}: ")
         else:
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}, {currentsubstep}: ")
+            currentstep = currentsubstep
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
         self.controller.page2.progress.config(value=percent)
 
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:
             self.controller.page2.progresstext.config(text=f"{currentstep} complete!")
-            #self.controller.style.configure('prog.Horizontal.TProgressbar', background='green')
+            # need to consider how many steps we have... shouldn't just step by 10 (but would need 
+            # to step by some constant value unless we want to change how we're doing this.)
+            stepamount = 10
+
+            if self.controller.page2.progresstotal["value"] + stepamount > self.controller.page2.progresstotal["maximum"]:
+                self.controller.page2.progresstotal.config(value=self.controller.page2.progresstotal["maximum"])
+                self.controller.page2.progresstotaltext.config(text=f"Done!")
+            else:
+                self.controller.page2.progresstotal.step(stepamount)
+
         
 
     # Method has two behaviors, if passed a string this method will act like a print() to the log

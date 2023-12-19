@@ -30,6 +30,16 @@ class PipelineGUI(ttk.Frame):
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
         file.add_separator()  
+ 
+        # change to an option menu so you can see what you've selected (too hard rn)
+        styles = tk.Menu(file, tearoff=0)
+        file.add_cascade(label="Set Style", menu=styles)
+        styles.add_command(label="Dark")  # command=lambda: self.controller.set_darkmode()
+        styles.add_command(label="Light") 
+        styles.add_command(label="not Goblin") 
+        styles.add_command(label="Pick Color")
+
+        file.add_separator() 
         file.add_command(label="Exit", command=self.quit)  
 
         info = tk.Menu(menubar, tearoff=0)
@@ -39,7 +49,7 @@ class PipelineGUI(ttk.Frame):
         info.add_command(label="Pasta Recipes") 
 
         menubar.add_cascade(label="File", menu=file)  
-        menubar.add_cascade(label="Info", menu=info)  
+        menubar.add_cascade(label="Info", menu=info) 
 
         self.controller.config(menu=menubar)
 
@@ -66,14 +76,14 @@ class PipelineGUI(ttk.Frame):
         self.outres = ttk.Label(right, text="Output Resulution:")
         self.mesher = ttk.Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
         self.export = ttk.Button(right, text="Export", command=lambda: self.controller.export())
-        self.cancel = ttk.Button(right, text="Cancel", command=lambda: self.controller.cancel_recon())
+        self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left, bg=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.map = tk.Canvas(left, background=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
         self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
-        self.logtext = tk.Text(right, width=50)
+        self.logtext = tk.Text(right, width=50, background=self.controller.logbackground)
         scrollbar = ttk.Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview
@@ -92,8 +102,8 @@ class PipelineGUI(ttk.Frame):
         self.outres.pack()
         self.mesher.pack()
         self.export.pack()
+        self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
-        self.cancel.pack()
         self.changebtn.pack(side='bottom')
         self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
@@ -119,10 +129,6 @@ class PipelineGUI(ttk.Frame):
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
         # starting progress bar
-        self.progresstotal.stop()
-        self.progresstext.config(text="Image Loading:")
-        self.progress.config(value=0)
-
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.projdir)
         if not imgdir:
             return
@@ -133,7 +139,7 @@ class PipelineGUI(ttk.Frame):
         self.controller.add_photos(imgdir)
         # updating progress bar
         self.progress.config(value=self.progress["maximum"])
-        self.progresstotal.step(10)
+        #self.progresstotal.step(10)
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='100%')
 
     # Event handler for "Set Bounds" button
@@ -141,12 +147,9 @@ class PipelineGUI(ttk.Frame):
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         # progress bar updating:
-        self.progress.stop()
-        self.progresstext.config(text="Handling Bounds:")
-        self.progress.config(value=6)
 
         self.controller.set_bounds((0,0),(0,0))
-        self.progresstotal.step(1)
+        #self.progresstotal.step(1)
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):

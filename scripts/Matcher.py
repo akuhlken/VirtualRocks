@@ -13,7 +13,7 @@ class Matcher:
 
     # Main matcher pipeling code
     #   method should run all scripts accosiated with Colmap and result
-    #   in a desnse reconstruction
+    #   in a dense reconstruction
     def image2dense(self, clean):
         print("$$", flush=True)
         rcode = 0
@@ -77,7 +77,7 @@ class Matcher:
             rcode = p.wait()
 
         if rcode == 0:
-            print("$Matcher.Dense Point Cloud.50$", flush=True)
+            print("$Matcher.Dense Point Cloud Construction.50$", flush=True)
             p = subprocess.Popen([str(colmap), "patch_match_stereo", "--workspace_path", f"{self.projdir}\dense", "--workspace_format", "COLMAP", "--PatchMatchStereo.geom_consistency", "true"], cwd=str(workingdir), text=True)
             rcode = p.wait()
 
