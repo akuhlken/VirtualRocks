@@ -99,8 +99,9 @@ class main(tk.Tk):
         self._startup() 
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
-            numimg = PhotoManager(self.imgdir).numimg
-            self.page2.update_text(numimg)
+            pm = PhotoManager(self.imgdir)
+            self.page2.update_text(pm.numimg)
+            self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
 
             self.page2.matcher.config(state="active")
 
@@ -112,8 +113,9 @@ class main(tk.Tk):
                 self.page2.mesher.config(state="active")
                 self.page2.export.config(state="active")
             self.page2.progresstotal.step()
-        except:
+        except Exception as e:
             self.recon._send_log("Could not find image directory")
+            print(e)
         
     # Handler for adding photos
     #   Set the controller variable for image directory
@@ -133,9 +135,10 @@ class main(tk.Tk):
         # Save the project paths to a file
         with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
             pickle.dump((path), file)
-        numimg = PhotoManager(self.imgdir).numimg
+        pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
-        self.page2.update_text(numimg)
+        self.page2.update_text(pm.numimg)
+        self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
         self.page2.matcher.config(state="active")
         self.page2.setbounds.config(state="disabled")
         self.page2.mesher.config(state="disabled")

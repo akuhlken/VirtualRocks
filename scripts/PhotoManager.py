@@ -45,3 +45,11 @@ class PhotoManager():
         for filename in os.listdir(imgdir):
             if filename.endswith(tuple(EXTENSIONS)):
                 self.numimg += 1
+
+    # Return the path to an image in the imgdir
+    def get_example(self, imgdir=None):
+        if not imgdir:
+            imgdir = self.imgdir
+        for filename in os.listdir(imgdir):
+            if filename.endswith(tuple(EXTENSIONS)):
+                return filename
