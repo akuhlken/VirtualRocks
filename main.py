@@ -193,6 +193,8 @@ class main(tk.Tk):
         self.style = tttk.Style("sandstone")
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
+        pm = PhotoManager(self.imgdir)
+        self.page2.set_map(self.imgdir / 'map')
 
     
     # Handler for exporting final project:

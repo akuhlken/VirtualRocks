@@ -9,7 +9,7 @@ from tkinter import ttk
 class PipelineGUI(ttk.Frame):
     
     # GUI constants
-    DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
+    DEFAULT_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, projdir):
@@ -60,8 +60,10 @@ class PipelineGUI(ttk.Frame):
         left = ttk.Frame(self)
         right = ttk.Frame(self)
         prog = ttk.Frame(left)
+        sep = ttk.Frame(right)
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
+        sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
         
         # control elements
@@ -93,7 +95,11 @@ class PipelineGUI(ttk.Frame):
         self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
         self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
+        # separator, for style
+        self.separator = tttk.Separator(right, bootstyle="info", orient="vertical")
+
         # packing
+        self.separator.pack(side="left", fill="y", padx=5)
         self.exampleimage.pack()
         self.addphotos.pack()
         self.numimages.pack()
