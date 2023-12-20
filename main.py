@@ -187,14 +187,14 @@ class main(tk.Tk):
     def start_darkmode(self):
         self.recon._send_log("Changing app style to dark mode...")
         self.style = tttk.Style("darkly")
+        self.page2.set_map(pl.Path(f"gui/placeholder/darkmap.jpg").resolve())
 
     def start_lightmode(self):
         self.recon._send_log("Changing app style to light mode...")
-        self.style = tttk.Style("sandstone")
+        self.style = tttk.Style("lumen")
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        pm = PhotoManager(self.imgdir)
-        self.page2.set_map(self.imgdir / 'map')
+        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
 
     
     # Handler for exporting final project:
