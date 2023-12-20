@@ -20,7 +20,7 @@ class PipelineGUI(ttk.Frame):
         self.create_menu()
         self.setup_layout()
 
-    # Settup method for top menu bar
+    # Setup method for top menu bar
     def create_menu(self):
         menubar = tk.Menu(self) 
 

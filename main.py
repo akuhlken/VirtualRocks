@@ -32,7 +32,7 @@ class main(tk.Tk):
 
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
-        self.backcolor = "#ffffff"  # exclusively for the background of the map.
+        self.backcolor = "#ffffff"  # background of map + menu bar
         self.logbackground = "#ffffff"
         self.style = tttk.Style("darkly")
 
@@ -191,6 +191,8 @@ class main(tk.Tk):
     def start_lightmode(self):
         self.recon._send_log("Changing app style to light mode...")
         self.style = tttk.Style("sandstone")
+        self.style.configure("TButton", width=16)
+        self.style.configure("cancel.TButton", width=30)
 
     
     # Handler for exporting final project:
