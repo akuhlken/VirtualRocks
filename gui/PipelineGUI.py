@@ -1,5 +1,5 @@
 import tkinter as tk
-#import ttkbootstrap as tttk
+import ttkbootstrap as tttk
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
@@ -34,8 +34,8 @@ class PipelineGUI(ttk.Frame):
         # change to an option menu so you can see what you've selected (too hard rn)
         styles = tk.Menu(file, tearoff=0)
         file.add_cascade(label="Set Style", menu=styles)
-        styles.add_command(label="Dark")  # command=lambda: self.controller.set_darkmode()
-        styles.add_command(label="Light") 
+        styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
+        styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
         styles.add_command(label="not Goblin") 
         styles.add_command(label="Pick Color")
 
@@ -66,7 +66,6 @@ class PipelineGUI(ttk.Frame):
         
         # control elements
         self.exampleimage = ttk.Label(right)
-        self.exampleimage.pack()
 
         self.addphotos = ttk.Button(right, text="Add Photos", command=lambda: self.photos_handler())
 
@@ -95,6 +94,7 @@ class PipelineGUI(ttk.Frame):
         self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
         # packing
+        self.exampleimage.pack()
         self.addphotos.pack()
         self.numimages.pack()
         self.matcher.pack()

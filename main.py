@@ -1,5 +1,6 @@
 import pickle
-import tkinter as tk      
+import tkinter as tk   
+import ttkbootstrap as tttk   
 from tkinter import ttk
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
@@ -33,16 +34,16 @@ class main(tk.Tk):
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # exclusively for the background of the map.
         self.logbackground = "#ffffff"
-        self.style = ttk.Style()
+        self.style = tttk.Style("darkly")
 
-        self.style.theme_use('xpnative')
+        #self.style.theme_use('xpnative')
 
         # maybe look into resize stuff? might be too hard
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        self.style.configure("TLabel", background="#ffffff")
+        #self.style.configure("TLabel", background="#ffffff")
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
-        self.style.configure("TFrame", background="#ffffff")
+        #self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
         #self.style.element_create("color.pbar", "from", "xpnative") # for coloring the bar
@@ -182,18 +183,14 @@ class main(tk.Tk):
         self.recon.cancel()
 
     # Handler for setting dark mode
-    #   needs to change both tk and ttk styles for all obj to be dark.
+    #   changes theme to a dark theme
     def start_darkmode(self):
         self.recon._send_log("Changing app style to dark mode...")
+        self.style = tttk.Style("darkly")
 
-        # change non-ttk style stuff
-        self.backcolor = "#000000"
-        self.logbackground = "#000000"
-
-        # change ttk style stuff
-        self.style.configure("TButton", width=16, activeforeground="#000000", activebackground="#000000")
-        self.style.configure("TLabel", background="#000000")
-        self.style.configure("TFrame", background="#000000")
+    def start_lightmode(self):
+        self.recon._send_log("Changing app style to light mode...")
+        self.style = tttk.Style("sandstone")
 
     
     # Handler for exporting final project:
