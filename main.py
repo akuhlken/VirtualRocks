@@ -206,6 +206,17 @@ class main(tk.Tk):
         self.style.configure("cancel.TButton", width=30)
         self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
 
+    def start_goblinmode(self):
+        if (self.styleflag == "goblin"):
+            self.recon._send_log("App style is already set to current mode.")
+            return
+        self.recon._send_log("goblin time hehehehehehe")
+        self.style = tttk.Style("goblin")
+        self.styleflag = "goblin"
+        self.style.configure("TButton", width=16)
+        self.style.configure("cancel.TButton", width=30)
+        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
+
     
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset

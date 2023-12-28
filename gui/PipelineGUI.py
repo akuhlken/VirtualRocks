@@ -36,7 +36,7 @@ class PipelineGUI(ttk.Frame):
         file.add_cascade(label="Set Style", menu=styles)
         styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
-        styles.add_command(label="not Goblin") 
+        styles.add_command(label="not Goblin", command=lambda: self.controller.start_goblinmode()) 
         styles.add_command(label="Pick Color")
 
         file.add_separator() 
