@@ -211,7 +211,8 @@ class main(tk.Tk):
             self.recon._send_log("App style is already set to current mode.")
             return
         self.recon._send_log("goblin time hehehehehehe")
-        self.style = tttk.Style("goblin")
+        self.style = tttk.Style(theme="goblinmode")
+        #self.style = tttk.Style(theme="goblinmode", themes_file=pl.Path(f"gui/goblinmode").resolve())
         self.styleflag = "goblin"
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)

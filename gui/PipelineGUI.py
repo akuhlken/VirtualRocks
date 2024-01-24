@@ -26,7 +26,13 @@ class PipelineGUI(ttk.Frame):
 
         file = tk.Menu(menubar, tearoff=0)  
         file.add_command(label="New")  
+        #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
+            # check if the user has done any work on the current
+            # project they're working on and if they want to save,
+            # then make a new file like how we do it from start.
         file.add_command(label="Open")  
+        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
+
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
         file.add_separator()  
@@ -129,6 +135,14 @@ class PipelineGUI(ttk.Frame):
         self.mesher.config(state="disabled")
         self.export.config(state="disabled")
         self.cancel.config(state="disabled")
+
+    # Event handler for "New" in the dropdown menu
+        # Method should first check if the current project is saved and prompt
+        # the user to save if they haven't already/recently.
+        # Then it should do basically the same thing as the new_project method
+        # in StartGUI.
+    def new_proj_handler(self):
+        pass
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
