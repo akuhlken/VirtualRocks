@@ -24,18 +24,15 @@ class PipelineGUI(ttk.Frame):
     def create_menu(self):
         menubar = tk.Menu(self) 
 
-        file = tk.Menu(menubar, tearoff=0)  
-        file.add_command(label="New")  
-        #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
+        file = tk.Menu(menubar, tearoff=0) 
+        file.add_command(label="New", command=lambda: self.new_proj_handler())  
             # check if the user has done any work on the current
             # project they're working on and if they want to save,
             # then make a new file like how we do it from start.
-        file.add_command(label="Open")  
-        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
-
+        file.add_command(label="Open", command=lambda: self.open_proj_handler()) 
         file.add_command(label="Save")  
         file.add_command(label="Save as") 
-        file.add_command(label="Close")    
+        file.add_command(label="Start Menu", command=lambda: self.startmenu_handler())   
         file.add_separator()  
  
         # change to an option menu so you can see what you've selected (too hard rn)
@@ -138,12 +135,32 @@ class PipelineGUI(ttk.Frame):
         self.cancel.config(state="disabled")
 
     # Event handler for "New" in the dropdown menu
-        # Method should first check if the current project is saved and prompt
-        # the user to save if they haven't already/recently.
+        # Method should first check to make sure nothing is running.
         # Then it should do basically the same thing as the new_project method
         # in StartGUI.
     def new_proj_handler(self):
+        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
+        if not projdir:
+            return
+        if ' ' in projdir:
+            print("Path must not contain white spaces")
+            mb.showerror("Paths cannot contain whitespace                           ")
+            return
+        self.controller.new_project(projdir)
+
+    # Event handler for "Open" in the dropdown menu
+        # Method should first check to make sure nothing is running.
+        # Then it should do basically the same thing as the open_project method
+        # in StartGUI.
+    def open_proj_handler(self):
+        projfile = fd.askopenfilename(filetypes=[('Choose a project.pkl file', '*.pkl')])
+        if not projfile:
+            return
+        self.controller.open_project(projfile)
+
+    def startmenu_handler(self):
         pass
+        #self.controller.page1.tkraise()
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir

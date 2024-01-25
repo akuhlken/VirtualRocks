@@ -211,12 +211,12 @@ class main(tk.Tk):
             self.recon._send_log("App style is already set to current mode.")
             return
         self.recon._send_log("goblin time hehehehehehe")
+        tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
         self.style = tttk.Style(theme="goblinmode")
-        #self.style = tttk.Style(theme="goblinmode", themes_file=pl.Path(f"gui/goblinmode").resolve())
         self.styleflag = "goblin"
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
+        self.page2.set_map(pl.Path(f"gui/placeholder/darkmap.jpg").resolve())
 
     
     # Handler for exporting final project:
