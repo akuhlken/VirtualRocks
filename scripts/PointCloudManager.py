@@ -82,3 +82,7 @@ print(f"Filtered point cloud saved to {output_ply_file_path}")
 
 ms.load_new_mesh(output_ply_file_path)
 ms.save_current_mesh(output_ply_file_path, binary = True)
+
+# TODO convert into class
+# TODO create method that opens point cloud and creates jpg
+    # Called by recon manager after matcher call
