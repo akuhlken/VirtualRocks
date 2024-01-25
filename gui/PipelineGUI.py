@@ -158,9 +158,10 @@ class PipelineGUI(ttk.Frame):
             return
         self.controller.open_project(projfile)
 
+    # Event handler for "Start Menu" in the dropdown menu
     def startmenu_handler(self):
-        pass
-        #self.controller.page1.tkraise()
+        self.controller.config(menu=tk.Menu(self))
+        self.controller.start_menu()
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir

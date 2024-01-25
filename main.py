@@ -42,9 +42,7 @@ class main(tk.Tk):
         # maybe look into resize stuff? might be too hard
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        #self.style.configure("TLabel", background="#ffffff")
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
-        #self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
         #self.style.element_create("color.pbar", "from", "xpnative") # for coloring the bar
@@ -69,7 +67,7 @@ class main(tk.Tk):
         self.page1.grid(row=0, column=0, sticky="nsew")
         self.page1.tkraise()
 
-    # Common startur tasks for both opening and creating projects
+    # Common startup tasks for both opening and creating projects
     def _startup(self):
         self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
@@ -119,6 +117,11 @@ class main(tk.Tk):
             self.recon._send_log("Could not find image directory")
             print(e)
         
+    # Handler for reopening the starting page
+    #   since there's an option for it in the menu, it must be done.
+    def start_menu(self):
+        self.page1.tkraise()
+
     # Handler for adding photos
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
