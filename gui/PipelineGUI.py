@@ -28,7 +28,8 @@ class PipelineGUI(ttk.Frame):
         file.add_command(label="New")  
         file.add_command(label="Open")  
         file.add_command(label="Save")  
-        file.add_command(label="Save as")    
+        file.add_command(label="Save as") 
+        file.add_command(label="Close")    
         file.add_separator()  
  
         # change to an option menu so you can see what you've selected (too hard rn)
