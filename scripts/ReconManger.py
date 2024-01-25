@@ -70,7 +70,7 @@ class ReconManager():
                 if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)
 
-    # Main matcher pipeling code
+    # Main matcher pipeliningg code
     #   NOTE: This method runs in its own thread
     #   method should run all scripts accosiated with Colmap and result
     #   in a desnse reconstruction

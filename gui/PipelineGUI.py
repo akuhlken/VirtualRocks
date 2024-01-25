@@ -1,5 +1,5 @@
 import tkinter as tk
-#import ttkbootstrap as tttk
+import ttkbootstrap as tttk
 from PIL import ImageTk, Image
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
@@ -9,7 +9,7 @@ from tkinter import ttk
 class PipelineGUI(ttk.Frame):
     
     # GUI constants
-    DEFAULT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
+    DEFAULT_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, projdir):
@@ -20,13 +20,19 @@ class PipelineGUI(ttk.Frame):
         self.create_menu()
         self.setup_layout()
 
-    # Settup method for top menu bar
+    # Setup method for top menu bar
     def create_menu(self):
         menubar = tk.Menu(self) 
 
         file = tk.Menu(menubar, tearoff=0)  
         file.add_command(label="New")  
+        #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
+            # check if the user has done any work on the current
+            # project they're working on and if they want to save,
+            # then make a new file like how we do it from start.
         file.add_command(label="Open")  
+        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
+
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
         file.add_separator()  
@@ -34,9 +40,9 @@ class PipelineGUI(ttk.Frame):
         # change to an option menu so you can see what you've selected (too hard rn)
         styles = tk.Menu(file, tearoff=0)
         file.add_cascade(label="Set Style", menu=styles)
-        styles.add_command(label="Dark")  # command=lambda: self.controller.set_darkmode()
-        styles.add_command(label="Light") 
-        styles.add_command(label="not Goblin") 
+        styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
+        styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
+        styles.add_command(label="not Goblin", command=lambda: self.controller.start_goblinmode()) 
         styles.add_command(label="Pick Color")
 
         file.add_separator() 
@@ -60,13 +66,14 @@ class PipelineGUI(ttk.Frame):
         left = ttk.Frame(self)
         right = ttk.Frame(self)
         prog = ttk.Frame(left)
+        sep = ttk.Frame(right)
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
+        sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
         
         # control elements
         self.exampleimage = ttk.Label(right)
-        self.exampleimage.pack()
 
         self.addphotos = ttk.Button(right, text="Add Photos", command=lambda: self.photos_handler())
 
@@ -94,7 +101,12 @@ class PipelineGUI(ttk.Frame):
         self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
         self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
 
+        # separator, for style
+        self.separator = tttk.Separator(right, bootstyle="info", orient="vertical")
+
         # packing
+        self.separator.pack(side="left", fill="y", padx=5)
+        self.exampleimage.pack()
         self.addphotos.pack()
         self.numimages.pack()
         self.matcher.pack()
@@ -123,6 +135,14 @@ class PipelineGUI(ttk.Frame):
         self.mesher.config(state="disabled")
         self.export.config(state="disabled")
         self.cancel.config(state="disabled")
+
+    # Event handler for "New" in the dropdown menu
+        # Method should first check if the current project is saved and prompt
+        # the user to save if they haven't already/recently.
+        # Then it should do basically the same thing as the new_project method
+        # in StartGUI.
+    def new_proj_handler(self):
+        pass
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
