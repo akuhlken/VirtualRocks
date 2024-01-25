@@ -39,7 +39,7 @@ class Mesher():
 
         # Point cloud simplification
         print("$Mesher.Optimizing Point Cloud.5$", flush=True)
-        self.ms.meshing_decimation_clustering(threshold = pymeshlab.AbsoluteValue(CELL_SIZE))
+        self.ms.meshing_decimation_clustering(threshold = pymeshlab.PureValue(CELL_SIZE))
 
         # Mesher (this will retry with lower res if the user runs out of memory)
         print("$Mesher.Poisson Mesher.7$", flush=True)
