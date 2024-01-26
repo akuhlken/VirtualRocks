@@ -12,10 +12,15 @@ class PipelineGUI(ttk.Frame):
     DEFAULT_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
+    # temp constants until we have a good way to deal with outliers and can display
+    DARK_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
+    LIGHT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
+
     def __init__(self, parent, controller, projdir):
         ttk.Frame.__init__(self, parent)
         self.projdir = projdir
         self.controller = controller
+        self.currentmap = self.DEFAULT_MAP
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.create_menu()
         self.setup_layout()
@@ -25,6 +30,7 @@ class PipelineGUI(ttk.Frame):
         menubar = tk.Menu(self) 
 
         file = tk.Menu(menubar, tearoff=0) 
+        file.add_command(label="Back to Start", command=lambda: self.startmenu_handler())   
         file.add_command(label="New", command=lambda: self.new_proj_handler())  
             # check if the user has done any work on the current
             # project they're working on and if they want to save,
@@ -32,7 +38,6 @@ class PipelineGUI(ttk.Frame):
         file.add_command(label="Open", command=lambda: self.open_proj_handler()) 
         file.add_command(label="Save")  
         file.add_command(label="Save as") 
-        file.add_command(label="Start Menu", command=lambda: self.startmenu_handler())   
         file.add_separator()  
  
         # change to an option menu so you can see what you've selected (too hard rn)
@@ -41,13 +46,13 @@ class PipelineGUI(ttk.Frame):
         styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
         styles.add_command(label="not Goblin", command=lambda: self.controller.start_goblinmode()) 
-        styles.add_command(label="Pick Color")
 
         file.add_separator() 
+        file.add_command(label="Fullscreen")
         file.add_command(label="Exit", command=self.quit)  
 
         info = tk.Menu(menubar, tearoff=0)
-        info.add_command(label="Common Issues") 
+        info.add_command(label="Common Issues", command=lambda: self.controller.open_helpmenu()) 
         info.add_command(label="Colmap Info") 
         info.add_command(label="MeshLab Info") 
         info.add_command(label="Pasta Recipes") 
@@ -84,7 +89,7 @@ class PipelineGUI(ttk.Frame):
         self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left, background=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.map = tk.Canvas(left)  # ttk doesn't have a canvas widget, so we can't convert this.
         self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
@@ -203,6 +208,8 @@ class PipelineGUI(ttk.Frame):
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir
         self.map.bind('<Configure>', self._resizer)
+        self.currentmap = mapdir
+
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
@@ -213,7 +220,7 @@ class PipelineGUI(ttk.Frame):
         self.exampleimage.image = img
 
     # Gives the user an option to chnage the main project directory
-    #   If no savefile this will crefresh and create a new project
+    #   If no savefile this will refresh and create a new project
     #   If chosen dir has a savefile this will load the existing project
     def change_projdir(self):
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')

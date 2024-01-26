@@ -5,6 +5,7 @@ from tkinter import ttk
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
+from gui.HelpMenuGUI import HelpMenuGUI
 import threading   
 import pathlib as pl
 from scripts.ReconManger import ReconManager
@@ -30,6 +31,9 @@ class main(tk.Tk):
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
 
+        # Importing external styles
+        tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
+
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # background of map + menu bar
@@ -45,16 +49,12 @@ class main(tk.Tk):
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
 
         # Progress bar styling
-        #self.style.element_create("color.pbar", "from", "xpnative") # for coloring the bar
         self.style.layout("prog.Horizontal.TProgressbar",
              [('Horizontal.Progressbar.trough',
                {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
                 'sticky': 'nswe'}),
               ('Horizontal.Progressbar.label', {'sticky': ''})])
         self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
-        #self.style.configure(self.style_name, background=BarColor[0], troughcolor=BarColor[1],
-         #                   troughrelief=relief, borderwidth=border_width, thickness=width)
-
 
         # container is a stack of frames (aka our two main pages)
         self.container = ttk.Frame(self)
@@ -71,7 +71,7 @@ class main(tk.Tk):
     def _startup(self):
         self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
-        self.page2.set_map(self.page2.DEFAULT_MAP)
+        self.page2.set_map(self.page2.currentmap)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
@@ -196,9 +196,10 @@ class main(tk.Tk):
         self.recon._send_log("Changing app style to dark mode...")
         self.style = tttk.Style("darkly")
         self.styleflag = "dark"
-        self.page2.set_map(pl.Path(f"gui/placeholder/darkmap.jpg").resolve())
+        self.page2.set_map(self.page2.DARK_MAP)
 
     def start_lightmode(self):
+        self.page2.set_map(self.page2.LIGHT_MAP)
         if (self.styleflag == "light"):
             self.recon._send_log("App style is already set to light mode.")
             return
@@ -207,21 +208,24 @@ class main(tk.Tk):
         self.styleflag = "light"
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
+        #self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
 
     def start_goblinmode(self):
         if (self.styleflag == "goblin"):
             self.recon._send_log("App style is already set to current mode.")
             return
         self.recon._send_log("goblin time hehehehehehe")
-        tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
         self.style = tttk.Style(theme="goblinmode")
         self.styleflag = "goblin"
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/darkmap.jpg").resolve())
+        self.page2.set_map(self.page2.DARK_MAP)
 
-    
+    def open_helpmenu(self):
+        self.recon._send_log("lookin' for help, eh?")
+        self.helpmenu = HelpMenuGUI(parent=self.container, controller=self)
+        return
+
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset
     #   and loading mesh+texture onto Quest 2
