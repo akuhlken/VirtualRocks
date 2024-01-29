@@ -1,11 +1,11 @@
 import pickle
 import tkinter as tk   
 import ttkbootstrap as tttk   
+import webbrowser as wb
 from tkinter import ttk
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
-from gui.HelpMenuGUI import HelpMenuGUI
 import threading   
 import pathlib as pl
 from scripts.ReconManger import ReconManager
@@ -221,9 +221,15 @@ class main(tk.Tk):
         self.style.configure("cancel.TButton", width=30)
         self.page2.set_map(self.page2.DARK_MAP)
 
+    # good programming would probably have some form of error handling here, sending
+    # a message to the log when the help menu fails to open.
     def open_helpmenu(self):
         self.recon._send_log("lookin' for help, eh?")
-        self.helpmenu = HelpMenuGUI(parent=self.container, controller=self)
+        try:
+            wb.open_new(pl.Path(f"gui/helpmenu/helpmain.html").resolve())
+        except:
+            self.recon._send_log("sucks for you I guess...")
+        #self.helpmenu = HelpMenuGUI(parent=self.container, controller=self)
         return
 
     # Handler for exporting final project:
