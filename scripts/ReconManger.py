@@ -101,9 +101,12 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
+            if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
             # If reconstruction exited normally
-            self.controller.page2.setbounds.config(state="active")
-            self.controller.page2.cancel.config(state="disabled")
+                self.controller.page2.setbounds.config(state="active")
+                self.controller.page2.cancel.config(state="disabled")
+            else:
+                self._send_log("Matcher failed, please retry")
         self.p = None
 
     # Main mesher pipeling code
@@ -127,9 +130,12 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
+            if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
             # If reconstruction exited normally
-            self.controller.page2.export.config(state="active")
-            self.controller.page2.cancel.config(state="disabled")
+                self.controller.page2.export.config(state="active")
+                self.controller.page2.cancel.config(state="disabled")
+            else:
+                self._send_log("Mesher failed, please retry")
         self.p = None
 
     #  Methods for canceling current recon
