@@ -5,63 +5,23 @@ from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 import pathlib as pl
 from tkinter import ttk
+from gui.AppWindow import AppWindow
 
-class PipelineGUI(ttk.Frame):
+class PipelineGUI(AppWindow):
     
     # GUI constants
     DEFAULT_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, projdir):
-        ttk.Frame.__init__(self, parent)
+        AppWindow.__init__(self, parent, controller)
         self.projdir = projdir
         self.controller = controller
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
-        self.create_menu()
         self.setup_layout()
-
-    # Setup method for top menu bar
-    def create_menu(self):
-        menubar = tk.Menu(self) 
-
-        file = tk.Menu(menubar, tearoff=0)  
-        file.add_command(label="New")  
-        #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
-            # check if the user has done any work on the current
-            # project they're working on and if they want to save,
-            # then make a new file like how we do it from start.
-        file.add_command(label="Open")  
-        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
-
-        file.add_command(label="Save")  
-        file.add_command(label="Save as")    
-        file.add_separator()  
- 
-        # change to an option menu so you can see what you've selected (too hard rn)
-        styles = tk.Menu(file, tearoff=0)
-        file.add_cascade(label="Set Style", menu=styles)
-        styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
-        styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
-        styles.add_command(label="not Goblin", command=lambda: self.controller.start_goblinmode()) 
-        styles.add_command(label="Pick Color")
-
-        file.add_separator() 
-        file.add_command(label="Exit", command=self.quit)  
-
-        info = tk.Menu(menubar, tearoff=0)
-        info.add_command(label="Common Issues") 
-        info.add_command(label="Colmap Info") 
-        info.add_command(label="MeshLab Info") 
-        info.add_command(label="Pasta Recipes") 
-
-        menubar.add_cascade(label="File", menu=file)  
-        menubar.add_cascade(label="Info", menu=info) 
-
-        self.controller.config(menu=menubar)
 
     # Setup method for GUI layout and elements
     def setup_layout(self):
-
         # Layout framework
         left = ttk.Frame(self)
         right = ttk.Frame(self)

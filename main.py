@@ -188,35 +188,26 @@ class main(tk.Tk):
     #   might be worth adding some flag so that we don't have to switch if we already have one style.
     def start_darkmode(self):
         if (self.styleflag == "dark"):
-            self.recon._send_log("App style is already set to dark mode.")
             return
-        self.recon._send_log("Changing app style to dark mode...")
         self.style = tttk.Style("darkly")
         self.styleflag = "dark"
-        self.page2.set_map(pl.Path(f"gui/placeholder/darkmap.jpg").resolve())
 
     def start_lightmode(self):
         if (self.styleflag == "light"):
-            self.recon._send_log("App style is already set to light mode.")
             return
-        self.recon._send_log("Changing app style to light mode...")
         self.style = tttk.Style("lumen")
         self.styleflag = "light"
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
 
     def start_goblinmode(self):
         if (self.styleflag == "goblin"):
-            self.recon._send_log("App style is already set to current mode.")
             return
-        self.recon._send_log("goblin time hehehehehehe")
         self.style = tttk.Style(theme="goblinmode")
         #self.style = tttk.Style(theme="goblinmode", themes_file=pl.Path(f"gui/goblinmode").resolve())
         self.styleflag = "goblin"
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
 
     
     # Handler for exporting final project:
