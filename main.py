@@ -28,6 +28,7 @@ class main(tk.Tk):
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
+        self.browser = wb.get()
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
 
@@ -224,12 +225,15 @@ class main(tk.Tk):
     # good programming would probably have some form of error handling here, sending
     # a message to the log when the help menu fails to open.
     def open_helpmenu(self):
-        self.recon._send_log("lookin' for help, eh?")
+        self.recon._send_log("lookin' for help, eh?")  
+
+        print((f'file:///' + str(pl.Path(f"docs/_build/html/index.html").resolve())).replace("\\","/"))
+        wb.open_new((f'file:///' + str(pl.Path(f"docs/_build/html/index.html").resolve())).replace("\\","/"))
+        wb.open_new("https://www.weather.gov")
         try:
-            wb.open_new(pl.Path(f"gui/helpmenu/helpmain.html").resolve())
+            wb.open_new(('file:///' + str(pl.Path(f"docs/_build/html/index.html").resolve())).replace("\\","/"))
         except:
             self.recon._send_log("sucks for you I guess...")
-        #self.helpmenu = HelpMenuGUI(parent=self.container, controller=self)
         return
 
     # Handler for exporting final project:
