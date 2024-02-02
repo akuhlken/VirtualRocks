@@ -18,6 +18,7 @@ class Mesher():
         self.dense2mesh()
 
     def dense2mesh(self):
+        print("$$", flush=True)
         # Path to Colmap dense folder
         base_path = self.projdir + r"\dense"
     
