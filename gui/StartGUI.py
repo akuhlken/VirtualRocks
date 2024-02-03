@@ -2,12 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
+from gui.AppWindow import AppWindow
 
-class StartGUI(ttk.Frame):
+class StartGUI(AppWindow):
 
     def __init__(self, parent, controller):
-        
-        ttk.Frame.__init__(self, parent)
+        AppWindow.__init__(self, parent, controller)
         self.controller = controller
         label = ttk.Label(self, text="Choose Project:", anchor="center", style="title.TLabel")
         label.pack(side="top", fill="x", pady=10)
@@ -22,28 +22,6 @@ class StartGUI(ttk.Frame):
         newBtn.pack(padx=20, side='left')
         openBtn.pack(padx=20, side='right')
         label.pack(side='bottom')
-  
-    # Event handler for the "new project" button
-        # Should open a dialogue asking the user to selct a working directory
-        # Then call controllers new_project method
-    def new_project(self):
-        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
-        if not projdir:
-            return
-        if ' ' in projdir:
-            print("Path must not contain white spaces")
-            mb.showerror("Paths cannot contain whitespace                           ")
-            return
-        self.controller.new_project(projdir)
-
-    # Event handler for the "open project" button
-        # Should open a dialogue asking the user to selct a project save file
-        # Then call controllers open_project method
-    def open_project(self):
-        projfile = fd.askopenfilename(filetypes=[('Choose a project.pkl file', '*.pkl')])
-        if not projfile:
-            return
-        self.controller.open_project(projfile)
 
 
         
