@@ -225,15 +225,11 @@ class main(tk.Tk):
     # good programming would probably have some form of error handling here, sending
     # a message to the log when the help menu fails to open.
     def open_helpmenu(self):
-        self.recon._send_log("lookin' for help, eh?")  
-
-        print((f'file:///' + str(pl.Path(f"docs/_build/html/index.html").resolve())).replace("\\","/"))
-        wb.open_new((f'file:///' + str(pl.Path(f"docs/_build/html/index.html").resolve())).replace("\\","/"))
-        wb.open_new("https://www.weather.gov")
+        self.recon._send_log("Documentation opening in your default browser.")  
         try:
-            wb.open_new(('file:///' + str(pl.Path(f"docs/_build/html/index.html").resolve())).replace("\\","/"))
+            wb.open_new(('file:///' + str(pl.Path(f"docs/_build/html/index.html").absolute())).replace("\\","/"))
         except:
-            self.recon._send_log("sucks for you I guess...")
+            self.recon._send_log("Documentation failed to open.")
         return
 
     # Handler for exporting final project:

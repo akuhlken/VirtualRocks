@@ -22,6 +22,8 @@ high quality texture, and turns that 3D mesh into a VR headset-ready experience.
    Tutorial
    Reference
    Samples
+   colmap
+   meshlab
    
 
 Indices and tables
