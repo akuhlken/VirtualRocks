@@ -14,6 +14,7 @@ class AppWindow(ttk.Frame):
         menubar = tk.Menu(self) 
 
         file = tk.Menu(menubar, tearoff=0)  
+        file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
         file.add_command(label="New", command=lambda: self.new_project())  
         #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
             # check if the user has done any work on the current
