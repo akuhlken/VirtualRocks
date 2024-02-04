@@ -1,6 +1,6 @@
 import pickle
 import tkinter as tk   
-import ttkbootstrap as tttk   
+import ttkbootstrap as tttk  
 from tkinter import ttk
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
@@ -30,6 +30,9 @@ class main(tk.Tk):
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
 
+        # Importing external styles
+        tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
+
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.backcolor = "#ffffff"  # background of map + menu bar
@@ -42,21 +45,15 @@ class main(tk.Tk):
         # maybe look into resize stuff? might be too hard
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
-        #self.style.configure("TLabel", background="#ffffff")
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
-        #self.style.configure("TFrame", background="#ffffff")
 
         # Progress bar styling
-        #self.style.element_create("color.pbar", "from", "xpnative") # for coloring the bar
         self.style.layout("prog.Horizontal.TProgressbar",
              [('Horizontal.Progressbar.trough',
                {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
                 'sticky': 'nswe'}),
               ('Horizontal.Progressbar.label', {'sticky': ''})])
         self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
-        #self.style.configure(self.style_name, background=BarColor[0], troughcolor=BarColor[1],
-         #                   troughrelief=relief, borderwidth=border_width, thickness=width)
-
 
         # container is a stack of frames (aka our two main pages)
         self.container = ttk.Frame(self)
@@ -69,11 +66,11 @@ class main(tk.Tk):
         self.page1.grid(row=0, column=0, sticky="nsew")
         self.page1.tkraise()
 
-    # Common startur tasks for both opening and creating projects
+    # Common startup tasks for both opening and creating projects
     def _startup(self):
         self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
-        self.page2.set_map(self.page2.DEFAULT_MAP)
+        self.page2.set_map(self.page2.currentmap)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
@@ -119,6 +116,11 @@ class main(tk.Tk):
             self.recon._send_log("Could not find image directory")
             print(e)
         
+    # Handler for reopening the starting page
+    #   since there's an option for it in the menu, it must be done.
+    def start_menu(self):
+        self.page1.tkraise()
+
     # Handler for adding photos
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
@@ -183,42 +185,7 @@ class main(tk.Tk):
     def cancel_recon(self):
         self.recon.cancel()
 
-    # Handler for setting dark mode
-    #   changes theme to a dark theme
-    #   might be worth adding some flag so that we don't have to switch if we already have one style.
-    def start_darkmode(self):
-        if (self.styleflag == "dark"):
-            self.recon._send_log("App style is already set to dark mode.")
-            return
-        self.recon._send_log("Changing app style to dark mode...")
-        self.style = tttk.Style("darkly")
-        self.styleflag = "dark"
-        self.page2.set_map(pl.Path(f"gui/placeholder/darkmap.jpg").resolve())
 
-    def start_lightmode(self):
-        if (self.styleflag == "light"):
-            self.recon._send_log("App style is already set to light mode.")
-            return
-        self.recon._send_log("Changing app style to light mode...")
-        self.style = tttk.Style("lumen")
-        self.styleflag = "light"
-        self.style.configure("TButton", width=16)
-        self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
-
-    def start_goblinmode(self):
-        if (self.styleflag == "goblin"):
-            self.recon._send_log("App style is already set to current mode.")
-            return
-        self.recon._send_log("goblin time hehehehehehe")
-        self.style = tttk.Style(theme="goblinmode")
-        #self.style = tttk.Style(theme="goblinmode", themes_file=pl.Path(f"gui/goblinmode").resolve())
-        self.styleflag = "goblin"
-        self.style.configure("TButton", width=16)
-        self.style.configure("cancel.TButton", width=30)
-        self.page2.set_map(pl.Path(f"gui/placeholder/map.jpg").resolve())
-
-    
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset
     #   and loading mesh+texture onto Quest 2
