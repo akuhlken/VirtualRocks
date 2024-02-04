@@ -1,7 +1,6 @@
 import pickle
 import tkinter as tk   
-import ttkbootstrap as tttk   
-import webbrowser as wb
+import ttkbootstrap as tttk  
 from tkinter import ttk
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
@@ -28,7 +27,6 @@ class main(tk.Tk):
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
-        self.browser = wb.get()
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
 
@@ -187,39 +185,6 @@ class main(tk.Tk):
     def cancel_recon(self):
         self.recon.cancel()
 
-    # Handler for setting dark mode
-    #   changes theme to a dark theme
-    #   might be worth adding some flag so that we don't have to switch if we already have one style.
-    def start_darkmode(self):
-        if (self.styleflag == "dark"):
-            return
-        self.style = tttk.Style("darkly")
-        self.styleflag = "dark"
-
-    def start_lightmode(self):
-        self.page2.set_map(self.page2.LIGHT_MAP)
-        if (self.styleflag == "light"):
-            return
-        self.style = tttk.Style("lumen")
-        self.styleflag = "light"
-        self.style.configure("TButton", width=16)
-        self.style.configure("cancel.TButton", width=30)
-
-    def start_goblinmode(self):
-        if (self.styleflag == "goblin"):
-            return
-        self.style = tttk.Style(theme="goblinmode")
-        self.styleflag = "goblin"
-        self.style.configure("TButton", width=16)
-        self.style.configure("cancel.TButton", width=30)
-    # good programming would probably have some form of error handling here, sending
-    # a message to the log when the help menu fails to open.
-    def open_helpmenu(self, docpage = "index.html"):
-        try:
-            wb.open_new(('file:///' + str(pl.Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
-        except:
-            pass
-        return
 
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset

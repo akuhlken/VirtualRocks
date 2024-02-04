@@ -1,4 +1,7 @@
 import tkinter as tk
+import ttkbootstrap as tttk 
+import webbrowser as wb
+import pathlib as pl
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 from tkinter import ttk
@@ -30,19 +33,19 @@ class AppWindow(ttk.Frame):
         # change to an option menu so you can see what you've selected (too hard rn)
         styles = tk.Menu(file, tearoff=0)
         file.add_cascade(label="Set Style", menu=styles)
-        styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
-        styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
-        styles.add_command(label="not Goblin", command=lambda: self.controller.start_goblinmode()) 
-        styles.add_command(label="Pick Color")
+        styles.add_command(label="Dark", command=lambda: self.start_darkmode())
+        styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
+        styles.add_command(label="chaos", command=lambda: self.start_goblinmode()) 
 
-        file.add_separator() 
+        file.add_separator()
+        file.add_command(label="Recents...") 
+        file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
 
         info = tk.Menu(menubar, tearoff=0)
-        info.add_command(label="Common Issues", command=lambda: self.controller.open_helpmenu()) 
-        info.add_command(label="Colmap Info", command=lambda: self.controller.open_helpmenu("colmap.html")) 
-        info.add_command(label="MeshLab Info", command=lambda: self.controller.open_helpmenu("meshlab.html")) 
-        info.add_command(label="Pasta Recipes") 
+        info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
+        info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
+        info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
 
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info) 
@@ -70,3 +73,37 @@ class AppWindow(ttk.Frame):
         if not projfile:
             return
         self.controller.open_project(projfile)
+
+    # Handler for setting dark mode
+    #   changes theme to a dark theme
+    #   might be worth adding some flag so that we don't have to switch if we already have one style.
+    def start_darkmode(self):
+        if (self.controller.styleflag == "dark"):
+            return
+        self.controller.style = tttk.Style("darkly")
+        self.controller.styleflag = "dark"
+
+    def start_lightmode(self):
+        if (self.controller.styleflag == "light"):
+            return
+        self.controller.style = tttk.Style("lumen")
+        self.controller.styleflag = "light"
+        self.controller.style.configure("TButton", width=16)
+        self.controller.style.configure("cancel.TButton", width=30)
+
+    def start_goblinmode(self):
+        if (self.controller.styleflag == "goblin"):
+            return
+        self.controller.style = tttk.Style(theme="goblinmode")
+        self.controller.styleflag = "goblin"
+        self.controller.style.configure("TButton", width=16)
+        self.controller.style.configure("cancel.TButton", width=30)
+
+    # Handler for opening the help menu/docs
+    #   can take argument to specify which page to open if it isn't the main page.
+    def open_helpmenu(self, docpage = "index.html"):
+        try:
+            wb.open_new(('file:///' + str(pl.Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
+        except:
+            pass
+        return
