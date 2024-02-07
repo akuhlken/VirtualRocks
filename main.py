@@ -8,6 +8,7 @@ from gui.StartGUI import StartGUI
 import threading   
 import pathlib as pl
 from scripts.ReconManger import ReconManager
+import ctypes
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -23,12 +24,17 @@ class main(tk.Tk):
         self.image = None
         self.recon = None
 
+        # for loading icon on taskbar
+        self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
+
         # Configuration variables
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
+        #self.iconbitmap(pl.Path(r"gui\placeholder\favicon.ico").resolve())
 
         # Importing external styles
         tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
