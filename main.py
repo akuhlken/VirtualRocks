@@ -35,14 +35,11 @@ class main(tk.Tk):
 
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
-        self.backcolor = "#ffffff"  # background of map + menu bar
         self.logbackground = "#ffffff"
         self.style = tttk.Style("darkly")
         self.styleflag = "dark"
 
-        #self.style.theme_use('xpnative')
-
-        # maybe look into resize stuff? might be too hard
+        # setting initial style stuff
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
