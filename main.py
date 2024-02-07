@@ -39,7 +39,7 @@ class main(tk.Tk):
         self.style = tttk.Style("darkly")
         self.styleflag = "dark"
 
-        # setting initial style stuff
+        # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
@@ -117,6 +117,10 @@ class main(tk.Tk):
     #   since there's an option for it in the menu, it must be done.
     def start_menu(self):
         self.page1.tkraise()
+
+    # Saving value of progress to make progress bar after style update accurate.
+    def swtich_style(self):
+        self.progresspercent = self.recon.progresspercent
 
     # Handler for adding photos
     #   Set the controller variable for image directory
