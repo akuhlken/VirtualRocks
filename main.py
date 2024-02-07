@@ -77,6 +77,7 @@ class main(tk.Tk):
     def new_project(self, projdir):
         print("creating new project")
         self.projdir = pl.Path(projdir)
+        self.project_name_input() # get the name of the project from the user using ttkbootstrap entry. probs with another function
         self._startup()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         
@@ -113,6 +114,13 @@ class main(tk.Tk):
             self.recon._send_log("Could not find image directory")
             print(e)
         
+
+    # get input from the user to get the name of the project.
+    #   we can validate the entry, so we need a list of things the project name cannot include.
+    def project_name_input(self):
+        name = tk.simpledialog.askstring("Project Name","What would you like to name this project?")
+        pass
+
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.
     def start_menu(self):
