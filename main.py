@@ -30,7 +30,7 @@ class main(tk.Tk):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
 
         # Configuration variables
-        self.projectname = "project"
+        self.projectname = tk.StringVar(value="project")
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
@@ -129,26 +129,25 @@ class main(tk.Tk):
         nameprompt = ttk.Frame(namepromptwindow, padding=10)
         nameprompt.pack(anchor="center", fill='both')
         ttk.Label(nameprompt, text="Enter a name for this project").pack()
-        projnameentry = ttk.Entry(namepromptwindow, validate="focus")
-        projnameentry.insert(0, "project")
+        projnameentry = ttk.Entry(namepromptwindow,textvariable = self.projectname, validate="focus")
+        subbtn=ttk.Button(namepromptwindow,text = 'Submit', command=lambda: namepromptwindow.destroy()) # use this button to close the window
         projnameentry.pack(padx=10, pady=10, expand=True)
+        subbtn.pack(padx=10, pady=10, expand=True)
+
+        print(self.projectname.get())
 
         # start window in the center
-        w = 200  # width
-        h = 100  # height
+        w = 300  # width
+        h = 150  # height
         centerdim = self.open_middle(w,h)
-        print(centerdim[1])
         namepromptwindow.geometry('%dx%d+%d+%d' % (w, h, centerdim[0], centerdim[1]))
 
         #self.projectname = simpledialog.askstring(title="Project Name", prompt="What would you like to name this project?", initialvalue="project")
         #print(self.projectname + ".pkl")
 
-        if len(self.projectname) == 0:
+        if len(self.projectname.get()) == 0:
             # ask again
             pass
-        # might be worth restyling later, doing it with ttkbootstrap and making it its own window
-        #
-        #   https://ttkbootstrap.readthedocs.io/en/latest/api/window/toplevel/
 
     # opens a new window at the middle of the screen.
     #   https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
