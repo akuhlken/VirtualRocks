@@ -2,6 +2,7 @@ import pickle
 import tkinter as tk   
 import ttkbootstrap as tttk  
 from tkinter import ttk
+import tkinter.simpledialog as simpledialog
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
@@ -29,12 +30,12 @@ class main(tk.Tk):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
 
         # Configuration variables
+        self.projectname = "project"
         self.minsize(500, 300)
         self.geometry("1000x700")
         self.title("VirtualRocks")
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
-        #self.iconbitmap(pl.Path(r"gui\placeholder\favicon.ico").resolve())
 
         # Importing external styles
         tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
@@ -124,8 +125,40 @@ class main(tk.Tk):
     # get input from the user to get the name of the project.
     #   we can validate the entry, so we need a list of things the project name cannot include.
     def project_name_input(self):
-        name = tk.simpledialog.askstring("Project Name","What would you like to name this project?")
-        pass
+        namepromptwindow = tttk.Toplevel(title="Name Project As...")
+        nameprompt = ttk.Frame(namepromptwindow, padding=10)
+        nameprompt.pack(anchor="center", fill='both')
+        ttk.Label(nameprompt, text="Enter a name for this project").pack()
+        projnameentry = ttk.Entry(namepromptwindow, validate="focus")
+        projnameentry.insert(0, "project")
+        projnameentry.pack(padx=10, pady=10, expand=True)
+
+        # start window in the center
+        w = 200  # width
+        h = 100  # height
+        centerdim = self.open_middle(w,h)
+        print(centerdim[1])
+        namepromptwindow.geometry('%dx%d+%d+%d' % (w, h, centerdim[0], centerdim[1]))
+
+        #self.projectname = simpledialog.askstring(title="Project Name", prompt="What would you like to name this project?", initialvalue="project")
+        #print(self.projectname + ".pkl")
+
+        if len(self.projectname) == 0:
+            # ask again
+            pass
+        # might be worth restyling later, doing it with ttkbootstrap and making it its own window
+        #
+        #   https://ttkbootstrap.readthedocs.io/en/latest/api/window/toplevel/
+
+    # opens a new window at the middle of the screen.
+    #   https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
+    def open_middle(self, windoww, windowh):
+        sw = self.container.winfo_screenwidth()    # screen width
+        sh = self.container.winfo_screenheight()   # screen height
+        midx = (sw/2) - (windoww/2)                # middle x based on size of window
+        midy = (sh/2) - (windowh/2)                # middle y based on size of window
+        return (midx, midy)                        # return the new coordinates for the middle
+
 
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.
@@ -152,7 +185,8 @@ class main(tk.Tk):
             self.recon._send_log("Photos directory is not a sub-directory of project")
             self.recon._send_log("Saving as absolute path...")
         # Save the project paths to a file
-        with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
+        #with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
+        with open(self.projdir / pl.Path(self.projectname + 'project.pkl'), 'wb') as file:
             pickle.dump((path), file)
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
