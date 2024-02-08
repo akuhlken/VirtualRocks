@@ -82,22 +82,41 @@ class AppWindow(ttk.Frame):
             return
         self.controller.style = tttk.Style("darkly")
         self.controller.styleflag = "dark"
+        self.init_common_style()
 
     def start_lightmode(self):
         if (self.controller.styleflag == "light"):
             return
         self.controller.style = tttk.Style("lumen")
         self.controller.styleflag = "light"
-        self.controller.style.configure("TButton", width=16)
-        self.controller.style.configure("cancel.TButton", width=30)
+        self.init_common_style()
 
     def start_goblinmode(self):
         if (self.controller.styleflag == "goblin"):
             return
         self.controller.style = tttk.Style(theme="goblinmode")
         self.controller.styleflag = "goblin"
+        self.init_common_style()
+
+    def init_common_style(self):
+        self.controller.swtich_style()
         self.controller.style.configure("TButton", width=16)
         self.controller.style.configure("cancel.TButton", width=30)
+        self.controller.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
+
+        # progress bar
+        self.controller.style.layout("prog.Horizontal.TProgressbar",
+             [('Horizontal.Progressbar.trough',
+               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
+                'sticky': 'nswe'}),
+              ('Horizontal.Progressbar.label', {'sticky': ''})])
+        self.controller.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
+
+        # progress bar progress % text
+        if 0 < self.controller.progresspercent < 100: 
+            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(self.controller.progresspercent))
+        else:
+            return
 
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.
