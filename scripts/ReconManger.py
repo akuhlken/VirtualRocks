@@ -9,6 +9,7 @@ class ReconManager():
         self.controller = controller
         self.imgdir = None
         self.projdir = projdir
+        self.progresspercent = 0
 
     # Method for updating progress bar and progress text
     #   when a process completes messages should be sent in the form: "$nextstep$""
@@ -29,13 +30,14 @@ class ReconManager():
         currentstep = pkg[0]
         currentsubstep = pkg[1]
         percent = pkg[2]
-        percentage = int(int(percent)/self.controller.page2.progress["maximum"] * 100) # if we only use this variable once, is it worth keeping?
+        self.progresspercent = int(int(percent)/self.controller.page2.progress["maximum"] * 100) # if we only use this variable once, is it worth keeping?
         if currentsubstep == "":
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}: ")
         else:
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}, {currentsubstep}: ")
             currentstep = currentsubstep
-        self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
+        self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(self.progresspercent))
+        #self.controller.style.configure('Horizontal.Progressbar.label', text='{:g} %'.format(percentage))
         self.controller.page2.progress.config(value=percent)
 
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:

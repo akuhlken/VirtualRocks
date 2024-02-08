@@ -35,14 +35,11 @@ class main(tk.Tk):
 
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
-        self.backcolor = "#ffffff"  # background of map + menu bar
         self.logbackground = "#ffffff"
         self.style = tttk.Style("darkly")
         self.styleflag = "dark"
 
-        #self.style.theme_use('xpnative')
-
-        # maybe look into resize stuff? might be too hard
+        # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
         self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
@@ -122,6 +119,10 @@ class main(tk.Tk):
     def start_menu(self):
         self.page1.tkraise()
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
+
+    # Saving value of progress to make progress bar after style update accurate.
+    def swtich_style(self):
+        self.progresspercent = self.recon.progresspercent
 
     # Handler for adding photos
     #   Set the controller variable for image directory
