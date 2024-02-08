@@ -74,6 +74,7 @@ class main(tk.Tk):
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
+        self.page2.menubar.entryconfig("Reconstruction", state="normal")
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
@@ -120,6 +121,7 @@ class main(tk.Tk):
     #   since there's an option for it in the menu, it must be done.
     def start_menu(self):
         self.page1.tkraise()
+        self.page2.menubar.entryconfig("Reconstruction", state="disabled")
 
     # Handler for adding photos
     #   Set the controller variable for image directory
