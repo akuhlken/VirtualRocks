@@ -24,7 +24,8 @@ class PipelineGUI(AppWindow):
         self.currentmap = self.DEFAULT_MAP
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.setup_layout()
-
+        
+   
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
