@@ -24,18 +24,8 @@ class PipelineGUI(AppWindow):
         self.currentmap = self.DEFAULT_MAP
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.setup_layout()
-        self.bind("<F11>", self.toggle_fullscreen)
-        self.bind("<Escape>", self.end_fullscreen)
-    #key binding
-    def toggle_fullscreen(self, event=None):
-        self.state = not self.state  # Just toggling the boolean
-        self.attributes("-fullscreen", self.state)
-        return "break"
-
-    def end_fullscreen(self, event=None):
-        self.state = False
-        self.attributes("-fullscreen", False)
-        return "break"
+        
+   
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
