@@ -14,9 +14,9 @@ class AppWindow(ttk.Frame):
 
     # Setup method for top menu bar
     def create_menu(self):
-        menubar = tk.Menu(self) 
+        self.menubar = tk.Menu(self) 
 
-        file = tk.Menu(menubar, tearoff=0)  
+        file = tk.Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
         file.add_command(label="New", command=lambda: self.new_project())  
         #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
@@ -42,15 +42,20 @@ class AppWindow(ttk.Frame):
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
 
-        info = tk.Menu(menubar, tearoff=0)
+        info = tk.Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
         info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
         info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
+    
+        recon = tk.Menu(self.menubar, tearoff=0)
+        recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
+        recon.add_command(label="Advanced Options", command=lambda: self.controller.options()) 
 
-        menubar.add_cascade(label="File", menu=file)  
-        menubar.add_cascade(label="Info", menu=info) 
-
-        self.controller.config(menu=menubar)
+        self.menubar.add_cascade(label="File", menu=file)
+        self.menubar.add_cascade(label="Info", menu=info) 
+        self.menubar.add_cascade(label="Reconstruction", menu=recon) 
+        self.controller.config(menu=self.menubar)
+        self.menubar.entryconfig("Reconstruction", state="disabled")
 
     # Event handler for the "new project" button
         # Should open a dialogue asking the user to selct a working directory
@@ -82,22 +87,41 @@ class AppWindow(ttk.Frame):
             return
         self.controller.style = tttk.Style("darkly")
         self.controller.styleflag = "dark"
+        self.init_common_style()
 
     def start_lightmode(self):
         if (self.controller.styleflag == "light"):
             return
         self.controller.style = tttk.Style("lumen")
         self.controller.styleflag = "light"
-        self.controller.style.configure("TButton", width=16)
-        self.controller.style.configure("cancel.TButton", width=30)
+        self.init_common_style()
 
     def start_goblinmode(self):
         if (self.controller.styleflag == "goblin"):
             return
         self.controller.style = tttk.Style(theme="goblinmode")
         self.controller.styleflag = "goblin"
+        self.init_common_style()
+
+    def init_common_style(self):
+        self.controller.swtich_style()
         self.controller.style.configure("TButton", width=16)
         self.controller.style.configure("cancel.TButton", width=30)
+        self.controller.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
+
+        # progress bar
+        self.controller.style.layout("prog.Horizontal.TProgressbar",
+             [('Horizontal.Progressbar.trough',
+               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
+                'sticky': 'nswe'}),
+              ('Horizontal.Progressbar.label', {'sticky': ''})])
+        self.controller.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
+
+        # progress bar progress % text
+        if 0 < self.controller.progresspercent < 100: 
+            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(self.controller.progresspercent))
+        else:
+            return
 
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.
