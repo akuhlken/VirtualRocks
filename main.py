@@ -185,6 +185,13 @@ class main(tk.Tk):
     def cancel_recon(self):
         self.recon.cancel()
 
+    # Handler for the automatic reconstruction feature
+    def auto_recon(self):
+        pass
+
+    # Handler for the advanced options menu item
+    def options(self):
+        pass
 
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset

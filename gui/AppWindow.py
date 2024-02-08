@@ -46,10 +46,14 @@ class AppWindow(ttk.Frame):
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
         info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
         info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
+    
+        recon = tk.Menu(menubar, tearoff=0)
+        recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
+        recon.add_command(label="Advanced Options", command=lambda: self.controller.options()) 
 
         menubar.add_cascade(label="File", menu=file)  
         menubar.add_cascade(label="Info", menu=info) 
-
+        menubar.add_cascade(label="Reconstruction", menu=recon) 
         self.controller.config(menu=menubar)
 
     # Event handler for the "new project" button
