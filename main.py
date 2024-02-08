@@ -187,7 +187,14 @@ class main(tk.Tk):
 
     # Handler for the automatic reconstruction feature
     def auto_recon(self):
-        pass
+        if not self.imgdir:
+            self.recon._send_log("No images loaded")
+            return
+        self.recon.imgdir = self.imgdir
+        self.page2.export.config(state="disabled")
+        self.thread1 = threading.Thread(target = self.recon.auto)
+        self.thread1.daemon = True
+        self.thread1.start()
 
     # Handler for the advanced options menu item
     def options(self):
