@@ -2,7 +2,8 @@ import pickle
 import tkinter as tk   
 import ttkbootstrap as tttk  
 from tkinter import ttk
-import tkinter.simpledialog as simpledialog
+from tkinter import simpledialog
+from tkinter import filedialog as fd
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
@@ -125,6 +126,11 @@ class main(tk.Tk):
     # get input from the user to get the name of the project.
     #   we can validate the entry, so we need a list of things the project name cannot include.
     def project_name_input(self):
+
+        projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1)
+        print(projectname)
+
+        '''
         namepromptwindow = tttk.Toplevel(title="Name Project As...")
         nameprompt = ttk.Frame(namepromptwindow, padding=10)
         nameprompt.pack(anchor="center", fill='both')
@@ -148,6 +154,7 @@ class main(tk.Tk):
         if len(self.projectname.get()) == 0:
             # ask again
             pass
+        '''
 
     # opens a new window at the middle of the screen.
     #   https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
