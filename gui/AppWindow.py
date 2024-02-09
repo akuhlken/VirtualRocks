@@ -14,9 +14,9 @@ class AppWindow(ttk.Frame):
 
     # Setup method for top menu bar
     def create_menu(self):
-        menubar = tk.Menu(self) 
+        self.menubar = tk.Menu(self) 
 
-        file = tk.Menu(menubar, tearoff=0)  
+        file = tk.Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
         file.add_command(label="New", command=lambda: self.new_project())  
         #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
@@ -42,15 +42,20 @@ class AppWindow(ttk.Frame):
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
 
-        info = tk.Menu(menubar, tearoff=0)
+        info = tk.Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
         info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
         info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
+    
+        recon = tk.Menu(self.menubar, tearoff=0)
+        recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
+        recon.add_command(label="Advanced Options", command=lambda: self.controller.options()) 
 
-        menubar.add_cascade(label="File", menu=file)  
-        menubar.add_cascade(label="Info", menu=info) 
-
-        self.controller.config(menu=menubar)
+        self.menubar.add_cascade(label="File", menu=file)
+        self.menubar.add_cascade(label="Info", menu=info) 
+        self.menubar.add_cascade(label="Reconstruction", menu=recon) 
+        self.controller.config(menu=self.menubar)
+        self.menubar.entryconfig("Reconstruction", state="disabled")
 
     # Event handler for the "new project" button
         # Should open a dialogue asking the user to selct a working directory

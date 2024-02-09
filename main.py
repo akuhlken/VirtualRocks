@@ -71,6 +71,20 @@ class main(tk.Tk):
         self.page1.grid(row=0, column=0, sticky="nsew")
         self.page1.tkraise()
 
+        #toggling fullscreen and escaping
+        self.bind("<F11>", self.toggle_fullscreen)
+        self.bind("<Escape>", self.end_fullscreen)
+    #key binding 
+    def toggle_fullscreen(self, event=None):
+        self.state = not self.state  # Just toggling the boolean
+        self.attributes("-fullscreen", self.state)
+        return "break"
+
+    def end_fullscreen(self, event=None):
+        self.state = False
+        self.attributes("-fullscreen", False)
+        return "break"
+
     # Common startup tasks for both opening and creating projects
     def _startup(self):
         self.page2 = PipelineGUI(self.container, self, self.projdir)
@@ -79,6 +93,7 @@ class main(tk.Tk):
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
+        self.page2.menubar.entryconfig("Reconstruction", state="normal")
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
@@ -137,6 +152,7 @@ class main(tk.Tk):
     #   since there's an option for it in the menu, it must be done.
     def start_menu(self):
         self.page1.tkraise()
+        self.page2.menubar.entryconfig("Reconstruction", state="disabled")
 
     # Saving value of progress to make progress bar after style update accurate.
     #   used by AppWindow.py.
@@ -208,6 +224,20 @@ class main(tk.Tk):
     def cancel_recon(self):
         self.recon.cancel()
 
+    # Handler for the automatic reconstruction feature
+    def auto_recon(self):
+        if not self.imgdir:
+            self.recon._send_log("No images loaded")
+            return
+        self.recon.imgdir = self.imgdir
+        self.page2.export.config(state="disabled")
+        self.thread1 = threading.Thread(target = self.recon.auto)
+        self.thread1.daemon = True
+        self.thread1.start()
+
+    # Handler for the advanced options menu item
+    def options(self):
+        pass
 
     # Handler for exporting final project:
     #   Should open a new dialogue with instructions for connecting headset

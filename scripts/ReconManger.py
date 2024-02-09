@@ -138,7 +138,6 @@ class ReconManager():
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Mesher failed, please retry")
-        self.p = None
 
     #  Methods for canceling current recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
@@ -153,3 +152,9 @@ class ReconManager():
                 self.p.kill()
         self._send_log("process was sent kill signal")
         self._send_log("$$")
+
+    # method to handle auto reconstruction without setting any user bounds
+    def auto(self):
+        self.matcher()
+        if (self.projdir / pl.Path(r"dense\fused.ply")).is_file(): 
+            self.mesher()
