@@ -2,12 +2,14 @@ import pickle
 import tkinter as tk   
 import ttkbootstrap as tttk  
 from tkinter import ttk
+from tkinter import simpledialog
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 import threading   
 import pathlib as pl
 from scripts.ReconManger import ReconManager
+import ctypes   # icon stuff
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -23,9 +25,15 @@ class main(tk.Tk):
         self.image = None
         self.recon = None
 
+        # for loading icon on taskbar
+        self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
+
         # Configuration variables
+        self.projectname = "project"
         self.minsize(500, 300)
-        self.geometry("1000x700")
+        centerdim = self.open_middle(1000,700)
+        self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
         self.title("VirtualRocks")
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
@@ -92,6 +100,7 @@ class main(tk.Tk):
     def new_project(self, projdir):
         print("creating new project")
         self.projdir = pl.Path(projdir)
+        self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
         self._startup()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         
@@ -127,7 +136,18 @@ class main(tk.Tk):
         except Exception as e:
             self.recon._send_log("Could not find image directory")
             print(e)
-        
+
+
+    # opens a new window at the middle of the screen.
+    #   https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
+    def open_middle(self, windoww, windowh):
+        sw = self.winfo_screenwidth()    # screen width
+        sh = self.winfo_screenheight()   # screen height
+        midx = (sw/2) - (windoww/2)                # middle x based on size of window
+        midy = (sh/2) - (windowh/2)                # middle y based on size of window
+        return (midx, midy-50)                        # return the new coordinates for the middle
+
+
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.
     def start_menu(self):
@@ -135,6 +155,7 @@ class main(tk.Tk):
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
 
     # Saving value of progress to make progress bar after style update accurate.
+    #   used by AppWindow.py.
     def swtich_style(self):
         self.progresspercent = self.recon.progresspercent
 
@@ -154,7 +175,8 @@ class main(tk.Tk):
             self.recon._send_log("Photos directory is not a sub-directory of project")
             self.recon._send_log("Saving as absolute path...")
         # Save the project paths to a file
-        with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
+        #with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
+        with open(self.projdir / pl.Path(self.projectname + '.pkl'), 'wb') as file:
             pickle.dump((path), file)
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
@@ -196,7 +218,7 @@ class main(tk.Tk):
         self.thread1.daemon = True
         self.thread1.start()
 
-    # Hanlder for canceling recon
+    # Handler for canceling recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
     #   After cancel it should change the action button back to start
     def cancel_recon(self):
