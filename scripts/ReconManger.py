@@ -16,6 +16,7 @@ class ReconManager():
         self.imgdir = None
         self.projdir = projdir
         self.progresspercent = 0
+        self._update_progress("$$")
 
     # Method for updating progress bar and progress text
     #   when a process completes messages should be sent in the form: "$nextstep$""
@@ -27,10 +28,6 @@ class ReconManager():
             self.controller.page2.progresstext.config(text=f"Nothing's running...")
             return
         
-        elif msg == "$$$":
-            self._update_progress("$$")
-            return
-
         pkg = msg.replace('$', '').split('.')
         currentstep = pkg[0]
         currentsubstep = pkg[1]

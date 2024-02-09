@@ -136,7 +136,6 @@ class main(tk.Tk):
             pm = PhotoManager(self.imgdir)
             self.page2.update_text(pm.numimg)
             self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
-            self.page2.progresstotal.step() # TODO
         except Exception as e:
             self.recon._send_log("Could not find image directory")
             print(e)
@@ -167,7 +166,7 @@ class main(tk.Tk):
     #   Set the controller variable for image directory
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imgdir):
-        self.recon._send_log("$$$")
+        self.recon._send_log("$$")
         self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = pl.Path(imgdir).resolve()
