@@ -3,6 +3,12 @@ import tkinter as tk
 import pathlib as pl
 from tkinter import messagebox as mb
 
+# Progress Constants
+STARTED = 0
+PHOTOS = 10
+MATCHER = 70
+MESHER = 100
+
 class ReconManager():
 
     def __init__(self, controller, projdir):
@@ -22,7 +28,6 @@ class ReconManager():
             return
         
         elif msg == "$$$":
-            self.controller.page2.progresstotal.stop()
             self._update_progress("$$")
             return
 
@@ -42,18 +47,7 @@ class ReconManager():
 
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:
             self.controller.page2.progresstext.config(text=f"{currentstep} complete!")
-            # need to consider how many steps we have... shouldn't just step by 10 (but would need 
-            # to step by some constant value unless we want to change how we're doing this.)
-            stepamount = 10
-
-            if self.controller.page2.progresstotal["value"] + stepamount > self.controller.page2.progresstotal["maximum"]:
-                self.controller.page2.progresstotal.config(value=self.controller.page2.progresstotal["maximum"])
-                self.controller.page2.progresstotaltext.config(text=f"Done!")
-            else:
-                self.controller.page2.progresstotal.step(stepamount)
-
         
-
     # Method has two behaviors, if passed a string this method will act like a print() to the log
     #   if no args are provided this will capture any messages that self.p sends and send them to the log,
     #   returning when self.p finishes
@@ -92,6 +86,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller._update_state(PHOTOS)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Matcher__________")
         
@@ -105,7 +100,7 @@ class ReconManager():
         if rcode == 0:
             if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
             # If reconstruction exited normally
-                self.controller.page2.setbounds.config(state="active")
+                self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Matcher failed, please retry")
@@ -121,6 +116,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller._update_state(MATCHER)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Mesher__________")
         
@@ -134,7 +130,7 @@ class ReconManager():
         if rcode == 0:
             if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
             # If reconstruction exited normally
-                self.controller.page2.export.config(state="active")
+                self.controller._update_state(MESHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Mesher failed, please retry")

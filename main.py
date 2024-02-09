@@ -14,6 +14,12 @@ import ctypes   # icon stuff
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
 
+# Progress Constants
+STARTED = 0
+PHOTOS = 10
+MATCHER = 70
+MESHER = 100
+
 class main(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -24,13 +30,15 @@ class main(tk.Tk):
         self.imgdir = None
         self.image = None
         self.recon = None
+        self.state = STARTED
 
         # for loading icon on taskbar
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
-
+        
         # Configuration variables
         self.projectname = "project"
+        self.picklepath = ""
         self.minsize(500, 300)
         centerdim = self.open_middle(1000,700)
         self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
@@ -74,14 +82,15 @@ class main(tk.Tk):
         #toggling fullscreen and escaping
         self.bind("<F11>", self.toggle_fullscreen)
         self.bind("<Escape>", self.end_fullscreen)
+
     #key binding 
     def toggle_fullscreen(self, event=None):
-        self.state = not self.state  # Just toggling the boolean
-        self.attributes("-fullscreen", self.state)
+        self.fullscreen = not self.fullscreen  # Just toggling the boolean
+        self.attributes("-fullscreen", self.fullscreen)
         return "break"
 
     def end_fullscreen(self, event=None):
-        self.state = False
+        self.fullscreen = False
         self.attributes("-fullscreen", False)
         return "break"
 
@@ -101,6 +110,7 @@ class main(tk.Tk):
         print("creating new project")
         self.projdir = pl.Path(projdir)
         self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
+        self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
         self._startup()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         
@@ -108,31 +118,25 @@ class main(tk.Tk):
     #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
         print("opening project")
+        self.picklepath = projfile
+        self.projectname = pl.Path(projfile).stem
         # Load the path variables from the file
+        print(projfile)
         self.projdir = pl.Path(projfile).parent
         with open(projfile, 'rb') as file:
-            path = pickle.load(file)
+            (path,self.state) = pickle.load(file)
         if path.is_absolute():
             self.imgdir = path
         else:
             self.imgdir = self.projdir / path
-        self._startup() 
+        self._startup()
+        self._update_state(self.state) 
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
             self.page2.update_text(pm.numimg)
             self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
-
-            self.page2.matcher.config(state="active")
-
-            if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
-                self.page2.setbounds.config(state="active")
-
-            if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
-                self.page2.setbounds.config(state="active")
-                self.page2.mesher.config(state="active")
-                self.page2.export.config(state="active")
-            self.page2.progresstotal.step()
+            self.page2.progresstotal.step() # TODO
         except Exception as e:
             self.recon._send_log("Could not find image directory")
             print(e)
@@ -174,18 +178,11 @@ class main(tk.Tk):
             path = self.imgdir
             self.recon._send_log("Photos directory is not a sub-directory of project")
             self.recon._send_log("Saving as absolute path...")
-        # Save the project paths to a file
-        #with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
-        with open(self.projdir / pl.Path(self.projectname + '.pkl'), 'wb') as file:
-            pickle.dump((path), file)
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(pm.numimg)
         self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
-        self.page2.matcher.config(state="active")
-        self.page2.setbounds.config(state="disabled")
-        self.page2.mesher.config(state="disabled")
-        self.page2.export.config(state="disabled")
+        self._update_state(PHOTOS)
             
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
@@ -193,8 +190,6 @@ class main(tk.Tk):
     def set_bounds(self, A, B):
         self.recon._send_log("$$")
         self.recon._send_log("$Setting Bounds..100$")
-        self.page2.mesher.config(state="active")
-        self.page2.export.config(state="disabled")
         self.A = A
         self.B = B
 
@@ -202,9 +197,6 @@ class main(tk.Tk):
     #   Start a new thread with the _recon() method
     def start_matcher(self):
         self.recon.imgdir = self.imgdir
-        self.page2.setbounds.config(state="disabled")
-        self.page2.mesher.config(state="disabled")
-        self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.matcher)
         self.thread1.daemon = True
         self.thread1.start()
@@ -213,7 +205,6 @@ class main(tk.Tk):
     #   Start a new thread with the _recon() method
     def start_mesher(self):
         self.recon.imgdir = self.imgdir
-        self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.mesher)
         self.thread1.daemon = True
         self.thread1.start()
@@ -230,7 +221,6 @@ class main(tk.Tk):
             self.recon._send_log("No images loaded")
             return
         self.recon.imgdir = self.imgdir
-        self.page2.export.config(state="disabled")
         self.thread1 = threading.Thread(target = self.recon.auto)
         self.thread1.daemon = True
         self.thread1.start()
@@ -257,6 +247,41 @@ class main(tk.Tk):
 
     def update_map(self):
         pass
+
+    def _update_state(self, state):
+        self.state = state
+        self.page2.progresstotal.config(value=state)
+        if state == STARTED:
+            self.page2.matcher.config(state='disabled')
+            self.page2.setbounds.config(state='disabled')
+            self.page2.mesher.config(state='disabled')
+            self.page2.export.config(state='disabled')
+        if state == PHOTOS:
+            self.page2.setbounds.config(state='disabled')
+            self.page2.mesher.config(state='disabled')
+            self.page2.export.config(state='disabled')
+            self.page2.matcher.config(state='active')
+        if state == MATCHER:
+            self.page2.export.config(state='disabled')
+            self.page2.matcher.config(state='active')
+            self.page2.setbounds.config(state='active')
+            self.page2.mesher.config(state='active')
+        if state == MESHER:
+            self.page2.matcher.config(state='active')
+            self.page2.setbounds.config(state='active')
+            self.page2.mesher.config(state='active')
+            self.page2.export.config(state='active')
+
+        # save to pickle
+        try:
+            path = self.imgdir.relative_to(self.projdir)
+            self.recon._send_log("Created savefile with project paths")
+        except:
+            path = self.imgdir
+            self.recon._send_log("Photos directory is not a sub-directory of project")
+            self.recon._send_log("Saving as absolute path...")
+        with open(self.picklepath, 'wb') as file:
+            pickle.dump((path,state), file)
 
     def _shutdown(self):
         try:
