@@ -216,6 +216,7 @@ class main(tk.Tk):
 
     def _update_state(self, state):
         self.state = state
+        self.page2.progresstotal.config(value=state)
         if state == STARTED:
             self.page2.matcher.config(state='disabled')
             self.page2.setbounds.config(state='disabled')

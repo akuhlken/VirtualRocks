@@ -28,7 +28,6 @@ class ReconManager():
             return
         
         elif msg == "$$$":
-            self.controller.page2.progresstotal.stop()
             self._update_progress("$$")
             return
 
@@ -48,18 +47,7 @@ class ReconManager():
 
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:
             self.controller.page2.progresstext.config(text=f"{currentstep} complete!")
-            # need to consider how many steps we have... shouldn't just step by 10 (but would need 
-            # to step by some constant value unless we want to change how we're doing this.)
-            stepamount = 10
-
-            if self.controller.page2.progresstotal["value"] + stepamount > self.controller.page2.progresstotal["maximum"]:
-                self.controller.page2.progresstotal.config(value=self.controller.page2.progresstotal["maximum"])
-                self.controller.page2.progresstotaltext.config(text=f"Done!")
-            else:
-                self.controller.page2.progresstotal.step(stepamount)
-
         
-
     # Method has two behaviors, if passed a string this method will act like a print() to the log
     #   if no args are provided this will capture any messages that self.p sends and send them to the log,
     #   returning when self.p finishes
