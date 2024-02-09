@@ -176,7 +176,7 @@ class main(tk.Tk):
             self.recon._send_log("Saving as absolute path...")
         # Save the project paths to a file
         #with open(self.projdir / pl.Path('project.pkl'), 'wb') as file:
-        with open(self.projdir / pl.Path(self.projectname + 'project.pkl'), 'wb') as file:
+        with open(self.projdir / pl.Path(self.projectname + '.pkl'), 'wb') as file:
             pickle.dump((path), file)
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
