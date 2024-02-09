@@ -30,10 +30,14 @@ class Mesher():
         # Open Colmap project from sparse as well as dense recon (fused.ply)
         print("$Mesher.Importing project files.1$", flush=True)
         self.ms.load_project([base_path+r"\images\project.bundle.out", base_path+r'\images\project.list.txt'])
+        if self.ms.mesh_number() != 1:
+            raise Exception("Failed to load sparse point cloud with rasters")
         
         # Import the fused.ply mesh
         print("$Mesher.Loading dense point cloud.3$", flush=True)
         self.ms.load_new_mesh(base_path+r"\fused.ply")
+        if self.ms.mesh_number() != 2:
+            raise Exception("Failed to load dense point cloud")
 
         # Update bounding box for dense poit cloud
         self.bounds = self.ms.current_mesh().bounding_box()
@@ -178,7 +182,6 @@ class Mesher():
         self.ms.set_selection_none()
         self.ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {minx} || x > {maxx}) || (y < {miny} || y > {maxy})")
         self.ms.meshing_remove_selected_vertices()
-       
 
 projdir = sys.argv[1]
 try:

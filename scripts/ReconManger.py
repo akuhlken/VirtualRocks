@@ -3,6 +3,12 @@ import tkinter as tk
 import pathlib as pl
 from tkinter import messagebox as mb
 
+# Progress Constants
+STARTED = 0
+PHOTOS = 10
+MATCHER = 70
+MESHER = 100
+
 class ReconManager():
 
     def __init__(self, controller, projdir):
@@ -92,6 +98,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller._update_state(PHOTOS)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Matcher__________")
         
@@ -105,7 +112,7 @@ class ReconManager():
         if rcode == 0:
             if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
             # If reconstruction exited normally
-                self.controller.page2.setbounds.config(state="active")
+                self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Matcher failed, please retry")
@@ -121,6 +128,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller._update_state(MATCHER)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Mesher__________")
         
@@ -134,7 +142,7 @@ class ReconManager():
         if rcode == 0:
             if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
             # If reconstruction exited normally
-                self.controller.page2.export.config(state="active")
+                self.controller._update_state(MESHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Mesher failed, please retry")
