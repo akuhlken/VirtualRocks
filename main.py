@@ -3,14 +3,13 @@ import tkinter as tk
 import ttkbootstrap as tttk  
 from tkinter import ttk
 from tkinter import simpledialog
-from tkinter import filedialog as fd
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 import threading   
 import pathlib as pl
 from scripts.ReconManger import ReconManager
-import ctypes
+import ctypes   # icon stuff
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -31,9 +30,10 @@ class main(tk.Tk):
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
 
         # Configuration variables
-        self.projectname = tk.StringVar(value="project")
+        self.projectname = "project"
         self.minsize(500, 300)
-        self.geometry("1000x700")
+        centerdim = self.open_middle(1000,700)
+        self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
         self.title("VirtualRocks")
         icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
@@ -85,7 +85,7 @@ class main(tk.Tk):
     def new_project(self, projdir):
         print("creating new project")
         self.projdir = pl.Path(projdir)
-        self.project_name_input() # get the name of the project from the user using ttkbootstrap entry. probs with another function
+        self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
         self._startup()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         
@@ -121,49 +121,16 @@ class main(tk.Tk):
         except Exception as e:
             self.recon._send_log("Could not find image directory")
             print(e)
-        
 
-    # get input from the user to get the name of the project.
-    #   we can validate the entry, so we need a list of things the project name cannot include.
-    def project_name_input(self):
-
-        projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1)
-        print(projectname)
-
-        '''
-        namepromptwindow = tttk.Toplevel(title="Name Project As...")
-        nameprompt = ttk.Frame(namepromptwindow, padding=10)
-        nameprompt.pack(anchor="center", fill='both')
-        ttk.Label(nameprompt, text="Enter a name for this project").pack()
-        projnameentry = ttk.Entry(namepromptwindow,textvariable = self.projectname, validate="focus")
-        subbtn=ttk.Button(namepromptwindow,text = 'Submit', command=lambda: namepromptwindow.destroy()) # use this button to close the window
-        projnameentry.pack(padx=10, pady=10, expand=True)
-        subbtn.pack(padx=10, pady=10, expand=True)
-
-        print(self.projectname.get())
-
-        # start window in the center
-        w = 300  # width
-        h = 150  # height
-        centerdim = self.open_middle(w,h)
-        namepromptwindow.geometry('%dx%d+%d+%d' % (w, h, centerdim[0], centerdim[1]))
-
-        #self.projectname = simpledialog.askstring(title="Project Name", prompt="What would you like to name this project?", initialvalue="project")
-        #print(self.projectname + ".pkl")
-
-        if len(self.projectname.get()) == 0:
-            # ask again
-            pass
-        '''
 
     # opens a new window at the middle of the screen.
     #   https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
     def open_middle(self, windoww, windowh):
-        sw = self.container.winfo_screenwidth()    # screen width
-        sh = self.container.winfo_screenheight()   # screen height
+        sw = self.winfo_screenwidth()    # screen width
+        sh = self.winfo_screenheight()   # screen height
         midx = (sw/2) - (windoww/2)                # middle x based on size of window
         midy = (sh/2) - (windowh/2)                # middle y based on size of window
-        return (midx, midy)                        # return the new coordinates for the middle
+        return (midx, midy-50)                        # return the new coordinates for the middle
 
 
     # Handler for reopening the starting page
@@ -172,6 +139,7 @@ class main(tk.Tk):
         self.page1.tkraise()
 
     # Saving value of progress to make progress bar after style update accurate.
+    #   used by AppWindow.py.
     def swtich_style(self):
         self.progresspercent = self.recon.progresspercent
 
@@ -234,7 +202,7 @@ class main(tk.Tk):
         self.thread1.daemon = True
         self.thread1.start()
 
-    # Hanlder for canceling recon
+    # Handler for canceling recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
     #   After cancel it should change the action button back to start
     def cancel_recon(self):
