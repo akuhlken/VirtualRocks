@@ -61,7 +61,7 @@ class AppWindow(ttk.Frame):
         # Should open a dialogue asking the user to selct a working directory
         # Then call controllers new_project method
     def new_project(self):
-        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
+        projdir = fd.askdirectory(title='Select Workspace', initialdir='/home/')
         if not projdir:
             return
         if ' ' in projdir:
@@ -74,7 +74,7 @@ class AppWindow(ttk.Frame):
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
     def open_project(self):
-        projfile = fd.askopenfilename(filetypes=[('Choose a project.pkl file', '*.pkl')])
+        projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return
         self.controller.open_project(projfile)
