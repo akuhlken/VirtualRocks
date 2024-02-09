@@ -96,6 +96,8 @@ class Mesher():
 
         # Remove non-manifold edges
         print("Removing non-manifold edges", flush=True)
+        nonman = self.ms.compute_selection_by_non_manifold_per_vertex()
+        print(f"Found {nonman} non-manifold edges out of 100000 total vertices", flush=True)
         self.ms.meshing_repair_non_manifold_edges()
 
         print("Building texture for low poly mesh", flush=True)
