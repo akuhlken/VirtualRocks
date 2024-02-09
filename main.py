@@ -170,13 +170,6 @@ class main(tk.Tk):
         self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = pl.Path(imgdir).resolve()
-        try:
-            path = self.imgdir.relative_to(self.projdir)
-            self.recon._send_log("Created savefile with project paths")
-        except:
-            path = self.imgdir
-            self.recon._send_log("Photos directory is not a sub-directory of project")
-            self.recon._send_log("Saving as absolute path...")
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(pm.numimg)
@@ -274,7 +267,7 @@ class main(tk.Tk):
         # save to pickle
         try:
             path = self.imgdir.relative_to(self.projdir)
-            self.recon._send_log("Created savefile with project paths")
+            self.recon._send_log("Updated savefile")
         except:
             path = self.imgdir
             self.recon._send_log("Photos directory is not a sub-directory of project")
