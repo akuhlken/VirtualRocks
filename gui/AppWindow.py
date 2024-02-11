@@ -38,7 +38,9 @@ class AppWindow(ttk.Frame):
         styles.add_command(label="chaos", command=lambda: self.start_goblinmode()) 
 
         file.add_separator()
-        file.add_command(label="Recents...") 
+        file.add_command(label="Recents...", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
+        # add try/except statements for like 3 tabs, if they appear depends on if the command works
+        # not sure what the function should be at this point
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
 

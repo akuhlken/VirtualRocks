@@ -1,4 +1,5 @@
 import pickle
+import json     # used for recents dictionary
 import tkinter as tk   
 import ttkbootstrap as tttk  
 from tkinter import ttk
@@ -31,6 +32,8 @@ class main(tk.Tk):
         self.image = None
         self.recon = None
         self.state = STARTED
+        self.recentdict = {}
+        self.get_recent()
 
         # for loading icon on taskbar
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
@@ -110,6 +113,8 @@ class main(tk.Tk):
         print("creating new project")
         self.projdir = pl.Path(projdir)
         self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
+        if self.projectname == "" or self.projectname == None:
+            self.projectname = "project"
         self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
         self._startup()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
@@ -133,6 +138,7 @@ class main(tk.Tk):
             self.imgdir = self.projdir / path
         self._startup()
         self._update_state(self.state) 
+        self.update_recent()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
@@ -186,6 +192,10 @@ class main(tk.Tk):
         self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
         self._update_state(PHOTOS)
             
+        # updates the .txt doc that tracks recent values. b/c this is where we make .pkl files,
+        # this one tracks new files.
+        self.update_recent()
+
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
@@ -249,6 +259,29 @@ class main(tk.Tk):
 
     def update_map(self):
         pass
+
+    def update_recent(self):
+        if str(pl.Path(self.picklepath)) in self.recentdict.keys():
+            print("shouldn't add this to the dictionary cus it's already there")
+            # this should remove it and add it back to the end of the dictionary
+            del self.recentdict[str(pl.Path(self.picklepath))]
+
+        self.recentdict[str(pl.Path(self.picklepath))] = str(self.imgdir)
+        print(self.recentdict)
+        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
+            # need to check if the pickle path is already in the file. if so, delete it and
+            # move it up to be more recent.
+            # could either just track 3, or only look at top 3.
+            json.dump(self.recentdict, f)
+            #f.write(self.picklepath +"\n")
+            print("saving file to recents")
+
+    def get_recent(self):
+        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
+            self.recentdict = json.load(f)
+            print(self.recentdict)
+            # can get item in dict by: list(self.recentdict).items())[index]
+
 
     def _update_state(self, state):
         self.state = state
