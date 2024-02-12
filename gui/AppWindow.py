@@ -42,10 +42,13 @@ class AppWindow(ttk.Frame):
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
         file.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
+        '''
         try:
-            file.add_command(label="Recents...", command=lambda: self.controller.get_recent())
+            self.open_recent(1)
+            file.add_command(label="only with history")
         except:
-            pass
+            file.add_command(label="broken")
+        '''
 
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
@@ -81,18 +84,18 @@ class AppWindow(ttk.Frame):
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
-    def open_project(self):
-        projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
+    def open_project(self,projfile=""):
+        if projfile == "":
+            projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return
         self.controller.open_project(projfile)
 
+    # do the try except stuff in here so it doesn't infinite loop.
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
         projfile = list(self.controller.recentlist)[index]
-        if not projfile:
-            return
-        self.controller.open_project(projfile)
+        self.open_project(projfile)
 
     # Handler for setting dark mode
     #   changes theme to a dark theme

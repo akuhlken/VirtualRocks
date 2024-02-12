@@ -138,6 +138,7 @@ class main(tk.Tk):
             self.imgdir = self.projdir / path
         self._startup()
         self._update_state(self.state) 
+        print("updating from open")
         self.update_recent()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
@@ -194,6 +195,7 @@ class main(tk.Tk):
             
         # updates the .txt doc that tracks recent values. b/c this is where we make .pkl files,
         # this one tracks new files.
+        print("updating from update photos, normally when new.")
         self.update_recent()
 
     # Handler for seeting the project bounds
@@ -274,7 +276,6 @@ class main(tk.Tk):
             filelist = f.read()
             if filelist == "":
                 self.recentlist = list()
-                print("nothing was saved: " + str(self.recentlist))
                 return
             self.recentlist = list(filelist.split('$'))
             print(self.recentlist)
