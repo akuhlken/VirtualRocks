@@ -32,7 +32,7 @@ class main(tk.Tk):
         self.image = None
         self.recon = None
         self.state = STARTED
-        self.recentdict = {}
+        self.recentlist = list()
         self.get_recent()
 
         # for loading icon on taskbar
@@ -261,18 +261,24 @@ class main(tk.Tk):
         pass
 
     def update_recent(self):
-        if str(pl.Path(self.picklepath)) in self.recentdict.keys():
-            del self.recentdict[str(pl.Path(self.picklepath))]
-        self.recentdict[str(pl.Path(self.picklepath))] = str(self.imgdir)
+        if str(self.picklepath) in self.recentlist:
+            self.recentlist.remove(str(self.picklepath))
+        self.recentlist.append(str(self.picklepath))
+
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
-            json.dump(self.recentdict, f)
+            f.write("$".join(self.recentlist))
             print("saving file to recents")
 
     def get_recent(self):
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
-            self.recentdict = json.load(f)
-            print(self.recentdict)
-            # can get item in dict by: list(self.recentdict).items())[index]
+            filelist = f.read()
+            if filelist == "":
+                self.recentlist = list()
+                print("nothing was saved: " + str(self.recentlist))
+                return
+            self.recentlist = list(filelist.split('$'))
+            print(self.recentlist)
+            # can get item in dict by: list(self.recentdict.items())[index]
 
 
     def _update_state(self, state):

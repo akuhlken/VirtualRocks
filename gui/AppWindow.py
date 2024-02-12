@@ -41,6 +41,12 @@ class AppWindow(ttk.Frame):
         file.add_command(label="Recents...", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
+        file.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
+        try:
+            file.add_command(label="Recents...", command=lambda: self.controller.get_recent())
+        except:
+            pass
+
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
 
@@ -77,6 +83,13 @@ class AppWindow(ttk.Frame):
         # Then call controllers open_project method
     def open_project(self):
         projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
+        if not projfile:
+            return
+        self.controller.open_project(projfile)
+
+    def open_recent(self,index=1):
+        index = -index # need negation of index because most recent is at the end.
+        projfile = list(self.controller.recentlist)[index]
         if not projfile:
             return
         self.controller.open_project(projfile)
