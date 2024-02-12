@@ -14,6 +14,8 @@ class AppWindow(ttk.Frame):
 
     # Setup method for top menu bar
     def create_menu(self):
+        # need to be able to refresh menu
+        #   https://stackoverflow.com/questions/48796038/python-tkinter-menu-refresh 
         self.menubar = tk.Menu(self) 
 
         file = tk.Menu(self.menubar, tearoff=0)  
@@ -41,7 +43,11 @@ class AppWindow(ttk.Frame):
         file.add_command(label="Recents...", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
-        file.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
+        if len(self.controller.recentlist) == 1:
+            file.add_command(label="current is only file")
+        else:
+            file.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
+
         '''
         try:
             self.open_recent(1)
