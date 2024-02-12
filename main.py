@@ -262,18 +262,10 @@ class main(tk.Tk):
 
     def update_recent(self):
         if str(pl.Path(self.picklepath)) in self.recentdict.keys():
-            print("shouldn't add this to the dictionary cus it's already there")
-            # this should remove it and add it back to the end of the dictionary
             del self.recentdict[str(pl.Path(self.picklepath))]
-
         self.recentdict[str(pl.Path(self.picklepath))] = str(self.imgdir)
-        print(self.recentdict)
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
-            # need to check if the pickle path is already in the file. if so, delete it and
-            # move it up to be more recent.
-            # could either just track 3, or only look at top 3.
             json.dump(self.recentdict, f)
-            #f.write(self.picklepath +"\n")
             print("saving file to recents")
 
     def get_recent(self):
