@@ -94,8 +94,11 @@ class AppWindow(ttk.Frame):
     # do the try except stuff in here so it doesn't infinite loop.
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
-        projfile = list(self.controller.recentlist)[index]
-        self.open_project(projfile)
+        try:
+            projfile = self.controller.recentlist[index]
+            self.open_project(projfile)
+        except:
+            print("file not saved to history")
 
     # Handler for setting dark mode
     #   changes theme to a dark theme
