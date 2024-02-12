@@ -43,10 +43,12 @@ class AppWindow(ttk.Frame):
         file.add_command(label="Recents...", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
-        if len(self.controller.recentlist) == 1:
+        if len(self.controller.recentlist) == 1 or len(self.controller.recentlist) == 0:
             file.add_command(label="current is only file")
+            print("insufficient recents: " + str(len(self.controller.recentlist)))
         else:
             file.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
+            print("you can open recent now")
 
         '''
         try:

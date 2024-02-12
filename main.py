@@ -1,5 +1,4 @@
 import pickle
-import json     # used for recents dictionary
 import tkinter as tk   
 import ttkbootstrap as tttk  
 from tkinter import ttk
@@ -137,8 +136,7 @@ class main(tk.Tk):
         else:
             self.imgdir = self.projdir / path
         self._startup()
-        self._update_state(self.state) 
-        print("updating from open")
+        self._update_state(self.state)
         self.update_recent()
         self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
         try:
@@ -195,7 +193,6 @@ class main(tk.Tk):
             
         # updates the .txt doc that tracks recent values. b/c this is where we make .pkl files,
         # this one tracks new files.
-        print("updating from update photos, normally when new.")
         self.update_recent()
 
     # Handler for seeting the project bounds
@@ -270,6 +267,9 @@ class main(tk.Tk):
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
             f.write("$".join(self.recentlist))
             print("saving file to recents")
+
+        self.container.update()
+        self.container.update_idletasks()
 
     def get_recent(self):
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
