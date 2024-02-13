@@ -15,7 +15,7 @@ class AppWindow(ttk.Frame):
     # Setup method for top menu bar
     def create_menu(self):
         # need to be able to refresh menu
-        self.menubar = tk.Menu(self, postcommand=self.controller.update_recent()) 
+        self.menubar = tk.Menu(self) #postcommand=self.controller.update_recent(menuupdate=True) 
 
         file = tk.Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
@@ -40,16 +40,24 @@ class AppWindow(ttk.Frame):
 
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
-        recents = tk.Menu(file, tearoff=0)
+        recents = tk.Menu(file, tearoff=0, postcommand=self.controller.update_recent())
         file.add_cascade(label="Open Recent...", menu=recents)
         numrecents = len(self.controller.recentlist)
         if numrecents == 0:
             recents.add_command(label="no recents found")
-        elif numrecents >= 1:
+        if numrecents >= 1:
             recents.add_command(label="Print All Recents", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
             if not self.controller.picklepath:   # addresses edge case where we only want to open the most recent file when none is currently open.
-                recents.add_command(label="most recent opened", command=lambda: self.open_recent(1))
-            recents.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
+                recents.add_separator()
+                recents.add_command(label=str(pl.Path(self.controller.recentlist[-1]).stem), command=lambda: self.open_recent())
+        if numrecents >= 2:
+            if self.controller.picklepath:
+                recents.add_separator()
+            recents.add_command(label="1 " + str(pl.Path(self.controller.recentlist[-2]).stem), command=lambda: self.open_recent(2))
+        if numrecents >= 3:
+            recents.add_command(label="2 " + str(pl.Path(self.controller.recentlist[-3]).stem), command=lambda: self.open_recent(3))
+        if numrecents >= 4:
+            recents.add_command(label="3 " + str(pl.Path(self.controller.recentlist[-4]).stem), command=lambda: self.open_recent(4))
 
 
         file.add_separator()
@@ -86,18 +94,22 @@ class AppWindow(ttk.Frame):
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
-    def open_project(self,projfile=None):
+    def open_project(self, projfile=None, menuupdate=False):
+        if menuupdate:
+            self.controller.update_recent(menuupdate=True)
+            return
         if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return
         self.controller.open_project(projfile)
-
-    # do the try except stuff in here so it doesn't infinite loop.
+        
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
         try:
             projfile = self.controller.recentlist[index]
+            if not projfile:
+                return
             self.open_project(projfile)
         except:
             print("file not saved to history")
