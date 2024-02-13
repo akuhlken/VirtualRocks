@@ -15,8 +15,7 @@ class AppWindow(ttk.Frame):
     # Setup method for top menu bar
     def create_menu(self):
         # need to be able to refresh menu
-        #   https://stackoverflow.com/questions/48796038/python-tkinter-menu-refresh 
-        self.menubar = tk.Menu(self) 
+        self.menubar = tk.Menu(self, postcommand=self.controller.update_recent()) 
 
         file = tk.Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
@@ -26,7 +25,6 @@ class AppWindow(ttk.Frame):
             # project they're working on and if they want to save,
             # then make a new file like how we do it from start.
         file.add_command(label="Open", command=lambda: self.open_project())
-        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
 
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
@@ -34,29 +32,25 @@ class AppWindow(ttk.Frame):
  
         # change to an option menu so you can see what you've selected (too hard rn)
         styles = tk.Menu(file, tearoff=0)
-        file.add_cascade(label="Set Style", menu=styles)
+        file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
         styles.add_command(label="chaos", command=lambda: self.start_goblinmode()) 
-
         file.add_separator()
-        file.add_command(label="Recents...", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
+
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
-        if len(self.controller.recentlist) == 1 or len(self.controller.recentlist) == 0:
-            file.add_command(label="current is only file")
-            print("insufficient recents: " + str(len(self.controller.recentlist)))
-        else:
-            file.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
-            print("you can open recent now")
+        recents = tk.Menu(file, tearoff=0)
+        file.add_cascade(label="Open Recent...", menu=recents)
+        numrecents = len(self.controller.recentlist)
+        if numrecents == 0:
+            recents.add_command(label="no recents found")
+        elif numrecents >= 1:
+            recents.add_command(label="Print All Recents", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
+            if not self.controller.picklepath:   # addresses edge case where we only want to open the most recent file when none is currently open.
+                recents.add_command(label="most recent opened", command=lambda: self.open_recent(1))
+            recents.add_command(label="Open Most Recent", command=lambda: self.open_recent(2))
 
-        '''
-        try:
-            self.open_recent(1)
-            file.add_command(label="only with history")
-        except:
-            file.add_command(label="broken")
-        '''
 
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
@@ -92,8 +86,8 @@ class AppWindow(ttk.Frame):
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
-    def open_project(self,projfile=""):
-        if projfile == "":
+    def open_project(self,projfile=None):
+        if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return

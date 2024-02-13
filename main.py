@@ -260,16 +260,14 @@ class main(tk.Tk):
         pass
 
     def update_recent(self):
+        if not str(self.picklepath):
+            return
         if str(self.picklepath) in self.recentlist:
             self.recentlist.remove(str(self.picklepath))
         self.recentlist.append(str(self.picklepath))
-
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
             f.write("$".join(self.recentlist))
             print("saving file to recents")
-
-        self.container.update()
-        self.container.update_idletasks()
 
     def get_recent(self):
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
