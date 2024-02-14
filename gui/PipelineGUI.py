@@ -116,16 +116,6 @@ class PipelineGUI(AppWindow):
             return
         self.controller.new_project(projdir)
 
-    # Event handler for "Open" in the dropdown menu
-        # Method should first check to make sure nothing is running.
-        # Then it should do basically the same thing as the open_project method
-        # in StartGUI.
-    def open_proj_handler(self):
-        projfile = fd.askopenfilename(filetypes=[('Choose a project.pkl file', '*.pkl')])
-        if not projfile:
-            return
-        self.controller.open_project(projfile)
-
     # Event handler for "Start Menu" in the dropdown menu
     def startmenu_handler(self):
         self.controller.config(menu=tk.Menu(self))

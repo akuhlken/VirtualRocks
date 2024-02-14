@@ -14,7 +14,8 @@ class AppWindow(ttk.Frame):
 
     # Setup method for top menu bar
     def create_menu(self):
-        self.menubar = tk.Menu(self) 
+        # need to be able to refresh menu
+        self.menubar = tk.Menu(self) #postcommand=self.controller.update_recent(menuupdate=True) 
 
         file = tk.Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
@@ -24,7 +25,6 @@ class AppWindow(ttk.Frame):
             # project they're working on and if they want to save,
             # then make a new file like how we do it from start.
         file.add_command(label="Open", command=lambda: self.open_project())
-        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
 
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
@@ -32,13 +32,31 @@ class AppWindow(ttk.Frame):
  
         # change to an option menu so you can see what you've selected (too hard rn)
         styles = tk.Menu(file, tearoff=0)
-        file.add_cascade(label="Set Style", menu=styles)
+        file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
         styles.add_command(label="chaos", command=lambda: self.start_goblinmode()) 
-
         file.add_separator()
-        file.add_command(label="Recents...") 
+
+        # add try/except statements for like 3 tabs, if they appear depends on if the command works
+        # not sure what the function should be at this point
+        recents = tk.Menu(file, tearoff=0, postcommand=self.controller.update_recent())
+        file.add_cascade(label="Open Recent...", menu=recents)
+        numrecents = len(self.controller.recentlist)
+        if numrecents == 0:
+            recents.add_command(label="no recents found")
+        if numrecents >= 1:
+            recents.add_command(label="Print All Recents", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
+            recents.add_separator()
+            recents.add_command(label=str(pl.Path(self.controller.recentlist[-1]).stem), command=lambda: self.open_recent())
+        if numrecents >= 2:
+            recents.add_command(label="1 " + str(pl.Path(self.controller.recentlist[-2]).stem), command=lambda: self.open_recent(2))
+        if numrecents >= 3:
+            recents.add_command(label="2 " + str(pl.Path(self.controller.recentlist[-3]).stem), command=lambda: self.open_recent(3))
+        if numrecents >= 4:
+            recents.add_command(label="3 " + str(pl.Path(self.controller.recentlist[-4]).stem), command=lambda: self.open_recent(4))
+
+
         file.add_separator()
         file.add_command(label="Exit", command=self.quit)  
 
@@ -73,11 +91,25 @@ class AppWindow(ttk.Frame):
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
-    def open_project(self):
-        projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
+    def open_project(self, projfile=None, menuupdate=False):
+        if menuupdate:
+            self.controller.update_recent(menuupdate=True)
+            return
+        if not projfile:
+            projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return
         self.controller.open_project(projfile)
+        
+    def open_recent(self,index=1):
+        index = -index # need negation of index because most recent is at the end.
+        try:
+            projfile = self.controller.recentlist[index]
+            if not projfile:
+                return
+            self.open_project(projfile)
+        except:
+            print("file not saved to history")
 
     # Handler for setting dark mode
     #   changes theme to a dark theme

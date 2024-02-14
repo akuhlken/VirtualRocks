@@ -39,7 +39,6 @@ class ReconManager():
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}, {currentsubstep}: ")
             currentstep = currentsubstep
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(self.progresspercent))
-        #self.controller.style.configure('Horizontal.Progressbar.label', text='{:g} %'.format(percentage))
         self.controller.page2.progress.config(value=percent)
 
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:

@@ -31,6 +31,8 @@ class main(tk.Tk):
         self.image = None
         self.recon = None
         self.state = STARTED
+        self.recentlist = list()
+        self.get_recent()
 
         # for loading icon on taskbar
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
@@ -116,6 +118,7 @@ class main(tk.Tk):
         self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
         self._startup()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
+        self.title("VirtualRocks: " + self.projectname)
         if imgdir:
             self.imgdir = imgdir
             pm = PhotoManager(self.imgdir)
@@ -124,7 +127,6 @@ class main(tk.Tk):
             self._update_state(PHOTOS)
         else:
             self._update_state(STARTED)
-        self.title("VirtualRocks: " + self.projectname)
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
@@ -143,7 +145,8 @@ class main(tk.Tk):
         else:
             self.imgdir = self.projdir / path
         self._startup()
-        self._update_state(self.state) 
+        self._update_state(self.state)
+        self.update_recent()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
@@ -190,6 +193,10 @@ class main(tk.Tk):
         self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
         self._update_state(PHOTOS)
             
+        # updates the .txt doc that tracks recent values. b/c this is where we make .pkl files,
+        # this one tracks new files.
+        self.update_recent()
+
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
@@ -235,14 +242,28 @@ class main(tk.Tk):
     def options(self):
         pass
 
-    def update_log(self):
-        pass
-
-    def update_progress(self):
-        pass
-
     def update_map(self):
         pass
+
+    def update_recent(self):
+        if str(self.picklepath) in self.recentlist:
+            self.recentlist.remove(str(self.picklepath))
+        if str(self.picklepath) and str(self.imgdir):
+            self.recentlist.append(str(self.picklepath))
+        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
+            f.write("$".join(self.recentlist))
+            print("saving file to recents")
+
+    def get_recent(self):
+        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
+            filelist = f.read()
+            if filelist == "":
+                self.recentlist = list()
+                return
+            self.recentlist = list(filelist.split('$'))
+            print(self.recentlist)
+            # can get item in dict by: list(self.recentdict.items())[index]
+
 
     def _update_state(self, state):
         self.state = state
