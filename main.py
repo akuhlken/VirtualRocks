@@ -115,8 +115,6 @@ class main(tk.Tk):
             self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
         else:
             self.projectname = name
-        if self.projectname == "" or self.projectname == None:
-            self.projectname = "project"
         self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
         self._startup()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")

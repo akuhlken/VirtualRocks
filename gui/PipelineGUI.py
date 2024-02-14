@@ -187,7 +187,7 @@ class PipelineGUI(AppWindow):
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
     def show_files(self):
-        show_in_file_manager(self.controller.projdir + "/out")
+        show_in_file_manager(str(self.controller.projdir) + "/out")
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
