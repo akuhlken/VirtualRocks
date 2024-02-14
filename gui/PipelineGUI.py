@@ -6,6 +6,7 @@ from tkinter import messagebox as mb
 import pathlib as pl
 from tkinter import ttk
 from gui.AppWindow import AppWindow
+from showinfm import show_in_file_manager
 
 class PipelineGUI(AppWindow):
     
@@ -48,7 +49,7 @@ class PipelineGUI(AppWindow):
         self.setbounds = ttk.Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
         self.outres = ttk.Label(right, text="Output Resulution:")
         self.mesher = ttk.Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
-        self.export = ttk.Button(right, text="Export", command=lambda: self.controller.export())
+        self.show = ttk.Button(right, text="Show Files", command=lambda: self.show_files())
         self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
@@ -79,7 +80,7 @@ class PipelineGUI(AppWindow):
         self.setbounds.pack()
         self.outres.pack()
         self.mesher.pack()
-        self.export.pack()
+        self.show.pack()
         self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
         self.changebtn.pack(side='bottom')
@@ -98,7 +99,7 @@ class PipelineGUI(AppWindow):
         self.setbounds.config(state="disabled")
         self.matcher.config(state="disabled")
         self.mesher.config(state="disabled")
-        self.export.config(state="disabled")
+        self.show.config(state="disabled")
         self.cancel.config(state="disabled")
 
     # Event handler for "New" in the dropdown menu
@@ -194,6 +195,9 @@ class PipelineGUI(AppWindow):
             return
         self.controller.cancel_recon()   
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
+
+    def show_files(self):
+        show_in_file_manager(self.controller.projdir + "/out")
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
