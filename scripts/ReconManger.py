@@ -137,12 +137,14 @@ class ReconManager():
     #   After cancel it should change the action button back to start
     def cancel(self):
         self.controller.page2.cancel.config(state="disabled")
-        if self.p:
+        try:
             try:
                 self.p.terminate()
                 self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill()
+        except:
+            pass
         self._send_log("process was sent kill signal")
         self._send_log("$$")
 

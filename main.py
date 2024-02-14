@@ -27,7 +27,7 @@ class main(tk.Tk):
 
         # Controller Variables
         self.projdir = None
-        self.imgdir = None
+        self.imgdir = ""
         self.image = None
         self.recon = None
         self.state = STARTED
@@ -106,13 +106,22 @@ class main(tk.Tk):
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
-    def new_project(self, projdir):
+    def new_project(self, projdir, name=None, imgdir=None):
         print("creating new project")
         self.projdir = pl.Path(projdir)
-        self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
+        if not name:
+            self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
+        else:
+            self.projectname = name
         self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
         self._startup()
-        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
+        self._update_state(STARTED)
+        self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
+        if imgdir:
+            self.imgdir = imgdir
+            pm = PhotoManager(self.imgdir)
+            self.page2.update_text(pm.numimg)
+            self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
@@ -131,7 +140,7 @@ class main(tk.Tk):
             self.imgdir = self.projdir / path
         self._startup()
         self._update_state(self.state) 
-        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
+        self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
             self.page2.update_text(pm.numimg)

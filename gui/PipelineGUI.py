@@ -86,7 +86,6 @@ class PipelineGUI(AppWindow):
         self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
         
-
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
@@ -193,11 +192,8 @@ class PipelineGUI(AppWindow):
             print("Path must not contain white spaces")
             mb.showerror("Paths cannot contain whitespace                           ")
             return
-        projfile = projdir / pl.Path(r"project.pkl")
-        if (projfile).is_file():
-            self.controller.open_project(projfile)
-        else:
-            self.controller.new_project(projdir)
+        self.controller.cancel_recon()   
+        self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
