@@ -124,6 +124,7 @@ class main(tk.Tk):
             self._update_state(PHOTOS)
         else:
             self._update_state(STARTED)
+        self.title("VirtualRocks: " + self.projectname)
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
@@ -131,6 +132,7 @@ class main(tk.Tk):
         print("opening project")
         self.picklepath = projfile
         self.projectname = pl.Path(projfile).stem
+        self.title("VirtualRocks: " + self.projectname)
         # Load the path variables from the file
         print(projfile)
         self.projdir = pl.Path(projfile).parent
@@ -167,6 +169,7 @@ class main(tk.Tk):
     def start_menu(self):
         self.page1.tkraise()
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
+        self.title("VirtualRocks")
 
     # Saving value of progress to make progress bar after style update accurate.
     #   used by AppWindow.py.
