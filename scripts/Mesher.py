@@ -13,11 +13,11 @@ VERBOSE = False
 
 class Mesher():
 
-    def __init__(self, projdir):
+    def __init__(self, projdir, outdir):
         self.projdir = projdir
-        self.dense2mesh()
+        self.dense2mesh(outdir)
 
-    def dense2mesh(self):
+    def dense2mesh(self, outdir):
         print("$$", flush=True)
         # Path to Colmap dense folder
         base_path = self.projdir + r"\dense"
@@ -62,7 +62,10 @@ class Mesher():
         print("$Mesher.Setting vertex colors.18$", flush=True)
         self.ms.set_color_per_vertex(color1 = pymeshlab.Color(255, 255, 255))
 
-        self.outdir = self.projdir + r"\out"
+        self.outdir = outdir
+        if outdir == "":
+            self.outdir = self.projdir + r"\out"
+
         if os.path.exists(self.outdir):
             shutil.rmtree(self.outdir)
         os.makedirs(self.outdir)
@@ -184,7 +187,9 @@ class Mesher():
         self.ms.meshing_remove_selected_vertices()
 
 projdir = sys.argv[1]
+outdir = sys.argv[2]
+
 try:
-    Mesher(projdir)
+    Mesher(projdir, outdir)
 except Exception as e:
     print(e, flush=True)

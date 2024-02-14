@@ -27,7 +27,7 @@ class main(tk.Tk):
 
         # Controller Variables
         self.projdir = None
-        self.imgdir = None
+        self.imgdir = ""
         self.image = None
         self.recon = None
         self.state = STARTED
@@ -108,16 +108,27 @@ class main(tk.Tk):
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
-    def new_project(self, projdir):
+    def new_project(self, projdir, name=None, imgdir=None):
         print("creating new project")
         self.projdir = pl.Path(projdir)
-        self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
+        if not name:
+            self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
+        else:
+            self.projectname = name
         if self.projectname == "" or self.projectname == None:
             self.projectname = "project"
         self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
         self._startup()
-        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
+        self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         self.title("VirtualRocks: " + self.projectname)
+        if imgdir:
+            self.imgdir = imgdir
+            pm = PhotoManager(self.imgdir)
+            self.page2.update_text(pm.numimg)
+            self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
+            self._update_state(PHOTOS)
+        else:
+            self._update_state(STARTED)
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
@@ -138,7 +149,7 @@ class main(tk.Tk):
         self._startup()
         self._update_state(self.state)
         self.update_recent()
-        self.page2.dirtext.config(text=f"PATH: [ {self.projdir} ]")
+        self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
             self.page2.update_text(pm.numimg)
@@ -178,13 +189,6 @@ class main(tk.Tk):
         self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = pl.Path(imgdir).resolve()
-        try:
-            path = self.imgdir.relative_to(self.projdir)
-            self.recon._send_log("Created savefile with project paths")
-        except:
-            path = self.imgdir
-            self.recon._send_log("Photos directory is not a sub-directory of project")
-            self.recon._send_log("Saving as absolute path...")
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(pm.numimg)
@@ -240,22 +244,6 @@ class main(tk.Tk):
     def options(self):
         pass
 
-    # Handler for exporting final project:
-    #   Should open a new dialogue with instructions for connecting headset
-    #   and loading mesh+texture onto Quest 2
-    def export(self):
-        if not DEBUG:
-            print("PLACEHOLDER")
-            pass # TODO: export model
-        else:
-            print("Exported")
-
-    def update_log(self):
-        pass
-
-    def update_progress(self):
-        pass
-
     def update_map(self):
         pass
 
@@ -286,14 +274,14 @@ class main(tk.Tk):
             self.page2.matcher.config(state='disabled')
             self.page2.setbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
-            self.page2.export.config(state='disabled')
+            self.page2.show.config(state='disabled')
         if state == PHOTOS:
             self.page2.setbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
-            self.page2.export.config(state='disabled')
+            self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
         if state == MATCHER:
-            self.page2.export.config(state='disabled')
+            self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
@@ -301,12 +289,12 @@ class main(tk.Tk):
             self.page2.matcher.config(state='active')
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
-            self.page2.export.config(state='active')
+            self.page2.show.config(state='active')
 
         # save to pickle
         try:
             path = self.imgdir.relative_to(self.projdir)
-            self.recon._send_log("Created savefile with project paths")
+            self.recon._send_log("Updated savefile")
         except:
             path = self.imgdir
             self.recon._send_log("Photos directory is not a sub-directory of project")
