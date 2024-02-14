@@ -262,7 +262,7 @@ class main(tk.Tk):
     def update_recent(self):
         if str(self.picklepath) in self.recentlist:
             self.recentlist.remove(str(self.picklepath))
-        if str(self.picklepath):
+        if str(self.picklepath) and str(self.imgdir):
             self.recentlist.append(str(self.picklepath))
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
             f.write("$".join(self.recentlist))

@@ -47,12 +47,9 @@ class AppWindow(ttk.Frame):
             recents.add_command(label="no recents found")
         if numrecents >= 1:
             recents.add_command(label="Print All Recents", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
-            if not self.controller.picklepath:   # addresses edge case where we only want to open the most recent file when none is currently open.
-                recents.add_separator()
-                recents.add_command(label=str(pl.Path(self.controller.recentlist[-1]).stem), command=lambda: self.open_recent())
+            recents.add_separator()
+            recents.add_command(label=str(pl.Path(self.controller.recentlist[-1]).stem), command=lambda: self.open_recent())
         if numrecents >= 2:
-            if self.controller.picklepath:
-                recents.add_separator()
             recents.add_command(label="1 " + str(pl.Path(self.controller.recentlist[-2]).stem), command=lambda: self.open_recent(2))
         if numrecents >= 3:
             recents.add_command(label="2 " + str(pl.Path(self.controller.recentlist[-3]).stem), command=lambda: self.open_recent(3))
