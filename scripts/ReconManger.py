@@ -120,7 +120,7 @@ class ReconManager():
         workingdir = colmap.parent
         
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir, ""], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
