@@ -121,7 +121,7 @@ class ReconManager():
         workingdir = colmap.parent
         
         # TODO have next line run specific python version?
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir, ""], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
@@ -137,12 +137,14 @@ class ReconManager():
     #   After cancel it should change the action button back to start
     def cancel(self):
         self.controller.page2.cancel.config(state="disabled")
-        if self.p:
+        try:
             try:
-                self.p.terminate() 
+                self.p.terminate()
                 self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill()
+        except:
+            pass
         self._send_log("process was sent kill signal")
         self._send_log("$$")
 
