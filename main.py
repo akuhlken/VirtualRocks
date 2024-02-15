@@ -154,6 +154,7 @@ class main(tk.Tk):
             self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
         except Exception as e:
             self.recon._send_log("Could not find image directory")
+            self._update_state(STARTED)
             print(e)
 
 
@@ -177,7 +178,10 @@ class main(tk.Tk):
     # Saving value of progress to make progress bar after style update accurate.
     #   used by AppWindow.py.
     def swtich_style(self):
-        self.progresspercent = self.recon.progresspercent
+        if self.recon:
+            return self.recon.progresspercent
+        else:
+            return -1
 
     # Handler for adding photos
     #   Set the controller variable for image directory
@@ -292,11 +296,8 @@ class main(tk.Tk):
         # save to pickle
         try:
             path = self.imgdir.relative_to(self.projdir)
-            self.recon._send_log("Updated savefile")
         except:
             path = self.imgdir
-            self.recon._send_log("Photos directory is not a sub-directory of project")
-            self.recon._send_log("Saving as absolute path...")
         with open(self.picklepath, 'wb') as file:
             pickle.dump((path,state), file)
 

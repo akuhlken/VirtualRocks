@@ -136,7 +136,7 @@ class AppWindow(ttk.Frame):
         self.init_common_style()
 
     def init_common_style(self):
-        self.controller.swtich_style()
+        temp = self.controller.swtich_style()
         self.controller.style.configure("TButton", width=16)
         self.controller.style.configure("cancel.TButton", width=30)
         self.controller.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
@@ -150,8 +150,8 @@ class AppWindow(ttk.Frame):
         self.controller.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
 
         # progress bar progress % text
-        if 0 < self.controller.progresspercent < 100: 
-            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(self.controller.progresspercent))
+        if 0 < temp < 100: 
+            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(temp))
         else:
             return
 
