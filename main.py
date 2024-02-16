@@ -259,7 +259,7 @@ class main(Tk):
             print("saving file to recents")
 
     def get_recent(self):
-        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
+        with open(Path("main.py").parent / 'recentprojects.txt', 'r') as f:
             self.recentlist = f.readlines()
             print(self.recentlist)
 
