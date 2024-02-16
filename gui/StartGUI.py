@@ -1,7 +1,4 @@
-import tkinter as tk
-from tkinter import ttk
-from tkinter import filedialog as fd
-from tkinter import messagebox as mb
+from tkinter import ttk, Button
 from gui.AppWindow import AppWindow
 
 class StartGUI(AppWindow):
@@ -15,8 +12,8 @@ class StartGUI(AppWindow):
         middleframe = ttk.Frame(self)
         middleframe.place(anchor="c", relx=.5, rely=.5)
 
-        newBtn = tk.Button(middleframe, height=10, width=20, text="New", bg=controller.buttoncolor, relief="groove", command=lambda: self.new_project())
-        openBtn = tk.Button(middleframe, height=10, width=20, text="Open", bg=controller.buttoncolor, relief="groove", command=lambda: self.open_project())
+        newBtn = Button(middleframe, height=10, width=20, text="New", bg=controller.buttoncolor, relief="groove", command=lambda: self.new_project())
+        openBtn = Button(middleframe, height=10, width=20, text="Open", bg=controller.buttoncolor, relief="groove", command=lambda: self.open_project())
         label = ttk.Label(self, text="*paths cannot contain white spaces")
 
         newBtn.pack(padx=20, side='left')

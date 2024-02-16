@@ -1,22 +1,21 @@
-import tkinter as tk
-import ttkbootstrap as tttk
+from tkinter import ttk, Canvas, Text, Menu
+from tkinter.ttk import Frame, Label, Button, Scrollbar, Progressbar
+from ttkbootstrap import Separator
+from tkinter import filedialog as fd, messagebox as mb
 from PIL import ImageTk, Image
-from tkinter import filedialog as fd
-from tkinter import messagebox as mb
-import pathlib as pl
-from tkinter import ttk
+from pathlib import Path
 from gui.AppWindow import AppWindow
 from showinfm import show_in_file_manager
 
 class PipelineGUI(AppWindow):
     
     # GUI constants
-    DEFAULT_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
-    DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
+    DEFAULT_MAP = Path(f"gui/placeholder/darkmap.jpg").resolve()
+    DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
     # temp constants until we have a good way to deal with outliers and can display
-    DARK_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
-    LIGHT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
+    DARK_MAP = Path(f"gui/placeholder/darkmap.jpg").resolve()
+    LIGHT_MAP = Path(f"gui/placeholder/map.jpg").resolve()
 
     def __init__(self, parent, controller, projdir):
         AppWindow.__init__(self, parent, controller)
@@ -29,46 +28,46 @@ class PipelineGUI(AppWindow):
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
-        left = ttk.Frame(self)
-        right = ttk.Frame(self)
-        prog = ttk.Frame(left)
-        sep = ttk.Frame(right)
+        left = Frame(self)
+        right = Frame(self)
+        prog = Frame(left)
+        sep = Frame(right)
         left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
         
         # control elements
-        self.exampleimage = ttk.Label(right)
+        self.exampleimage = Label(right)
 
-        self.addphotos = ttk.Button(right, text="Add Photos", command=lambda: self.photos_handler())
+        self.addphotos = Button(right, text="Add Photos", command=lambda: self.photos_handler())
 
-        self.numimages = ttk.Label(right, text="Number of images:")
-        self.matcher = ttk.Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
-        self.setbounds = ttk.Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
-        self.outres = ttk.Label(right, text="Output Resulution:")
-        self.mesher = ttk.Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
-        self.show = ttk.Button(right, text="Show Files", command=lambda: self.show_files())
-        self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
+        self.numimages = Label(right, text="Number of images:")
+        self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
+        self.setbounds = Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
+        self.outres = Label(right, text="Output Resulution:")
+        self.mesher = Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
+        self.show = Button(right, text="Show Files", command=lambda: self.show_files())
+        self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left)  # ttk doesn't have a canvas widget, so we can't convert this.
-        self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
-        self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
+        self.map = Canvas(left)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.dirtext = Label(left, text="Project Directory: Test/test/test/test/test")
+        self.changebtn = Button(left, text="Change", command=lambda: self.change_projdir())
 
-        self.logtext = tk.Text(right, width=50, background=self.controller.logbackground)
-        scrollbar = ttk.Scrollbar(right)
+        self.logtext = Text(right, width=50, background=self.controller.logbackground)
+        scrollbar = Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview
 
         # progress bar elements
-        self.progresstotal = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
-        self.progresstotaltext = ttk.Label(prog, text="Total Progress:")
-        self.progress = ttk.Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
-        self.progresstext = ttk.Label(prog, text="Progress on Current Step:")
+        self.progresstotal = Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
+        self.progresstotaltext = Label(prog, text="Total Progress:")
+        self.progress = Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
+        self.progresstext = Label(prog, text="Progress on Current Step:")
 
         # separator, for style
-        self.separator = tttk.Separator(right, bootstyle="info", orient="vertical")
+        self.separator = Separator(right, bootstyle="info", orient="vertical")
 
         # packing
         self.separator.pack(side="left", fill="y", padx=5)
@@ -117,7 +116,7 @@ class PipelineGUI(AppWindow):
 
     # Event handler for "Start Menu" in the dropdown menu
     def startmenu_handler(self):
-        self.controller.config(menu=tk.Menu(self))
+        self.controller.config(menu=Menu(self))
         self.controller.start_menu()
 
     # Event handler for "Add Photos" button
