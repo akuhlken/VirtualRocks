@@ -254,19 +254,17 @@ class main(tk.Tk):
             self.recentlist.remove(str(self.picklepath))
         if str(self.picklepath) and str(self.imgdir):
             self.recentlist.append(str(self.picklepath))
+            print("adding " + str(self.picklepath))
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
-            f.write("$".join(self.recentlist))
+            for recent in self.recentlist:
+                #f.write(recent)
+                print(recent, file=f)
             print("saving file to recents")
 
     def get_recent(self):
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
-            filelist = f.read()
-            if filelist == "":
-                self.recentlist = list()
-                return
-            self.recentlist = list(filelist.split('$'))
+            self.recentlist = f.readlines()
             print(self.recentlist)
-            # can get item in dict by: list(self.recentdict.items())[index]
 
 
     def _update_state(self, state):

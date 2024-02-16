@@ -182,6 +182,9 @@ class PipelineGUI(AppWindow):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.cancel_recon()   
+        if str(self.controller.picklepath) in self.controller.recentlist:
+            self.controller.recentlist.remove(str(self.controller.picklepath))
+            print("om nom nom nom nom nom")
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
     def show_files(self):

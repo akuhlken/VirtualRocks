@@ -1,5 +1,5 @@
 import subprocess
-#import tkinter as tk      # don't think we need this, but don't remove yet. 
+import tkinter as tk
 import pathlib as pl
 from tkinter import messagebox as mb
 
