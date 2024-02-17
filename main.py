@@ -8,6 +8,7 @@ from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
 import pickle
 import ctypes   # for adding icon to taskbar
+import json
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -29,7 +30,8 @@ class main(Tk):
         self.image = None
         self.recon = None
         self.state = STARTED
-        self.recentlist = list()
+        self.recentlist = list()      # saved to JSON file as a dict, but needs to be list (of tuples) to be usable.
+        self.numrecents = 0
         self.get_recent()
 
         # for loading icon on taskbar, basically just says we aren't doing only python.
@@ -247,20 +249,33 @@ class main(Tk):
         pass
 
     def update_recent(self):
-        if str(self.picklepath) in self.recentlist:
-            self.recentlist.remove(str(self.picklepath))
-        if str(self.picklepath) and str(self.imgdir):
-            self.recentlist.append(str(self.picklepath))
-            print("adding " + str(self.picklepath))
-        with open(Path("main.py").parent / 'recentprojects.txt', 'w') as f:
-            for recent in self.recentlist:
-                #f.write(recent)
-                print(recent, file=f)
-            print("saving file to recents")
+        # used by menu to update, basically the menu is refreshed every time this is called (needs to handle blanks)
+        # if picklepath is null, then we shouldn't add anything to the dict.
+        #   the values should add. get the max current and add one?
+        #   basically, we don't need a dictionary for function, but we want to use JSON so we need it
+        #   should also have something that limits the length of recent to 4 so we don't save more things to loop thru.
+
+        while len(self.recentlist) > 4:
+            print("removing " + str(self.recentlist[0]) + " from recents")
+            del self.recentlist[0]
+        for rectup in self.recentlist:
+            if self.picklepath == rectup[0]:
+                self.recentlist.remove(rectup)
+        if self.picklepath:     # if there is a picklepath (there should also be an image path)
+            self.recentlist.append((self.picklepath, self.numrecents))
+            self.numrecents += 1
+
+    def save_recent(self):
+        with open(Path("main.py").parent / 'recents.json', 'w') as f:
+            json.dump(self.recentlist, f)
+            print("saved recent files.")
+    
 
     def get_recent(self):
-        with open(Path("main.py").parent / 'recentprojects.txt', 'r') as f:
-            self.recentlist = f.readlines()
+        with open(Path("main.py").parent / 'recents.json') as f:
+            # need to check if empty
+            recentdict = json.load(f)
+            self.recentlist = list(dict(recentdict).items())
             print(self.recentlist)
 
 
@@ -302,6 +317,7 @@ class main(Tk):
         except:
             print("no active processes")
         print("exiting app")
+        self.save_recent()                  # save recents at the very end
         self.destroy()
 
 if __name__ == "__main__":

@@ -43,19 +43,19 @@ class AppWindow(Frame):
         if numrecents == 0:
             recents.add_command(label="no recents found")
         if numrecents >= 1:
-            recents.add_command(label="Print All Recents", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
+            recents.add_command(label="Print All Recents", command=lambda: print(self.controller.recentlist)) # should remove this command, for testing only.
             recents.add_separator()
-            recents.add_command(label=str(Path(self.controller.recentlist[-1]).stem), command=lambda: self.open_recent())
+            recents.add_command(label=str(Path(self.controller.recentlist[-1][0]).stem), command=lambda: self.open_recent())
         if numrecents >= 2:
-            recents.add_command(label="1 " + str(Path(self.controller.recentlist[-2]).stem), command=lambda: self.open_recent(2))
+            recents.add_command(label="1 " + str(Path(self.controller.recentlist[-2][0]).stem), command=lambda: self.open_recent(2))
         if numrecents >= 3:
-            recents.add_command(label="2 " + str(Path(self.controller.recentlist[-3]).stem), command=lambda: self.open_recent(3))
+            recents.add_command(label="2 " + str(Path(self.controller.recentlist[-3][0]).stem), command=lambda: self.open_recent(3))
         if numrecents >= 4:
-            recents.add_command(label="3 " + str(Path(self.controller.recentlist[-4]).stem), command=lambda: self.open_recent(4))
+            recents.add_command(label="3 " + str(Path(self.controller.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
 
 
         file.add_separator()
-        file.add_command(label="Exit", command=self.quit)  
+        file.add_command(label="Exit", command=lambda: self.exit_app())  
 
         info = Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
@@ -101,7 +101,7 @@ class AppWindow(Frame):
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
         try:
-            projfile = self.controller.recentlist[index]
+            projfile = self.controller.recentlist[index][0]
             if not projfile:
                 return
             self.open_project(projfile)
@@ -160,3 +160,8 @@ class AppWindow(Frame):
         except:
             pass
         return
+    
+    def exit_app(self):
+        self.controller.save_recent()
+        print("saved recents to file")
+        self.quit()
