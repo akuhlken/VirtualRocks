@@ -134,7 +134,6 @@ class main(Tk):
         print("opening project")
         self.picklepath = projfile
         self.projectname = Path(projfile).stem
-        self.title("VirtualRocks: " + self.projectname)
         # Load the path variables from the file
         print(projfile)
         self.projdir = Path(projfile).parent
@@ -146,6 +145,10 @@ class main(Tk):
             self.imgdir = self.projdir / path
         self._startup()
         self._update_state(self.state)
+        self.title("VirtualRocks: " + self.projectname)
+
+        print("in update: " + self.picklepath)
+
         self.update_recent()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
@@ -254,15 +257,16 @@ class main(Tk):
         #   the values should add. get the max current and add one?
         #   basically, we don't need a dictionary for function, but we want to use JSON so we need it
         #   should also have something that limits the length of recent to 4 so we don't save more things to loop thru.
-
+        strpickle = str(Path(self.picklepath).as_posix())
+    
         while len(self.recentlist) > 4:
             print("removing " + str(self.recentlist[0]) + " from recents")
             del self.recentlist[0]
         for rectup in self.recentlist:
-            if self.picklepath == rectup[0]:
+            if strpickle == rectup[0]:
                 self.recentlist.remove(rectup)
         if self.picklepath:     # if there is a picklepath (there should also be an image path)
-            self.recentlist.append((self.picklepath, self.numrecents))
+            self.recentlist.append((strpickle, self.numrecents))
             self.numrecents += 1
 
     def save_recent(self):

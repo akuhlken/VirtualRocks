@@ -84,14 +84,13 @@ class AppWindow(Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.new_project(projdir)
+        print("in new: " + str(self.controller.picklepath))
+        self.controller.update_recent()
 
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
-    def open_project(self, projfile=None, menuupdate=False):
-        if menuupdate:
-            self.controller.update_recent(menuupdate=True)
-            return
+    def open_project(self, projfile=None):
         if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
