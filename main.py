@@ -135,7 +135,7 @@ class main(Tk):
         self.picklepath = projfile
         self.projectname = Path(projfile).stem
         # Load the path variables from the file
-        print(projfile)
+        #print(projfile)
         self.projdir = Path(projfile).parent
         with open(projfile, 'rb') as file:
             (path,self.state) = pickle.load(file)
@@ -147,7 +147,7 @@ class main(Tk):
         self._update_state(self.state)
         self.title("VirtualRocks: " + self.projectname)
 
-        print("in update: " + str(self.picklepath))
+        #print("in update: " + str(self.picklepath))
 
         self.update_recent()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
@@ -260,7 +260,7 @@ class main(Tk):
         strpickle = str(Path(self.picklepath).as_posix())
     
         while len(self.recentlist) > 4:
-            print("removing " + str(self.recentlist[0]) + " from recents")
+            #print("removing " + str(self.recentlist[0]) + " from recents")
             del self.recentlist[0]
         for rectup in self.recentlist:
             if strpickle == rectup[0]:
@@ -280,7 +280,7 @@ class main(Tk):
             # need to check if empty
             recentdict = json.load(f)
             self.recentlist = list(dict(recentdict).items())
-            print(self.recentlist)
+            #print(self.recentlist)
 
 
     def _update_state(self, state):
