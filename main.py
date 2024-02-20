@@ -147,7 +147,7 @@ class main(Tk):
         self._update_state(self.state)
         self.title("VirtualRocks: " + self.projectname)
 
-        print("in update: " + self.picklepath)
+        print("in update: " + str(self.picklepath))
 
         self.update_recent()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")

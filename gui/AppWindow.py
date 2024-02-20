@@ -95,7 +95,7 @@ class AppWindow(Frame):
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return
-        self.controller.open_project(projfile)
+        self.controller.open_project(Path(projfile))
         
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
