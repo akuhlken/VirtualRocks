@@ -2,6 +2,7 @@ import subprocess
 import tkinter as tk       
 import pathlib as pl
 from tkinter import messagebox as mb
+from scripts.PointCloudManager import PointCloudManager as pcm
 
 class ReconManager():
 
@@ -104,7 +105,12 @@ class ReconManager():
             # If reconstruction exited normally
             self.controller.page2.setbounds.config(state="active")
             self.controller.page2.cancel.config(state="disabled")
+            self.pcm.generate_image()
+            self.controller.page2.set_map(pl.Path(f"gui/placeholder\density_map.png").resolve())
         self.p = None
+        #first call generate image and display
+        #then popup to ask for bounds
+        #call filter_point_cloud once bounds have been provided
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
@@ -131,6 +137,9 @@ class ReconManager():
             self.controller.page2.export.config(state="active")
             self.controller.page2.cancel.config(state="disabled")
         self.p = None
+
+
+
 
     #  Methods for canceling current recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py

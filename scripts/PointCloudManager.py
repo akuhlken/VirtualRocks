@@ -1,11 +1,11 @@
-
 import numpy as np
 import matplotlib.pyplot as plt
+import pathlib as pl
 class PointCloudManager:
-    def __init__(self, input_ply_file_path):
-        self.input_ply_file_path = input_ply_file_path
+    def __init__(self):
+        self.input_ply_file_path = pl.Path(r"dense\fused.ply")
 
-    def _read_ply_file(self):
+    def read_ply_file(self):
         with open(self.input_ply_file_path, 'r') as f:
             lines = f.readlines()
 
@@ -41,7 +41,7 @@ class PointCloudManager:
         return point_cloud_data, fields
 
     def filter_point_cloud(self, x_min, x_max, y_min, y_max):
-        point_cloud_data, fields = self._read_ply_file()
+        point_cloud_data, fields = self.read_ply_file()
 
         # Filter points based on user-specified bounds (X and Y only)
         filtered_point_cloud = point_cloud_data[
@@ -50,11 +50,7 @@ class PointCloudManager:
             (point_cloud_data[:, 1] >= y_min) &
             (point_cloud_data[:, 1] <= y_max)
             ]
-
-        return filtered_point_cloud, fields
-
-    def save_filtered_ply(self, filtered_point_cloud, fields, output_ply_file_path):
-        with open(output_ply_file_path, 'w') as output_file:
+        with open(pl.Path(r"dense\filtered.ply"), 'w') as output_file:
             # Write the header
             output_file.write("ply\n")
             output_file.write("format ascii 1.0\n")
@@ -71,11 +67,9 @@ class PointCloudManager:
                 formatted_point.append(str(int(point[-1])))
                 output_file.write(" ".join(formatted_point).rstrip('0').rstrip('.') + '\n')
 
-        print(f"Filtered point cloud saved to {output_ply_file_path}")
-
-    def generate_image(self, ply_file_path):
+    def generate_image(self):
         # Read the input PLY file and extract x and y coordinates
-        with open(ply_file_path, 'r') as f:
+        with open(pl.Path(r"dense\fused.ply"), 'r') as f:
             lines = f.readlines()
 
         header_lines = []
@@ -106,8 +100,8 @@ class PointCloudManager:
         y_values = []
         for i in range(num_points):
             values = list(map(float, data_lines[i].split()))
-            x_values.append(values[0])  # Assuming x-coordinate is the first field
-            y_values.append(values[1])  # Assuming y-coordinate is the second field
+            x_values.append(values[0])
+            y_values.append(values[1])
 
         # Create a hexbin plot (density map)
         plt.hexbin(x_values, y_values, gridsize=50, cmap='Blues', mincnt=1)
@@ -118,7 +112,8 @@ class PointCloudManager:
         plt.title('Density Map of Points')
 
         # Save the plot as a PNG file
-        plt.savefig('density_map.png')
+        #plt.savefig(pl.Path(r"dense\density_map.png"))
+        plt.savefig(r"gui/placeholder\density_map.png")
 
         # Show the plot (optional)
         #plt.show()
