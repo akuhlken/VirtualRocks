@@ -148,12 +148,12 @@ class PipelineGUI(AppWindow):
         if dialog.result: 
             try:
                 minx= dialog.result[0]
-                maxx= dialog.result[0]
-                miny= dialog.result[0]
-                maxy= dialog.result[0]
-                self.controller.set_bounds(minx, maxx, miny, maxy)
+                maxx= dialog.result[1]
+                miny= dialog.result[2]
+                maxy= dialog.result[3]
             except:
                 self._log("All fields must contain numbers")
+        self.controller.set_bounds(minx, maxx, miny, maxy)
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):

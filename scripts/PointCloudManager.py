@@ -1,3 +1,5 @@
+import os
+import shutil
 from matplotlib import pyplot
 from plyfile import PlyData, PlyElement
 import pathlib as pl
@@ -10,30 +12,32 @@ def get_coordinates(filename):
     return x, y
 
 def create_heat_map(file, outdir):
-    filename = file
-    x, y = get_coordinates(filename)
+    x, y = get_coordinates(file)
     pyplot.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
     pyplot.xlabel('X')
     pyplot.ylabel('Y')
     pyplot.title('Dense Point Cloud')
-    pyplot.savefig(pl.Path(outdir / "heat_map.png"))
+    pyplot.savefig(pl.Path(str(outdir)) / "heat_map.png")
     pyplot.close('all')
     # TODO: Warning created when using Matplotlib outside of main thread, works for me but needs testing
 
 def remove_points(file, minx, maxx, miny, maxy):
-    plydata = PlyData.read(file)
+    tempfile = pl.Path(file).parent / "temp.ply"
+    if os.path.isfile(tempfile):
+        os.remove(tempfile)
+    shutil.copy(file, tempfile)
+    plydata = PlyData.read(tempfile)
     vertex = plydata['vertex']
     x = vertex['x']
     y = vertex['y']
     mask = (x >= minx) & (x <= maxx) & (y >= miny) & (y <= maxy)
-    vertex = vertex[~mask]
+    vertex = vertex[mask]
     new_vertex = PlyElement.describe(vertex, 'vertex')
     new_plydata = PlyData([new_vertex], text=plydata.text)
-    file = str(file)
     new_plydata.write(file)
-
+    
 #create_heat_map(pl.Path(r"C:\Users\akuhl\Downloads\test\dense\fused.ply"), pl.Path(r"C:\Users\akuhl\Downloads\test\dense"))
-#remove_points(pl.Path(r"C:\Users\akuhl\Downloads\test\dense\fused.ply"), -10, 10, -10, 10)
+remove_points(r"C:\Users\akuhl\Downloads\test\dense\fused.ply", -10, 10, -10, 10)
 
 # import numpy as np
 # import matplotlib.pyplot as plt

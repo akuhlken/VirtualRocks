@@ -1,5 +1,4 @@
 import subprocess
-import tkinter as tk       
 import pathlib as pl
 from tkinter import messagebox as mb
 import scripts.PointCloudManager as pcm
