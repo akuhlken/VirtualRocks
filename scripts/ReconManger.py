@@ -97,7 +97,6 @@ class ReconManager():
                 # If reconstruction exited normally
                 dense = Path(self.projdir / "dense")
                 pcm.create_heat_map(Path(dense / "fused.ply"), dense)
-                self.controller.page2.set_map(Path(dense/ "heat_map.png"))
                 self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:

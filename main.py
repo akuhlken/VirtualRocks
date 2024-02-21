@@ -283,21 +283,27 @@ class main(Tk):
         self.state = state
         self.page2.progresstotal.config(value=state)
         if state == STARTED:
+            self.page2.set_map(self.page2.DEFAULT_MAP)
             self.page2.matcher.config(state='disabled')
             self.page2.setbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.show.config(state='disabled')
         if state == PHOTOS:
+            self.page2.set_map(self.page2.DEFAULT_MAP)
             self.page2.setbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
         if state == MATCHER:
+            dense = Path(self.projdir / "dense")
+            self.page2.set_map(Path(dense/ "heat_map.png"))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
         if state == MESHER:
+            dense = Path(self.projdir / "dense")
+            self.page2.set_map(Path(dense/ "heat_map.png"))
             self.page2.matcher.config(state='active')
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
