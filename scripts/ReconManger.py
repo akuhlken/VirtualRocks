@@ -2,6 +2,7 @@ import subprocess
 import tkinter as tk
 from pathlib import Path
 from tkinter import messagebox as mb
+import scripts.PointCloudManager as pcm
 
 # Progress Constants
 STARTED = 0
@@ -49,16 +50,14 @@ class ReconManager():
     #   returning when self.p finishes
     def _send_log(self, msg=None):
         if msg:
-            self.controller.page2.logtext.insert(tk.END, msg + "\n")
-            self.controller.page2.logtext.see("end")
+            self.controller.page2._log(msg)
             if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)
             return
         while self.p.poll() is None:
             msg = self.p.stdout.readline().strip() # read a line from the process output
             if msg:
-                self.controller.page2.logtext.insert(tk.END, msg + "\n")
-                self.controller.page2.logtext.see("end")
+                self.controller.page2._log(msg)
                 if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)
 
@@ -94,13 +93,19 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
-            if (self.projdir / Path(r"dense\fused.ply")).is_file():
-            # If reconstruction exited normally
+            if Path(self.projdir / "dense" / "fused.ply").is_file():
+                # If reconstruction exited normally
+                dense = Path(self.projdir / "dense")
+                pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+                self.controller.page2.set_map(Path(dense/ "heat_map.png"))
                 self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Matcher failed, please retry")
         self.p = None
+        #first call generate image and display
+        #then popup to ask for bounds
+        #call filter_point_cloud once bounds have been provided
 
     # Main mesher pipeling code
     #   NOTE: This method runs in its own thread
@@ -130,6 +135,9 @@ class ReconManager():
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Mesher failed, please retry")
+
+
+
 
     #  Methods for canceling current recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py

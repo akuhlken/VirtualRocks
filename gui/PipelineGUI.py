@@ -1,10 +1,11 @@
-from tkinter import Canvas, Text, Menu
+from tkinter import Canvas, Text, Menu, END
 from tkinter.ttk import Frame, Label, Button, Scrollbar, Progressbar
 from ttkbootstrap import Separator
 from tkinter import filedialog as fd, messagebox as mb
 from PIL import ImageTk, Image
 from pathlib import Path
 from gui.AppWindow import AppWindow
+from gui.BoundsDialog import BoundsDialog
 from showinfm import show_in_file_manager
 
 class PipelineGUI(AppWindow):
@@ -19,20 +20,23 @@ class PipelineGUI(AppWindow):
 
     def __init__(self, parent, controller, projdir):
         AppWindow.__init__(self, parent, controller)
+        self.setup_layout()
         self.projdir = projdir
         self.controller = controller
         self.currentmap = self.DEFAULT_MAP
+        self.map_image_id = None
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
-        self.setup_layout()
+        self.bind("<<RefreshMap>>", self._refresh_map)
+        
         
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
-        left = Frame(self)
+        self.left = Frame(self)
         right = Frame(self)
-        prog = Frame(left)
+        prog = Frame(self.left)
         sep = Frame(right)
-        left.pack(side='left', fill='both', anchor="e", expand=True)
+        self.left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
@@ -51,9 +55,9 @@ class PipelineGUI(AppWindow):
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = Canvas(left)  # ttk doesn't have a canvas widget, so we can't convert this.
-        self.dirtext = Label(left, text="Project Directory: Test/test/test/test/test")
-        self.changebtn = Button(left, text="Change", command=lambda: self.change_projdir())
+        self.map = Canvas(self.left)
+        self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
+        self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
 
         self.logtext = Text(right, width=50, background=self.controller.logbackground)
         scrollbar = Scrollbar(right)
@@ -100,6 +104,7 @@ class PipelineGUI(AppWindow):
         self.show.config(state="disabled")
         self.cancel.config(state="disabled")
 
+
     # Event handler for "New" in the dropdown menu
         # Method should first check to make sure nothing is running.
         # Then it should do basically the same thing as the new_project method
@@ -141,9 +146,16 @@ class PipelineGUI(AppWindow):
         # Method should open a dialogue prompting the user to enter bounds
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
-        # progress bar updating:
-        self.controller.set_bounds((0,0),(0,0))
-        #self.progresstotal.step(1)
+        dialog = BoundsDialog(self)
+        if dialog.result: 
+            try:
+                minx= dialog.result[0]
+                maxx= dialog.result[1]
+                miny= dialog.result[2]
+                maxy= dialog.result[3]
+            except:
+                self._log("All fields must contain numbers")
+            self.controller.set_bounds(minx, maxx, miny, maxy)
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):
@@ -154,12 +166,8 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
-        image = ImageTk.PhotoImage(Image.open(mapdir))
-        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
-        self.map_image = mapdir
-        self.map.bind('<Configure>', self._resizer)
         self.currentmap = mapdir
-
+        self.event_generate("<<RefreshMap>>")
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
@@ -194,7 +202,7 @@ class PipelineGUI(AppWindow):
     #   Updates and scales the map image with window
     def _resizer(self, e):
         global image1, resized_image, new_image
-        image1 = Image.open(self.map_image)
+        image1 = Image.open(self.currentmap)
         width_scale = e.width / image1.width
         height_scale = e.height / image1.height
         scale = min(width_scale, height_scale)
@@ -205,3 +213,15 @@ class PipelineGUI(AppWindow):
         resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
         new_image = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=new_image)
+
+    def _log(self, msg):
+        self.logtext.insert(END, msg + "\n")
+        self.logtext.see("end")
+
+    def _refresh_map(self, e):
+        self.map.destroy()
+        self.map = Canvas(self.left)
+        self.map.bind('<Configure>', self._resizer)
+        self.map.pack(fill='both', expand=True, side='right')
+        image = ImageTk.PhotoImage(Image.open(self.currentmap))
+        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
