@@ -1,4 +1,4 @@
-from tkinter import Canvas, Text, Menu
+from tkinter import Canvas, Text, Menu, END
 from tkinter.ttk import Frame, Label, Button, Scrollbar, Progressbar
 from ttkbootstrap import Separator
 from tkinter import filedialog as fd, messagebox as mb
@@ -215,7 +215,7 @@ class PipelineGUI(AppWindow):
         self.map.itemconfigure(self.map_image_id, image=new_image)
 
     def _log(self, msg):
-        # self.logtext.insert(tk.END, msg + "\n") TODO
+        self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
 
     def _refresh_map(self, e):
