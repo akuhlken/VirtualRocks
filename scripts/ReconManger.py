@@ -4,12 +4,20 @@ import pathlib as pl
 from tkinter import messagebox as mb
 from scripts.PointCloudManager import PointCloudManager as pcm
 
+# Progress Constants
+STARTED = 0
+PHOTOS = 10
+MATCHER = 70
+MESHER = 100
+
 class ReconManager():
 
     def __init__(self, controller, projdir):
         self.controller = controller
         self.imgdir = None
         self.projdir = projdir
+        self.progresspercent = 0
+        self._update_progress("$$")
 
     # Method for updating progress bar and progress text
     #   when a process completes messages should be sent in the form: "$nextstep$""
@@ -21,38 +29,22 @@ class ReconManager():
             self.controller.page2.progresstext.config(text=f"Nothing's running...")
             return
         
-        elif msg == "$$$":
-            self.controller.page2.progresstotal.stop()
-            self._update_progress("$$")
-            return
-
         pkg = msg.replace('$', '').split('.')
         currentstep = pkg[0]
         currentsubstep = pkg[1]
         percent = pkg[2]
-        percentage = int(int(percent)/self.controller.page2.progress["maximum"] * 100) # if we only use this variable once, is it worth keeping?
+        self.progresspercent = int(int(percent)/self.controller.page2.progress["maximum"] * 100) # if we only use this variable once, is it worth keeping?
         if currentsubstep == "":
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}: ")
         else:
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}, {currentsubstep}: ")
             currentstep = currentsubstep
-        self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(percentage))
+        self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(self.progresspercent))
         self.controller.page2.progress.config(value=percent)
 
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:
             self.controller.page2.progresstext.config(text=f"{currentstep} complete!")
-            # need to consider how many steps we have... shouldn't just step by 10 (but would need 
-            # to step by some constant value unless we want to change how we're doing this.)
-            stepamount = 10
-
-            if self.controller.page2.progresstotal["value"] + stepamount > self.controller.page2.progresstotal["maximum"]:
-                self.controller.page2.progresstotal.config(value=self.controller.page2.progresstotal["maximum"])
-                self.controller.page2.progresstotaltext.config(text=f"Done!")
-            else:
-                self.controller.page2.progresstotal.step(stepamount)
-
         
-
     # Method has two behaviors, if passed a string this method will act like a print() to the log
     #   if no args are provided this will capture any messages that self.p sends and send them to the log,
     #   returning when self.p finishes
@@ -91,6 +83,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller._update_state(PHOTOS)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Matcher__________")
         
@@ -102,11 +95,14 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
-            # If reconstruction exited normally
-            self.controller.page2.setbounds.config(state="active")
-            self.controller.page2.cancel.config(state="disabled")
-            self.pcm.generate_image()
-            self.controller.page2.set_map(pl.Path(f"gui/placeholder\density_map.png").resolve())
+            if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
+                # If reconstruction exited normally
+                self.pcm.generate_image()
+                self.controller.page2.set_map(pl.Path(f"gui/placeholder\density_map.png").resolve())
+                self.controller._update_state(MATCHER)
+                self.controller.page2.cancel.config(state="disabled")
+            else:
+                self._send_log("Matcher failed, please retry")
         self.p = None
         #first call generate image and display
         #then popup to ask for bounds
@@ -122,6 +118,7 @@ class ReconManager():
                 self.cancel()
         except:
             pass
+        self.controller._update_state(MATCHER)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Mesher__________")
         
@@ -133,10 +130,12 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
+            if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
             # If reconstruction exited normally
-            self.controller.page2.export.config(state="active")
-            self.controller.page2.cancel.config(state="disabled")
-        self.p = None
+                self.controller._update_state(MESHER)
+                self.controller.page2.cancel.config(state="disabled")
+            else:
+                self._send_log("Mesher failed, please retry")
 
 
 
@@ -146,11 +145,19 @@ class ReconManager():
     #   After cancel it should change the action button back to start
     def cancel(self):
         self.controller.page2.cancel.config(state="disabled")
-        if self.p:
+        try:
             try:
-                self.p.terminate() 
+                self.p.terminate()
                 self.p.wait(timeout=2)
             except subprocess.TimeoutExpired:
                 self.p.kill()
+        except:
+            pass
         self._send_log("process was sent kill signal")
         self._send_log("$$")
+
+    # method to handle auto reconstruction without setting any user bounds
+    def auto(self):
+        self.matcher()
+        if (self.projdir / pl.Path(r"dense\fused.ply")).is_file(): 
+            self.mesher()

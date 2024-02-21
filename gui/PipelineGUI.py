@@ -5,63 +5,29 @@ from tkinter import filedialog as fd
 from tkinter import messagebox as mb
 import pathlib as pl
 from tkinter import ttk
+from gui.AppWindow import AppWindow
+from showinfm import show_in_file_manager
 
-class PipelineGUI(ttk.Frame):
+class PipelineGUI(AppWindow):
     
     # GUI constants
     DEFAULT_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = pl.Path(f"gui/placeholder/drone.jpg").resolve()
 
+    # temp constants until we have a good way to deal with outliers and can display
+    DARK_MAP = pl.Path(f"gui/placeholder/darkmap.jpg").resolve()
+    LIGHT_MAP = pl.Path(f"gui/placeholder/map.jpg").resolve()
+
     def __init__(self, parent, controller, projdir):
-        ttk.Frame.__init__(self, parent)
+        AppWindow.__init__(self, parent, controller)
         self.projdir = projdir
         self.controller = controller
+        self.currentmap = self.DEFAULT_MAP
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
-        self.create_menu()
         self.setup_layout()
-
-    # Setup method for top menu bar
-    def create_menu(self):
-        menubar = tk.Menu(self) 
-
-        file = tk.Menu(menubar, tearoff=0)  
-        file.add_command(label="New")  
-        #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
-            # check if the user has done any work on the current
-            # project they're working on and if they want to save,
-            # then make a new file like how we do it from start.
-        file.add_command(label="Open")  
-        #file.add_command(label="Open", command=lambda: self.controller.open_project()) 
-
-        file.add_command(label="Save")  
-        file.add_command(label="Save as")    
-        file.add_separator()  
- 
-        # change to an option menu so you can see what you've selected (too hard rn)
-        styles = tk.Menu(file, tearoff=0)
-        file.add_cascade(label="Set Style", menu=styles)
-        styles.add_command(label="Dark", command=lambda: self.controller.start_darkmode())
-        styles.add_command(label="Light", command=lambda: self.controller.start_lightmode()) 
-        styles.add_command(label="not Goblin", command=lambda: self.controller.start_goblinmode()) 
-        styles.add_command(label="Pick Color")
-
-        file.add_separator() 
-        file.add_command(label="Exit", command=self.quit)  
-
-        info = tk.Menu(menubar, tearoff=0)
-        info.add_command(label="Common Issues") 
-        info.add_command(label="Colmap Info") 
-        info.add_command(label="MeshLab Info") 
-        info.add_command(label="Pasta Recipes") 
-
-        menubar.add_cascade(label="File", menu=file)  
-        menubar.add_cascade(label="Info", menu=info) 
-
-        self.controller.config(menu=menubar)
-
+        
     # Setup method for GUI layout and elements
     def setup_layout(self):
-
         # Layout framework
         left = ttk.Frame(self)
         right = ttk.Frame(self)
@@ -82,11 +48,11 @@ class PipelineGUI(ttk.Frame):
         self.setbounds = ttk.Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
         self.outres = ttk.Label(right, text="Output Resulution:")
         self.mesher = ttk.Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
-        self.export = ttk.Button(right, text="Export", command=lambda: self.controller.export())
+        self.show = ttk.Button(right, text="Show Files", command=lambda: self.show_files())
         self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left, background=self.controller.backcolor)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.map = tk.Canvas(left)  # ttk doesn't have a canvas widget, so we can't convert this.
         self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
@@ -113,14 +79,13 @@ class PipelineGUI(ttk.Frame):
         self.setbounds.pack()
         self.outres.pack()
         self.mesher.pack()
-        self.export.pack()
+        self.show.pack()
         self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
         self.changebtn.pack(side='bottom')
         self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
         
-
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
@@ -133,16 +98,27 @@ class PipelineGUI(ttk.Frame):
         self.setbounds.config(state="disabled")
         self.matcher.config(state="disabled")
         self.mesher.config(state="disabled")
-        self.export.config(state="disabled")
+        self.show.config(state="disabled")
         self.cancel.config(state="disabled")
 
     # Event handler for "New" in the dropdown menu
-        # Method should first check if the current project is saved and prompt
-        # the user to save if they haven't already/recently.
+        # Method should first check to make sure nothing is running.
         # Then it should do basically the same thing as the new_project method
         # in StartGUI.
     def new_proj_handler(self):
-        pass
+        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
+        if not projdir:
+            return
+        if ' ' in projdir:
+            print("Path must not contain white spaces")
+            mb.showerror("Paths cannot contain whitespace                           ")
+            return
+        self.controller.new_project(projdir)
+
+    # Event handler for "Start Menu" in the dropdown menu
+    def startmenu_handler(self):
+        self.controller.config(menu=tk.Menu(self))
+        self.controller.start_menu()
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
@@ -167,7 +143,6 @@ class PipelineGUI(ttk.Frame):
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         # progress bar updating:
-
         self.controller.set_bounds((0,0),(0,0))
         #self.progresstotal.step(1)
 
@@ -184,6 +159,8 @@ class PipelineGUI(ttk.Frame):
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir
         self.map.bind('<Configure>', self._resizer)
+        self.currentmap = mapdir
+
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
@@ -194,7 +171,7 @@ class PipelineGUI(ttk.Frame):
         self.exampleimage.image = img
 
     # Gives the user an option to chnage the main project directory
-    #   If no savefile this will crefresh and create a new project
+    #   If no savefile this will refresh and create a new project
     #   If chosen dir has a savefile this will load the existing project
     def change_projdir(self):
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
@@ -204,11 +181,11 @@ class PipelineGUI(ttk.Frame):
             print("Path must not contain white spaces")
             mb.showerror("Paths cannot contain whitespace                           ")
             return
-        projfile = projdir / pl.Path(r"project.pkl")
-        if (projfile).is_file():
-            self.controller.open_project(projfile)
-        else:
-            self.controller.new_project(projdir)
+        self.controller.cancel_recon()   
+        self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
+
+    def show_files(self):
+        show_in_file_manager(str(self.controller.projdir) + "/out")
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
