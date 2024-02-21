@@ -6,6 +6,7 @@ from tkinter import messagebox as mb
 import pathlib as pl
 from tkinter import ttk
 from gui.AppWindow import AppWindow
+from gui.BoundsDialog import BoundsDialog
 from showinfm import show_in_file_manager
 
 class PipelineGUI(AppWindow):
@@ -142,9 +143,16 @@ class PipelineGUI(AppWindow):
         # Method should open a dialogue prompting the user to enter bounds
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
-        # progress bar updating:
-        self.controller.set_bounds((0,0),(0,0))
-        #self.progresstotal.step(1)
+        dialog = BoundsDialog(self)
+        try:
+            minx= dialog.result[0]
+            maxx= dialog.result[0]
+            miny= dialog.result[0]
+            maxy= dialog.result[0]
+            self.controller.set_bounds(minx, maxx, miny, maxy)
+        except:
+            pass
+            # TODO: Inform the user what went wrong
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):

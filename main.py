@@ -10,7 +10,6 @@ import threading
 import pathlib as pl
 from scripts.ReconManger import ReconManager
 import ctypes   # icon stuff
-import scripts.test
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -205,15 +204,9 @@ class main(tk.Tk):
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
     #   This method should not open a dialogue, the is the role of the GUI classes
-    def set_bounds(self, A, B):
-        # TODO: ask user for bounds
-        # dense = pl.Path(self.projdir / "dense")
-        # scripts.test.create_heat_map(pl.Path(dense / "fused.ply"), dense)
-        # self.page2.set_map(pl.Path(dense/ "heat_map.png"))
+    def set_bounds(self, minx, maxx, miny, maxy):        
         self.recon._send_log("$$")
         self.recon._send_log("$Setting Bounds..100$")
-        self.A = A
-        self.B = B
 
     # Handler for starting recon
     #   Start a new thread with the _recon() method
