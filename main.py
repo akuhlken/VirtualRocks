@@ -1,15 +1,14 @@
-import pickle
-import tkinter as tk   
-import ttkbootstrap as tttk  
-from tkinter import ttk
-from tkinter import simpledialog
+from ttkbootstrap import Style
+from tkinter import simpledialog, PhotoImage, Frame, Tk
+from pathlib import Path
+from threading import Thread
 from scripts.PhotoManager import PhotoManager
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
-import threading   
-import pathlib as pl
 from scripts.ReconManger import ReconManager
-import ctypes   # icon stuff
+import pickle
+import ctypes   # for adding icon to taskbar
+import json
 import scripts.PointCloudManager as pcm
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
@@ -21,10 +20,10 @@ PHOTOS = 10
 MATCHER = 70
 MESHER = 100
 
-class main(tk.Tk):
+class main(Tk):
 
     def __init__(self, *args, **kwargs):
-        tk.Tk.__init__(self, *args, **kwargs)
+        Tk.__init__(self, *args, **kwargs)
 
         # Controller Variables
         self.projdir = None
@@ -32,10 +31,11 @@ class main(tk.Tk):
         self.image = None
         self.recon = None
         self.state = STARTED
-        self.recentlist = list()
+        self.recentlist = list()      # saved to JSON file as a dict, but needs to be list (of tuples) to be usable.
+        self.numrecents = 0
         self.get_recent()
 
-        # for loading icon on taskbar
+        # for loading icon on taskbar, basically just says we aren't doing only python.
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
         
@@ -46,16 +46,16 @@ class main(tk.Tk):
         centerdim = self.open_middle(1000,700)
         self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
         self.title("VirtualRocks")
-        icon = tk.PhotoImage(file=pl.Path(r"gui\placeholder\logo.png").resolve())
+        icon = PhotoImage(file=Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
 
         # Importing external styles
-        tttk.Style.load_user_themes = pl.Path(f"gui/goblinmode.py").resolve()
+        Style.load_user_themes = Path(f"gui/goblinmode.py").resolve()
 
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.logbackground = "#ffffff"
-        self.style = tttk.Style("darkly")
+        self.style = Style("darkly")
         self.styleflag = "dark"
 
         # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
@@ -72,7 +72,7 @@ class main(tk.Tk):
         self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
 
         # container is a stack of frames (aka our two main pages)
-        self.container = ttk.Frame(self)
+        self.container = Frame(self)
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
@@ -111,12 +111,12 @@ class main(tk.Tk):
     #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir, name=None, imgdir=None):
         print("creating new project")
-        self.projdir = pl.Path(projdir)
+        self.projdir = Path(projdir)
         if not name:
             self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
         else:
             self.projectname = name
-        self.picklepath = self.projdir / pl.Path(self.projectname + '.pkl')
+        self.picklepath = self.projdir / Path(self.projectname + '.pkl')
         self._startup()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         self.title("VirtualRocks: " + self.projectname)
@@ -124,7 +124,7 @@ class main(tk.Tk):
             self.imgdir = imgdir
             pm = PhotoManager(self.imgdir)
             self.page2.update_text(pm.numimg)
-            self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
+            self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
             self._update_state(PHOTOS)
         else:
             self._update_state(STARTED)
@@ -134,11 +134,10 @@ class main(tk.Tk):
     def open_project(self, projfile):
         print("opening project")
         self.picklepath = projfile
-        self.projectname = pl.Path(projfile).stem
-        self.title("VirtualRocks: " + self.projectname)
+        self.projectname = Path(projfile).stem
         # Load the path variables from the file
-        print(projfile)
-        self.projdir = pl.Path(projfile).parent
+        #print(projfile)
+        self.projdir = Path(projfile).parent
         with open(projfile, 'rb') as file:
             (path,self.state) = pickle.load(file)
         if path.is_absolute():
@@ -147,12 +146,16 @@ class main(tk.Tk):
             self.imgdir = self.projdir / path
         self._startup()
         self._update_state(self.state)
+        self.title("VirtualRocks: " + self.projectname)
+
+        #print("in update: " + str(self.picklepath))
+
         self.update_recent()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
             self.page2.update_text(pm.numimg)
-            self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
+            self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
         except Exception as e:
             self.recon._send_log("Could not find image directory")
             self._update_state(STARTED)
@@ -160,7 +163,6 @@ class main(tk.Tk):
 
 
     # opens a new window at the middle of the screen.
-    #   https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
     def open_middle(self, windoww, windowh):
         sw = self.winfo_screenwidth()    # screen width
         sh = self.winfo_screenheight()   # screen height
@@ -191,11 +193,11 @@ class main(tk.Tk):
         self.recon._send_log("$$")
         self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
-        self.imgdir = pl.Path(imgdir).resolve()
+        self.imgdir = Path(imgdir).resolve()
         pm = PhotoManager(self.imgdir)
         self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(pm.numimg)
-        self.page2.set_example_image(self.imgdir / pl.Path(pm.get_example()))
+        self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
         self._update_state(PHOTOS)
             
         # updates the .txt doc that tracks recent values. b/c this is where we make .pkl files,
@@ -208,16 +210,16 @@ class main(tk.Tk):
     def set_bounds(self, minx, maxx, miny, maxy):      
         self.recon._send_log("$$")
         self.recon._send_log("$Setting Bounds..100$")
-        dense = pl.Path(self.projdir / "dense")
-        pcm.remove_points(pl.Path(dense / "fused.ply"), minx, maxx, miny, maxy)
-        pcm.create_heat_map(pl.Path(dense / "fused.ply"), dense)
-        self.page2.set_map(pl.Path(dense/ "heat_map.png"))
+        dense = Path(self.projdir / "dense")
+        pcm.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
+        pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+        self.page2.set_map(Path(dense/ "heat_map.png"))
 
     # Handler for starting recon
     #   Start a new thread with the _recon() method
     def start_matcher(self):
         self.recon.imgdir = self.imgdir
-        self.thread1 = threading.Thread(target = self.recon.matcher)
+        self.thread1 = Thread(target = self.recon.matcher)
         self.thread1.daemon = True
         self.thread1.start()
 
@@ -225,7 +227,7 @@ class main(tk.Tk):
     #   Start a new thread with the _recon() method
     def start_mesher(self):
         self.recon.imgdir = self.imgdir
-        self.thread1 = threading.Thread(target = self.recon.mesher)
+        self.thread1 = Thread(target = self.recon.mesher)
         self.thread1.daemon = True
         self.thread1.start()
 
@@ -241,27 +243,40 @@ class main(tk.Tk):
             self.recon._send_log("No images loaded")
             return
         self.recon.imgdir = self.imgdir
-        self.thread1 = threading.Thread(target = self.recon.auto)
+        self.thread1 = Thread(target = self.recon.auto)
         self.thread1.daemon = True
         self.thread1.start()
 
     def update_recent(self):
-        if str(self.picklepath) in self.recentlist:
-            self.recentlist.remove(str(self.picklepath))
-        if str(self.picklepath) and str(self.imgdir):
-            self.recentlist.append(str(self.picklepath))
-        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
-            f.write("$".join(self.recentlist))
+        # used by menu to update, basically the menu is refreshed every time this is called (needs to handle blanks)
+        # if picklepath is null, then we shouldn't add anything to the dict.
+        #   the values should add. get the max current and add one?
+        #   basically, we don't need a dictionary for function, but we want to use JSON so we need it
+        #   should also have something that limits the length of recent to 4 so we don't save more things to loop thru.
+        strpickle = str(Path(self.picklepath).as_posix())
+    
+        while len(self.recentlist) > 4:
+            #print("removing " + str(self.recentlist[0]) + " from recents")
+            del self.recentlist[0]
+        for rectup in self.recentlist:
+            if strpickle == rectup[0]:
+                self.recentlist.remove(rectup)
+        if self.picklepath:     # if there is a picklepath (there should also be an image path)
+            self.recentlist.append((strpickle, self.numrecents))
+            self.numrecents += 1
+
+    def save_recent(self):
+        with open(Path("main.py").parent / 'recents.json', 'w') as f:
+            json.dump(self.recentlist, f)
+            print("saved recent files.")
+    
 
     def get_recent(self):
-        with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:
-            filelist = f.read()
-            if filelist == "":
-                self.recentlist = list()
-                return
-            self.recentlist = list(filelist.split('$'))
-            print(self.recentlist)
-            # can get item in dict by: list(self.recentdict.items())[index]
+        with open(Path("main.py").parent / 'recents.json') as f:
+            # need to check if empty
+            recentdict = json.load(f)
+            self.recentlist = list(dict(recentdict).items())
+            #print(self.recentlist)
 
 
     def _update_state(self, state):
@@ -302,6 +317,7 @@ class main(tk.Tk):
         except:
             print("no active processes")
         print("exiting app")
+        self.save_recent()                  # save recents at the very end
         self.destroy()
 
 if __name__ == "__main__":

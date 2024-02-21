@@ -9,6 +9,9 @@ what things to install.
 ^^^^^^^^^^^^^^^^^^^^^^^
 everything (colmap).
 
+list things to pip install in a code block.
+`code block?`
+
 
 how to get github stuff working.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,5 +1,6 @@
 import subprocess
-import pathlib as pl
+import tkinter as tk
+from pathlib import Path
 from tkinter import messagebox as mb
 import scripts.PointCloudManager as pcm
 
@@ -66,7 +67,7 @@ class ReconManager():
     #   in a desnse reconstruction
     def matcher(self):
         clean = 'T'
-        if (self.projdir / pl.Path(r"database.db")).is_file():
+        if (self.projdir / Path(r"database.db")).is_file():
             response = mb.askyesnocancel("Start Matcher", "Start clean and remove old database?")
             if response == None:
                 return
@@ -84,7 +85,7 @@ class ReconManager():
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Matcher__________")
         
-        colmap = pl.Path("scripts/COLMAP.bat").resolve()
+        colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         # TODO have next line run specific python version?
         # self.projdir, self.imgdir, clean
@@ -92,11 +93,11 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
-            if pl.Path(self.projdir / "dense" / "fused.ply").is_file():
+            if Path(self.projdir / "dense" / "fused.ply").is_file():
                 # If reconstruction exited normally
-                dense = pl.Path(self.projdir / "dense")
-                pcm.create_heat_map(pl.Path(dense / "fused.ply"), dense)
-                self.controller.page2.set_map(pl.Path(dense/ "heat_map.png"))
+                dense = Path(self.projdir / "dense")
+                pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+                self.controller.page2.set_map(Path(dense/ "heat_map.png"))
                 self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
@@ -120,7 +121,7 @@ class ReconManager():
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Mesher__________")
         
-        colmap = pl.Path("scripts/COLMAP.bat").resolve()
+        colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
         
         # TODO have next line run specific python version?
@@ -128,7 +129,7 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
-            if (self.projdir / pl.Path(r"out\100k.obj")).is_file():
+            if (self.projdir / Path(r"out\100k.obj")).is_file():
             # If reconstruction exited normally
                 self.controller._update_state(MESHER)
                 self.controller.page2.cancel.config(state="disabled")
@@ -157,5 +158,5 @@ class ReconManager():
     # method to handle auto reconstruction without setting any user bounds
     def auto(self):
         self.matcher()
-        if (self.projdir / pl.Path(r"dense\fused.ply")).is_file(): 
+        if (self.projdir / Path(r"dense\fused.ply")).is_file(): 
             self.mesher()
