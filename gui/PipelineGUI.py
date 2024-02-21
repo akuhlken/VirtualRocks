@@ -21,21 +21,23 @@ class PipelineGUI(AppWindow):
 
     def __init__(self, parent, controller, projdir):
         AppWindow.__init__(self, parent, controller)
+        self.setup_layout()
         self.projdir = projdir
         self.controller = controller
         self.currentmap = self.DEFAULT_MAP
         self.map_image_id = None
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
-        self.setup_layout()
+        self.bind("<<RefreshMap>>", self._refresh_map)
+        
         
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
-        left = ttk.Frame(self)
+        self.left = ttk.Frame(self)
         right = ttk.Frame(self)
-        prog = ttk.Frame(left)
+        prog = ttk.Frame(self.left)
         sep = ttk.Frame(right)
-        left.pack(side='left', fill='both', anchor="e", expand=True)
+        self.left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
@@ -54,10 +56,9 @@ class PipelineGUI(AppWindow):
         self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left)
-        self.map.bind('<Configure>', self._resizer)
-        self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
-        self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
+        self.map = tk.Canvas(self.left)
+        self.dirtext = ttk.Label(self.left, text="Project Directory: Test/test/test/test/test")
+        self.changebtn = ttk.Button(self.left, text="Change", command=lambda: self.change_projdir())
 
         self.logtext = tk.Text(right, width=50, background=self.controller.logbackground)
         scrollbar = ttk.Scrollbar(right)
@@ -103,6 +104,7 @@ class PipelineGUI(AppWindow):
         self.mesher.config(state="disabled")
         self.show.config(state="disabled")
         self.cancel.config(state="disabled")
+
 
     # Event handler for "New" in the dropdown menu
         # Method should first check to make sure nothing is running.
@@ -165,13 +167,8 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
-        if self.map_image_id:
-            self.map.delete(self.map_image_id)
-            self.map_image_id = None
-            self.map.config(width=1, height=1)
         self.currentmap = mapdir
-        image = ImageTk.PhotoImage(Image.open(self.currentmap))
-        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
+        self.event_generate("<<RefreshMap>>")
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
@@ -201,7 +198,7 @@ class PipelineGUI(AppWindow):
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
     def _resizer(self, e):
-        print(e.width, e.height)
+        print(e.width, e.height, self.map.winfo_width(), self.map.winfo_height())
         global image1, resized_image, new_image
         image1 = Image.open(self.currentmap)
         width_scale = e.width / image1.width
@@ -218,3 +215,11 @@ class PipelineGUI(AppWindow):
     def _log(self, msg):
         self.logtext.insert(tk.END, msg + "\n")
         self.logtext.see("end")
+
+    def _refresh_map(self, e):
+        self.map.destroy()
+        self.map = tk.Canvas(self.left)
+        self.map.bind('<Configure>', self._resizer)
+        self.map.pack(fill='both', expand=True, side='right')
+        image = ImageTk.PhotoImage(Image.open(self.currentmap))
+        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
