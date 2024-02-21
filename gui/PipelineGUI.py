@@ -24,6 +24,7 @@ class PipelineGUI(AppWindow):
         self.projdir = projdir
         self.controller = controller
         self.currentmap = self.DEFAULT_MAP
+        self.map_image_id = None
         self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.setup_layout()
         
@@ -164,16 +165,13 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
-        # img = Image.open(mapdir)
-        # img = img.resize((150, 100), Image.Resampling.LANCZOS)
-        # img = ImageTk.PhotoImage(img)
-        # self.map.config(image=img)
-        # self.map.image = img
-
-        image = ImageTk.PhotoImage(Image.open(mapdir))
-        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
-        self.map_image = mapdir
+        if self.map_image_id:
+            self.map.delete(self.map_image_id)
+            self.map_image_id = None
+            self.map.config(width=1, height=1)
         self.currentmap = mapdir
+        image = ImageTk.PhotoImage(Image.open(self.currentmap))
+        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
@@ -203,8 +201,9 @@ class PipelineGUI(AppWindow):
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
     def _resizer(self, e):
+        print(e.width, e.height)
         global image1, resized_image, new_image
-        image1 = Image.open(self.map_image)
+        image1 = Image.open(self.currentmap)
         width_scale = e.width / image1.width
         height_scale = e.height / image1.height
         scale = min(width_scale, height_scale)

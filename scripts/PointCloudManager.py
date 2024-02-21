@@ -36,9 +36,6 @@ def remove_points(file, minx, maxx, miny, maxy):
     new_plydata = PlyData([new_vertex], text=plydata.text)
     new_plydata.write(file)
     
-#create_heat_map(pl.Path(r"C:\Users\akuhl\Downloads\test\dense\fused.ply"), pl.Path(r"C:\Users\akuhl\Downloads\test\dense"))
-remove_points(r"C:\Users\akuhl\Downloads\test\dense\fused.ply", -10, 10, -10, 10)
-
 # import numpy as np
 # import matplotlib.pyplot as plt
 # import pathlib as pl
