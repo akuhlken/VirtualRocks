@@ -1,23 +1,20 @@
-import tkinter as tk
-import ttkbootstrap as tttk 
+from ttkbootstrap import Style 
 import webbrowser as wb
-import pathlib as pl
-from tkinter import filedialog as fd
-from tkinter import messagebox as mb
-from tkinter import ttk
+from pathlib import Path
+from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
 
-class AppWindow(ttk.Frame):
+class AppWindow(Frame):
     def __init__(self, parent, controller):
-        ttk.Frame.__init__(self, parent)
+        Frame.__init__(self, parent)
         self.controller = controller
         self.create_menu()
 
     # Setup method for top menu bar
     def create_menu(self):
         # need to be able to refresh menu
-        self.menubar = tk.Menu(self) #postcommand=self.controller.update_recent(menuupdate=True) 
+        self.menubar = Menu(self) #postcommand=self.controller.update_recent(menuupdate=True) 
 
-        file = tk.Menu(self.menubar, tearoff=0)  
+        file = Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
         file.add_command(label="New", command=lambda: self.new_project())  
         #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
@@ -31,7 +28,7 @@ class AppWindow(ttk.Frame):
         file.add_separator()  
  
         # change to an option menu so you can see what you've selected (too hard rn)
-        styles = tk.Menu(file, tearoff=0)
+        styles = Menu(file, tearoff=0)
         file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
@@ -40,32 +37,32 @@ class AppWindow(ttk.Frame):
 
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
-        recents = tk.Menu(file, tearoff=0, postcommand=self.controller.update_recent())
+        recents = Menu(file, tearoff=0, postcommand=self.controller.update_recent())
         file.add_cascade(label="Open Recent...", menu=recents)
         numrecents = len(self.controller.recentlist)
         if numrecents == 0:
             recents.add_command(label="no recents found")
         if numrecents >= 1:
-            recents.add_command(label="Print All Recents", command=lambda: self.controller.get_recent()) # should remove this command, for testing only.
-            recents.add_separator()
-            recents.add_command(label=str(pl.Path(self.controller.recentlist[-1]).stem), command=lambda: self.open_recent())
+            #recents.add_command(label="Print All Recents", command=lambda: print(self.controller.recentlist)) # should remove this command, for testing only.
+            #recents.add_separator()
+            recents.add_command(label=str(Path(self.controller.recentlist[-1][0]).stem), command=lambda: self.open_recent())
         if numrecents >= 2:
-            recents.add_command(label="1 " + str(pl.Path(self.controller.recentlist[-2]).stem), command=lambda: self.open_recent(2))
+            recents.add_command(label="1 " + str(Path(self.controller.recentlist[-2][0]).stem), command=lambda: self.open_recent(2))
         if numrecents >= 3:
-            recents.add_command(label="2 " + str(pl.Path(self.controller.recentlist[-3]).stem), command=lambda: self.open_recent(3))
+            recents.add_command(label="2 " + str(Path(self.controller.recentlist[-3][0]).stem), command=lambda: self.open_recent(3))
         if numrecents >= 4:
-            recents.add_command(label="3 " + str(pl.Path(self.controller.recentlist[-4]).stem), command=lambda: self.open_recent(4))
+            recents.add_command(label="3 " + str(Path(self.controller.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
 
 
         file.add_separator()
-        file.add_command(label="Exit", command=self.quit)  
+        file.add_command(label="Exit", command=lambda: self.exit_app())  
 
-        info = tk.Menu(self.menubar, tearoff=0)
+        info = Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
         info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
         info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
     
-        recon = tk.Menu(self.menubar, tearoff=0)
+        recon = Menu(self.menubar, tearoff=0)
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
         recon.add_command(label="Advanced Options", command=lambda: self.controller.options()) 
 
@@ -87,24 +84,23 @@ class AppWindow(ttk.Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.new_project(projdir)
+        #print("in new: " + str(self.controller.picklepath))
+        self.controller.update_recent()
 
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
         # Then call controllers open_project method
-    def open_project(self, projfile=None, menuupdate=False):
-        if menuupdate:
-            self.controller.update_recent(menuupdate=True)
-            return
+    def open_project(self, projfile=None):
         if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
         if not projfile:
             return
-        self.controller.open_project(projfile)
+        self.controller.open_project(Path(projfile))
         
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
         try:
-            projfile = self.controller.recentlist[index]
+            projfile = self.controller.recentlist[index][0]
             if not projfile:
                 return
             self.open_project(projfile)
@@ -117,21 +113,21 @@ class AppWindow(ttk.Frame):
     def start_darkmode(self):
         if (self.controller.styleflag == "dark"):
             return
-        self.controller.style = tttk.Style("darkly")
+        self.controller.style = Style("darkly")
         self.controller.styleflag = "dark"
         self.init_common_style()
 
     def start_lightmode(self):
         if (self.controller.styleflag == "light"):
             return
-        self.controller.style = tttk.Style("lumen")
+        self.controller.style = Style("lumen")
         self.controller.styleflag = "light"
         self.init_common_style()
 
     def start_goblinmode(self):
         if (self.controller.styleflag == "goblin"):
             return
-        self.controller.style = tttk.Style(theme="goblinmode")
+        self.controller.style = Style(theme="goblinmode")
         self.controller.styleflag = "goblin"
         self.init_common_style()
 
@@ -159,7 +155,12 @@ class AppWindow(ttk.Frame):
     #   can take argument to specify which page to open if it isn't the main page.
     def open_helpmenu(self, docpage = "index.html"):
         try:
-            wb.open_new(('file:///' + str(pl.Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
+            wb.open_new(('file:///' + str(Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
         except:
             pass
         return
+    
+    def exit_app(self):
+        self.controller.save_recent()
+        print("saved recents to file")
+        self.quit()
