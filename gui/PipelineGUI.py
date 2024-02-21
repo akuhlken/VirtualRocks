@@ -155,6 +155,7 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
+        print("got here")
         image = ImageTk.PhotoImage(Image.open(mapdir))
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir

@@ -2,7 +2,7 @@ import subprocess
 import tkinter as tk       
 import pathlib as pl
 from tkinter import messagebox as mb
-from scripts.PointCloudManager import PointCloudManager as pcm
+import scripts.PointCloudManager as pcm
 
 # Progress Constants
 STARTED = 0
@@ -95,10 +95,11 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
-            if (self.projdir / pl.Path(r"dense\fused.ply")).is_file():
+            if pl.Path(self.projdir / "dense" / "fused.ply").is_file():
                 # If reconstruction exited normally
-                self.pcm.generate_image()
-                self.controller.page2.set_map(pl.Path(f"gui/placeholder\density_map.png").resolve())
+                dense = pl.Path(self.projdir / "dense")
+                pcm.create_heat_map(pl.Path(dense / "fused.ply"), dense)
+                self.controller.page2.set_map(pl.Path(dense/ "heat_map.png"))
                 self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
