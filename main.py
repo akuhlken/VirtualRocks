@@ -278,7 +278,6 @@ class main(Tk):
             self.recentlist = list(dict(recentdict).items())
             #print(self.recentlist)
 
-
     def _update_state(self, state):
         self.state = state
         self.page2.progresstotal.config(value=state)
