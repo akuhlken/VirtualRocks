@@ -53,7 +53,8 @@ class PipelineGUI(AppWindow):
         self.cancel = ttk.Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = tk.Canvas(left)  # ttk doesn't have a canvas widget, so we can't convert this.
+        self.map = tk.Canvas(left)
+        self.map.bind('<Configure>', self._resizer)
         self.dirtext = ttk.Label(left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = ttk.Button(left, text="Change", command=lambda: self.change_projdir())
 
@@ -163,12 +164,16 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
+        # img = Image.open(mapdir)
+        # img = img.resize((150, 100), Image.Resampling.LANCZOS)
+        # img = ImageTk.PhotoImage(img)
+        # self.map.config(image=img)
+        # self.map.image = img
+
         image = ImageTk.PhotoImage(Image.open(mapdir))
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir
-        self.map.bind('<Configure>', self._resizer)
         self.currentmap = mapdir
-
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):

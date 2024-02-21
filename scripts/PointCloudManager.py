@@ -1,5 +1,5 @@
 from matplotlib import pyplot
-from plyfile import PlyData
+from plyfile import PlyData, PlyElement
 import pathlib as pl
 
 def get_coordinates(filename):
@@ -7,27 +7,33 @@ def get_coordinates(filename):
     vertex = plydata['vertex']
     x = vertex['x']
     y = vertex['y']
-    coordinates = list(zip(x, y))
-    print(len(coordinates))
-    return coordinates
+    return x, y
 
 def create_heat_map(file, outdir):
     filename = file
-    coordinates = get_coordinates(filename)
-    x_values = []
-    y_values = []
-    for point in coordinates:
-        x_values.append(point[0])
-        y_values.append(point[1])
-
-    # Create a hexbin plot (heat map)
-    pyplot.hexbin(x_values, y_values, gridsize=50, cmap='Blues', mincnt=1)
+    x, y = get_coordinates(filename)
+    pyplot.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
     pyplot.xlabel('X')
     pyplot.ylabel('Y')
     pyplot.title('Dense Point Cloud')
     pyplot.savefig(pl.Path(outdir / "heat_map.png"))
     pyplot.close('all')
     # TODO: Warning created when using Matplotlib outside of main thread, works for me but needs testing
+
+def remove_points(file, minx, maxx, miny, maxy):
+    plydata = PlyData.read(file)
+    vertex = plydata['vertex']
+    x = vertex['x']
+    y = vertex['y']
+    mask = (x >= minx) & (x <= maxx) & (y >= miny) & (y <= maxy)
+    vertex = vertex[~mask]
+    new_vertex = PlyElement.describe(vertex, 'vertex')
+    new_plydata = PlyData([new_vertex], text=plydata.text)
+    file = str(file)
+    new_plydata.write(file)
+
+#create_heat_map(pl.Path(r"C:\Users\akuhl\Downloads\test\dense\fused.ply"), pl.Path(r"C:\Users\akuhl\Downloads\test\dense"))
+#remove_points(pl.Path(r"C:\Users\akuhl\Downloads\test\dense\fused.ply"), -10, 10, -10, 10)
 
 # import numpy as np
 # import matplotlib.pyplot as plt
