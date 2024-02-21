@@ -240,13 +240,6 @@ class main(tk.Tk):
         self.thread1.daemon = True
         self.thread1.start()
 
-    # Handler for the advanced options menu item
-    def options(self):
-        pass
-
-    def update_map(self):
-        pass
-
     def update_recent(self):
         if str(self.picklepath) in self.recentlist:
             self.recentlist.remove(str(self.picklepath))
@@ -254,7 +247,6 @@ class main(tk.Tk):
             self.recentlist.append(str(self.picklepath))
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'w') as f:
             f.write("$".join(self.recentlist))
-            print("saving file to recents")
 
     def get_recent(self):
         with open(pl.Path("main.py").parent / 'recentprojects.txt', 'r') as f:

@@ -50,16 +50,14 @@ class ReconManager():
     #   returning when self.p finishes
     def _send_log(self, msg=None):
         if msg:
-            self.controller.page2.logtext.insert(tk.END, msg + "\n")
-            self.controller.page2.logtext.see("end")
+            self.controller.page2._log(msg)
             if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)
             return
         while self.p.poll() is None:
             msg = self.p.stdout.readline().strip() # read a line from the process output
             if msg:
-                self.controller.page2.logtext.insert(tk.END, msg + "\n")
-                self.controller.page2.logtext.see("end")
+                self.controller.page2._log(msg)
                 if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)
 

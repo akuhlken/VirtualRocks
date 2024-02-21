@@ -14,4 +14,7 @@ class BoundsDialog(simpledialog.Dialog):
         return self.entries[0]  # initial focus
 
     def apply(self):
-        self.result = [float(entry.get()) for entry in self.entries]
+        try:
+            self.result = [float(entry.get()) for entry in self.entries]
+        except:
+            self.result = -1

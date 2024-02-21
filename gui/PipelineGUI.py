@@ -144,15 +144,15 @@ class PipelineGUI(AppWindow):
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         dialog = BoundsDialog(self)
-        try:
-            minx= dialog.result[0]
-            maxx= dialog.result[0]
-            miny= dialog.result[0]
-            maxy= dialog.result[0]
-            self.controller.set_bounds(minx, maxx, miny, maxy)
-        except:
-            pass
-            # TODO: Inform the user what went wrong
+        if dialog.result: 
+            try:
+                minx= dialog.result[0]
+                maxx= dialog.result[0]
+                miny= dialog.result[0]
+                maxy= dialog.result[0]
+                self.controller.set_bounds(minx, maxx, miny, maxy)
+            except:
+                self._log("All fields must contain numbers")
 
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):
@@ -163,7 +163,6 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for setting map image in GUI
     def set_map(self, mapdir):
-        print("got here")
         image = ImageTk.PhotoImage(Image.open(mapdir))
         self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
         self.map_image = mapdir
@@ -211,3 +210,7 @@ class PipelineGUI(AppWindow):
         resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
         new_image = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=new_image)
+
+    def _log(self, msg):
+        self.logtext.insert(tk.END, msg + "\n")
+        self.logtext.see("end")

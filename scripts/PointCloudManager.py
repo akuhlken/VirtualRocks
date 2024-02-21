@@ -19,13 +19,15 @@ def create_heat_map(file, outdir):
     for point in coordinates:
         x_values.append(point[0])
         y_values.append(point[1])
-        
+
     # Create a hexbin plot (heat map)
     pyplot.hexbin(x_values, y_values, gridsize=50, cmap='Blues', mincnt=1)
     pyplot.xlabel('X')
     pyplot.ylabel('Y')
     pyplot.title('Dense Point Cloud')
     pyplot.savefig(pl.Path(outdir / "heat_map.png"))
+    pyplot.close('all')
+    # TODO: Warning created when using Matplotlib outside of main thread, works for me but needs testing
 
 # import numpy as np
 # import matplotlib.pyplot as plt
