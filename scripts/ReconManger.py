@@ -135,9 +135,6 @@ class ReconManager():
             else:
                 self._send_log("Mesher failed, please retry")
 
-
-
-
     #  Methods for canceling current recon
     #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
     #   After cancel it should change the action button back to start
