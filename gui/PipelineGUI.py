@@ -14,21 +14,14 @@ class PipelineGUI(AppWindow):
     DEFAULT_MAP = Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
-    # temp constants until we have a good way to deal with outliers and can display
-    DARK_MAP = Path(f"gui/placeholder/darkmap.jpg").resolve()
-    LIGHT_MAP = Path(f"gui/placeholder/map.jpg").resolve()
-
     def __init__(self, parent, controller, projdir):
         AppWindow.__init__(self, parent, controller)
         self.setup_layout()
         self.projdir = projdir
         self.controller = controller
         self.currentmap = self.DEFAULT_MAP
-        self.map_image_id = None
-        self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.bind("<<RefreshMap>>", self._refresh_map)
-        
-        
+
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
@@ -43,9 +36,7 @@ class PipelineGUI(AppWindow):
         
         # control elements
         self.exampleimage = Label(right)
-
         self.addphotos = Button(right, text="Add Photos", command=lambda: self.photos_handler())
-
         self.numimages = Label(right, text="Number of images:")
         self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
         self.setbounds = Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
@@ -55,7 +46,11 @@ class PipelineGUI(AppWindow):
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
+        self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_MAP))
         self.map = Canvas(self.left)
+        self.map_image_id = self.map.create_image(0, 0, image=self.temp, anchor='nw')
+        #self.map.update()
+        self.map.bind('<Configure>', self._resizer)
         self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
 
@@ -88,12 +83,10 @@ class PipelineGUI(AppWindow):
         self.changebtn.pack(side='bottom')
         self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
-        
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
         self.progress.pack(fill="both", expand=True)
-
         scrollbar.pack(side='right', fill='y')
         
         # dissable buttons
@@ -103,7 +96,6 @@ class PipelineGUI(AppWindow):
         self.mesher.config(state="disabled")
         self.show.config(state="disabled")
         self.cancel.config(state="disabled")
-
 
     # Event handler for "New" in the dropdown menu
         # Method should first check to make sure nothing is running.
@@ -201,27 +193,28 @@ class PipelineGUI(AppWindow):
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
     def _resizer(self, e):
-        global image1, resized_image, new_image
-        image1 = Image.open(self.currentmap)
-        width_scale = e.width / image1.width
-        height_scale = e.height / image1.height
-        scale = min(width_scale, height_scale)
-
-        new_width = int(image1.width * scale)
-        new_height = int(image1.height * scale)
-
-        resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        new_image = ImageTk.PhotoImage(resized_image)
-        self.map.itemconfigure(self.map_image_id, image=new_image)
-
+        image = Image.open(self.currentmap)
+        resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
+        self.temp = ImageTk.PhotoImage(resized_image)
+        self.map.itemconfigure(self.map_image_id, image=self.temp)
+        
     def _log(self, msg):
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
 
     def _refresh_map(self, e):
-        self.map.destroy()
-        self.map = Canvas(self.left)
-        self.map.bind('<Configure>', self._resizer)
-        self.map.pack(fill='both', expand=True, side='right')
-        image = ImageTk.PhotoImage(Image.open(self.currentmap))
-        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
+        if self.map.winfo_width() > 1 and self.map.winfo_height() > 1:
+            image = Image.open(self.currentmap)
+            resized_image = self._scale_image(self.map.winfo_width(), self.map.winfo_height(), image.width, image.height, image)
+            self.temp = ImageTk.PhotoImage(resized_image)
+        else:
+            self.temp = ImageTk.PhotoImage(Image.open(self.currentmap))
+        self.map.itemconfigure(self.map_image_id, image=self.temp)
+
+    def _scale_image(self, wwidth, wheight, iwidth, iheight, image):
+        width_scale = wwidth / iwidth
+        height_scale = wheight / iheight
+        scale = min(width_scale, height_scale)
+        new_width = int(iwidth * scale)
+        new_height = int(iheight * scale)
+        return image.resize((new_width, new_height), Image.Resampling.LANCZOS)

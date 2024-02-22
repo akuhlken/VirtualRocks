@@ -92,8 +92,8 @@ class AppWindow(Frame):
     def open_project(self, projfile=None):
         if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
-        if not projfile:
-            return
+            if not projfile:
+                return
         self.controller.open_project(Path(projfile))
         
     def open_recent(self,index=1):

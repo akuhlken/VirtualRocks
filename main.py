@@ -101,7 +101,6 @@ class main(Tk):
     def _startup(self):
         self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
-        self.page2.set_map(self.page2.currentmap)
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
