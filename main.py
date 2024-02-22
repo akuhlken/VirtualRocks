@@ -140,7 +140,7 @@ class main(Tk):
         self.projdir = Path(projfile).parent
         with open(projfile, 'rb') as file:
             (path,self.state) = pickle.load(file)
-        if path.is_absolute():
+        if Path(path).is_absolute():
             self.imgdir = path
         else:
             self.imgdir = self.projdir / path

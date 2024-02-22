@@ -53,7 +53,6 @@ class AppWindow(Frame):
         if numrecents >= 4:
             recents.add_command(label="3 " + str(Path(self.controller.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
 
-
         file.add_separator()
         file.add_command(label="Exit", command=lambda: self.exit_app())  
 
