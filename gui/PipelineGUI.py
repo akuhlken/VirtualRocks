@@ -25,9 +25,7 @@ class PipelineGUI(AppWindow):
         self.controller = controller
         self.currentmap = self.DEFAULT_MAP
         self.map_image_id = None
-        self.state = 0  # 0 = not started, 1 = matching started, 2 = matching done, 3 = mesher started, 4 = mesher done
         self.bind("<<RefreshMap>>", self._refresh_map)
-        
         
     # Setup method for GUI layout and elements
     def setup_layout(self):
@@ -43,9 +41,7 @@ class PipelineGUI(AppWindow):
         
         # control elements
         self.exampleimage = Label(right)
-
         self.addphotos = Button(right, text="Add Photos", command=lambda: self.photos_handler())
-
         self.numimages = Label(right, text="Number of images:")
         self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
         self.setbounds = Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
@@ -88,12 +84,10 @@ class PipelineGUI(AppWindow):
         self.changebtn.pack(side='bottom')
         self.dirtext.pack(side='bottom')
         self.map.pack(fill='both', expand=True, side='right')
-        
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
         self.progress.pack(fill="both", expand=True)
-
         scrollbar.pack(side='right', fill='y')
         
         # dissable buttons
@@ -201,6 +195,7 @@ class PipelineGUI(AppWindow):
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
     def _resizer(self, e):
+        print("resize", self.currentmap)
         global image1, resized_image, new_image
         image1 = Image.open(self.currentmap)
         width_scale = e.width / image1.width
@@ -219,6 +214,7 @@ class PipelineGUI(AppWindow):
         self.logtext.see("end")
 
     def _refresh_map(self, e):
+        print("map refreshed")
         self.map.destroy()
         self.map = Canvas(self.left)
         self.map.bind('<Configure>', self._resizer)
