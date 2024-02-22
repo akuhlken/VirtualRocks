@@ -47,9 +47,9 @@ class PipelineGUI(AppWindow):
         
         # status elements
         self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_MAP))
-        self.map = Canvas(self.left, width=self.temp.width(), height=self.temp.height())
+        self.map = Canvas(self.left)
         self.map_image_id = self.map.create_image(0, 0, image=self.temp, anchor='nw')
-        self.map.update()
+        #self.map.update()
         self.map.bind('<Configure>', self._resizer)
         self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
@@ -197,7 +197,7 @@ class PipelineGUI(AppWindow):
         resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
         self.temp = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=self.temp)
-
+        
     def _log(self, msg):
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
