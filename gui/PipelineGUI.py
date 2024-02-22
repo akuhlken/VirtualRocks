@@ -24,9 +24,8 @@ class PipelineGUI(AppWindow):
         self.projdir = projdir
         self.controller = controller
         self.currentmap = self.DEFAULT_MAP
-        self.map_image_id = None
         self.bind("<<RefreshMap>>", self._refresh_map)
-        
+
     # Setup method for GUI layout and elements
     def setup_layout(self):
         # Layout framework
@@ -51,7 +50,9 @@ class PipelineGUI(AppWindow):
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.map = Canvas(self.left)
+        self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_MAP))
+        self.map = Canvas(self.left, width=self.temp.width(), height=self.temp.height())
+        self.map_image_id = self.map.create_image(0, 0, image=self.temp, anchor='nw')
         self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
 
@@ -97,7 +98,6 @@ class PipelineGUI(AppWindow):
         self.mesher.config(state="disabled")
         self.show.config(state="disabled")
         self.cancel.config(state="disabled")
-
 
     # Event handler for "New" in the dropdown menu
         # Method should first check to make sure nothing is running.
@@ -206,18 +206,21 @@ class PipelineGUI(AppWindow):
         new_height = int(image1.height * scale)
 
         resized_image = image1.resize((new_width, new_height), Image.Resampling.LANCZOS)
-        new_image = ImageTk.PhotoImage(resized_image)
-        self.map.itemconfigure(self.map_image_id, image=new_image)
+        self.temp = ImageTk.PhotoImage(resized_image)
+        self.map.itemconfigure(self.map_image_id, image=self.temp)
 
     def _log(self, msg):
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
 
     def _refresh_map(self, e):
-        print("map refreshed")
-        self.map.destroy()
-        self.map = Canvas(self.left)
-        self.map.bind('<Configure>', self._resizer)
-        self.map.pack(fill='both', expand=True, side='right')
-        image = ImageTk.PhotoImage(Image.open(self.currentmap))
-        self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
+        print("map refreshed", self.currentmap)
+        self.temp = ImageTk.PhotoImage(Image.open(self.currentmap))
+        self.map.itemconfigure(self.map_image_id, image=self.temp)
+
+        # self.map.destroy()
+        # self.map = Canvas(self.left)
+        # self.map.bind('<Configure>', self._resizer)
+        # self.map.pack(fill='both', expand=True, side='right')
+        # image = ImageTk.PhotoImage(Image.open(self.currentmap))
+        # self.map_image_id = self.map.create_image(0, 0, image=image, anchor='nw')
