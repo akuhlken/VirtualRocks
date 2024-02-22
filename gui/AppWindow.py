@@ -2,17 +2,19 @@ from ttkbootstrap import Style
 import webbrowser as wb
 from pathlib import Path
 from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
+from scripts.RecentsManager import RecentsManager
 
 class AppWindow(Frame):
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, recents):
         Frame.__init__(self, parent)
         self.controller = controller
+        self.recents = recents
         self.create_menu()
 
     # Setup method for top menu bar
     def create_menu(self):
         # need to be able to refresh menu
-        self.menubar = Menu(self) #postcommand=self.controller.update_recent(menuupdate=True) 
+        self.menubar = Menu(self)
 
         file = Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
@@ -37,21 +39,21 @@ class AppWindow(Frame):
 
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
         # not sure what the function should be at this point
-        recents = Menu(file, tearoff=0, postcommand=self.controller.update_recent())
+        recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
         file.add_cascade(label="Open Recent...", menu=recents)
-        numrecents = len(self.controller.recentlist)
+        numrecents = len(self.recents.recentlist)
         if numrecents == 0:
             recents.add_command(label="no recents found")
         if numrecents >= 1:
-            #recents.add_command(label="Print All Recents", command=lambda: print(self.controller.recentlist)) # should remove this command, for testing only.
-            #recents.add_separator()
-            recents.add_command(label=str(Path(self.controller.recentlist[-1][0]).stem), command=lambda: self.open_recent())
+            recents.add_command(label="Print All Recents", command=lambda: print(self.recents.recentlist)) # should remove this command, for testing only.
+            recents.add_separator()
+            recents.add_command(label=str(Path(self.recents.recentlist[-1][0]).stem), command=lambda: self.open_recent())
         if numrecents >= 2:
-            recents.add_command(label="1 " + str(Path(self.controller.recentlist[-2][0]).stem), command=lambda: self.open_recent(2))
+            recents.add_command(label="1 " + str(Path(self.recents.recentlist[-2][0]).stem), command=lambda: self.open_recent(2))
         if numrecents >= 3:
-            recents.add_command(label="2 " + str(Path(self.controller.recentlist[-3][0]).stem), command=lambda: self.open_recent(3))
+            recents.add_command(label="2 " + str(Path(self.recents.recentlist[-3][0]).stem), command=lambda: self.open_recent(3))
         if numrecents >= 4:
-            recents.add_command(label="3 " + str(Path(self.controller.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
+            recents.add_command(label="3 " + str(Path(self.recents.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
 
         file.add_separator()
         file.add_command(label="Exit", command=lambda: self.exit_app())  
@@ -84,7 +86,7 @@ class AppWindow(Frame):
             return
         self.controller.new_project(projdir)
         #print("in new: " + str(self.controller.picklepath))
-        self.controller.update_recent()
+        #RecentsManager.update_recent()
 
     # Event handler for the "open project" button
         # Should open a dialogue asking the user to selct a project save file
@@ -99,7 +101,7 @@ class AppWindow(Frame):
     def open_recent(self,index=1):
         index = -index # need negation of index because most recent is at the end.
         try:
-            projfile = self.controller.recentlist[index][0]
+            projfile = self.recents.recentlist[index][0]
             if not projfile:
                 return
             self.open_project(projfile)
@@ -160,6 +162,6 @@ class AppWindow(Frame):
         return
     
     def exit_app(self):
-        self.controller.save_recent()
+        self.recents.save_recent()
         print("saved recents to file")
         self.quit()

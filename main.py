@@ -8,8 +8,9 @@ from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
 import pickle
 import ctypes   # for adding icon to taskbar
-import json
 import scripts.PointCloudManager as pcm
+from scripts.RecentsManager import RecentsManager
+
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -31,9 +32,10 @@ class main(Tk):
         self.image = None
         self.recon = None
         self.state = STARTED
-        self.recentlist = list()      # saved to JSON file as a dict, but needs to be list (of tuples) to be usable.
-        self.numrecents = 0
-        self.get_recent()
+
+        # recents
+        self.recents = RecentsManager()
+        self.recents.get_recent()
 
         # for loading icon on taskbar, basically just says we aren't doing only python.
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
@@ -78,7 +80,7 @@ class main(Tk):
         self.container.grid_columnconfigure(0, weight=1)
 
         # Load staring page and start application
-        self.page1 = StartGUI(parent=self.container, controller=self)
+        self.page1 = StartGUI(parent=self.container, controller=self, recents=self.recents)
         self.page1.grid(row=0, column=0, sticky="nsew")
         self.page1.tkraise()
 
@@ -99,7 +101,7 @@ class main(Tk):
 
     # Common startup tasks for both opening and creating projects
     def _startup(self):
-        self.page2 = PipelineGUI(self.container, self, self.projdir)
+        self.page2 = PipelineGUI(self.container, self, self.projdir, self.recents)
         self.page2.grid(row=0, column=0, sticky="nsew")
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
@@ -148,8 +150,7 @@ class main(Tk):
         self.title("VirtualRocks: " + self.projectname)
 
         #print("in update: " + str(self.picklepath))
-
-        self.update_recent()
+        self.recents.update_recent(self.picklepath)
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
             pm = PhotoManager(self.imgdir)
@@ -199,9 +200,8 @@ class main(Tk):
         self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
         self._update_state(PHOTOS)
             
-        # updates the .txt doc that tracks recent values. b/c this is where we make .pkl files,
-        # this one tracks new files.
-        self.update_recent()
+        # not sure if we need this since updating in new works.
+        self.recents.update_recent(self.picklepath)
 
     # Handler for seeting the project bounds
     #   Set the controller variables acording to bounds specified by the user
@@ -245,37 +245,6 @@ class main(Tk):
         self.thread1 = Thread(target = self.recon.auto)
         self.thread1.daemon = True
         self.thread1.start()
-
-    def update_recent(self):
-        # used by menu to update, basically the menu is refreshed every time this is called (needs to handle blanks)
-        # if picklepath is null, then we shouldn't add anything to the dict.
-        #   the values should add. get the max current and add one?
-        #   basically, we don't need a dictionary for function, but we want to use JSON so we need it
-        #   should also have something that limits the length of recent to 4 so we don't save more things to loop thru.
-        strpickle = str(Path(self.picklepath).as_posix())
-    
-        while len(self.recentlist) > 4:
-            #print("removing " + str(self.recentlist[0]) + " from recents")
-            del self.recentlist[0]
-        for rectup in self.recentlist:
-            if strpickle == rectup[0]:
-                self.recentlist.remove(rectup)
-        if self.picklepath:     # if there is a picklepath (there should also be an image path)
-            self.recentlist.append((strpickle, self.numrecents))
-            self.numrecents += 1
-
-    def save_recent(self):
-        with open(Path("main.py").parent / 'recents.json', 'w') as f:
-            json.dump(self.recentlist, f)
-            print("saved recent files.")
-    
-
-    def get_recent(self):
-        with open(Path("main.py").parent / 'recents.json') as f:
-            # need to check if empty
-            recentdict = json.load(f)
-            self.recentlist = list(dict(recentdict).items())
-            #print(self.recentlist)
 
     def _update_state(self, state):
         self.state = state
@@ -321,7 +290,7 @@ class main(Tk):
         except:
             print("no active processes")
         print("exiting app")
-        self.save_recent()                  # save recents at the very end
+        self.recents.save_recent() 
         self.destroy()
 
 if __name__ == "__main__":
