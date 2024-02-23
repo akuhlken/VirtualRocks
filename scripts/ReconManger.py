@@ -1,3 +1,5 @@
+import os
+import shutil
 import subprocess
 import tkinter as tk
 from pathlib import Path
@@ -97,6 +99,10 @@ class ReconManager():
                 # If reconstruction exited normally
                 dense = Path(self.projdir / "dense")
                 pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+                savefile = Path(dense / "save.ply")
+                if os.path.isfile(savefile):
+                    os.remove(savefile)
+                shutil.copy(Path(dense / "fused.ply"), savefile)
                 self.controller._update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:

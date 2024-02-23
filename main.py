@@ -1,3 +1,5 @@
+import os
+import shutil
 from ttkbootstrap import Style
 from tkinter import simpledialog, PhotoImage, Frame, Tk
 from pathlib import Path
@@ -242,6 +244,16 @@ class main(Tk):
         self.thread1 = Thread(target = self.recon.auto)
         self.thread1.daemon = True
         self.thread1.start()
+
+    def restore(self):
+        if self.state >= MATCHER:
+            dense = Path(self.projdir / "dense")
+            savefile = Path(dense / "save.ply")
+            shutil.copy(savefile, Path(dense / "fused.ply"))
+            pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+            self.page2.set_map(Path(dense/ "heat_map.png"))
+        else:
+            self.page2._log("Nothing to restore, run matcher to create a point cloud")
 
     def _update_state(self, state):
         self.state = state
