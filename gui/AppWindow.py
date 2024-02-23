@@ -61,6 +61,7 @@ class AppWindow(Frame):
         recon = Menu(self.menubar, tearoff=0)
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
         recon.add_command(label="Advanced Options", command=lambda: self.controller.options()) 
+        recon.add_command(label="Restore Point Cloud", command=lambda: self.controller.restore())
 
         self.menubar.add_cascade(label="File", menu=file)
         self.menubar.add_cascade(label="Info", menu=info) 
