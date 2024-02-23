@@ -55,8 +55,6 @@ class AppWindow(Frame):
         if numrecents >= 4:
             recents.add_command(label="3 " + str(Path(self.recents.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
 
-        file.add_separator()
-        file.add_command(label="Exit", command=lambda: self.exit_app())  
 
         info = Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
@@ -160,8 +158,3 @@ class AppWindow(Frame):
         except:
             pass
         return
-    
-    def exit_app(self):
-        self.recents.save_recent()
-        print("saved recents to file")
-        self.quit()
