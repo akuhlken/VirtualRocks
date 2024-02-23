@@ -51,9 +51,6 @@ class main(Tk):
         icon = PhotoImage(file=Path(r"gui\placeholder\logo.png").resolve())
         self.iconphoto(True, icon)
 
-        # Importing external styles
-        Style.load_user_themes = Path(f"gui/goblinmode.py").resolve()
-
         # Application styling
         self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.logbackground = "#ffffff"
