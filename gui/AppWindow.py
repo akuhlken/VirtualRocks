@@ -34,7 +34,6 @@ class AppWindow(Frame):
         file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
-        styles.add_command(label="chaos", command=lambda: self.start_goblinmode()) 
         file.add_separator()
 
         # add try/except statements for like 3 tabs, if they appear depends on if the command works
@@ -119,13 +118,6 @@ class AppWindow(Frame):
             return
         self.controller.style = Style("lumen")
         self.controller.styleflag = "light"
-        self.init_common_style()
-
-    def start_goblinmode(self):
-        if (self.controller.styleflag == "goblin"):
-            return
-        self.controller.style = Style(theme="goblinmode")
-        self.controller.styleflag = "goblin"
         self.init_common_style()
 
     def init_common_style(self):
