@@ -45,8 +45,6 @@ class AppWindow(Frame):
         if numrecents == 0:
             recents.add_command(label="no recents found")
         if numrecents >= 1:
-            recents.add_command(label="Print All Recents", command=lambda: print(self.recents.recentlist)) # should remove this command, for testing only.
-            recents.add_separator()
             recents.add_command(label=str(Path(self.recents.recentlist[-1][0]).stem), command=lambda: self.open_recent())
         if numrecents >= 2:
             recents.add_command(label="1 " + str(Path(self.recents.recentlist[-2][0]).stem), command=lambda: self.open_recent(2))
