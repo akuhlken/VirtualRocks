@@ -4,8 +4,8 @@ from gui.AppWindow import AppWindow
 
 class StartGUI(AppWindow):
 
-    def __init__(self, parent, controller):
-        AppWindow.__init__(self, parent, controller)
+    def __init__(self, parent, controller, recents):
+        AppWindow.__init__(self, parent, controller, recents)
         self.controller = controller
         label = Label(self, text="Choose Project:", anchor="center", style="title.TLabel")
         label.pack(side="top", fill="x", pady=10)

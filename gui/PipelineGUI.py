@@ -14,8 +14,8 @@ class PipelineGUI(AppWindow):
     DEFAULT_MAP = Path(f"gui/placeholder/darkmap.jpg").resolve()
     DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
-    def __init__(self, parent, controller, projdir):
-        AppWindow.__init__(self, parent, controller)
+    def __init__(self, parent, controller, projdir, recents):
+        AppWindow.__init__(self, parent, controller, recents)
         self.setup_layout()
         self.projdir = projdir
         self.controller = controller
