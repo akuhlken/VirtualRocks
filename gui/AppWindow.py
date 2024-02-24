@@ -4,6 +4,8 @@ from pathlib import Path
 from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
 from scripts.RecentsManager import RecentsManager
 
+# TODO: lots of header comments needed
+
 class AppWindow(Frame):
     def __init__(self, parent, controller, recents):
         Frame.__init__(self, parent)
@@ -13,31 +15,23 @@ class AppWindow(Frame):
 
     # Setup method for top menu bar
     def create_menu(self):
-        # need to be able to refresh menu
         self.menubar = Menu(self)
-
         file = Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
         file.add_command(label="New", command=lambda: self.new_project())  
-        #file.add_command(label="New", command=lambda: self.controller.StartGUI.new_project())  
-            # check if the user has done any work on the current
-            # project they're working on and if they want to save,
-            # then make a new file like how we do it from start.
         file.add_command(label="Open", command=lambda: self.open_project())
-
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
         file.add_separator()  
  
-        # change to an option menu so you can see what you've selected (too hard rn)
         styles = Menu(file, tearoff=0)
         file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self.start_darkmode())
         styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
         file.add_separator()
 
-        # add try/except statements for like 3 tabs, if they appear depends on if the command works
-        # not sure what the function should be at this point
+        # add try/except statements for like 3 tabs, if they appear depends on if the command works # TODO: does this still need to be done?
+        # not sure what the function should be at this point # TODO: Ummmm what...?
         recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
         file.add_cascade(label="Open Recent...", menu=recents)
         numrecents = len(self.recents.recentlist)
@@ -52,7 +46,6 @@ class AppWindow(Frame):
         if numrecents >= 4:
             recents.add_command(label="3 " + str(Path(self.recents.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
 
-
         info = Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
         info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
@@ -60,15 +53,16 @@ class AppWindow(Frame):
     
         recon = Menu(self.menubar, tearoff=0)
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
-        recon.add_command(label="Advanced Options", command=lambda: self.controller.options()) 
+        recon.add_command(label="Restore Point Cloud", command=lambda: self.controller.restore())
 
+        # Add menues as cascades
         self.menubar.add_cascade(label="File", menu=file)
         self.menubar.add_cascade(label="Info", menu=info) 
         self.menubar.add_cascade(label="Reconstruction", menu=recon) 
         self.controller.config(menu=self.menubar)
         self.menubar.entryconfig("Reconstruction", state="disabled")
 
-    # Event handler for the "new project" button
+    # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
         # Then call controllers new_project method
     def new_project(self):
@@ -81,10 +75,10 @@ class AppWindow(Frame):
             return
         self.controller.new_project(projdir)
         #print("in new: " + str(self.controller.picklepath))
-        #RecentsManager.update_recent()
+        #RecentsManager.update_recent()     # TODO: Important?
 
-    # Event handler for the "open project" button
-        # Should open a dialogue asking the user to selct a project save file
+    # Event handler for the "open project" menu item
+        # Should open a dialogue asking the user to selct a project file
         # Then call controllers open_project method
     def open_project(self, projfile=None):
         if not projfile:
@@ -94,14 +88,14 @@ class AppWindow(Frame):
         self.controller.open_project(Path(projfile))
         
     def open_recent(self,index=1):
-        index = -index # need negation of index because most recent is at the end.
+        index = -index
         try:
             projfile = self.recents.recentlist[index][0]
             if not projfile:
                 return
             self.open_project(projfile)
         except:
-            print("file not saved to history")
+            print("file not saved to history") # TODO: is isnt a very informative error message
 
     # Handler for setting dark mode
     #   changes theme to a dark theme
@@ -120,13 +114,13 @@ class AppWindow(Frame):
         self.controller.styleflag = "light"
         self.init_common_style()
 
-    def init_common_style(self):
+    def init_common_style(self): # TODO: Rename, this isnt super clear cut
         temp = self.controller.swtich_style()
         self.controller.style.configure("TButton", width=16)
         self.controller.style.configure("cancel.TButton", width=30)
         self.controller.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
 
-        # progress bar
+        # progress bar # TODO: is this exact same thing in main or am I crazy?
         self.controller.style.layout("prog.Horizontal.TProgressbar",
              [('Horizontal.Progressbar.trough',
                {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],

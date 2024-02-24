@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog
 
+# TODO: Header comments
 class BoundsDialog(simpledialog.Dialog):
     def body(self, master):
         self.title("Remove Points:")
@@ -14,6 +15,9 @@ class BoundsDialog(simpledialog.Dialog):
         return self.entries[0]  # initial focus
 
     def apply(self):
-        self.result = []
-        for entry in self.entries:
-            self.result.append(float(entry.get()))
+        try:
+            self.result = []
+            for entry in self.entries:
+                self.result.append(float(entry.get()))
+        except:
+            print("Could not convert input to floating point number")

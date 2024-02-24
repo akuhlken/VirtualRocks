@@ -1,8 +1,10 @@
 import exifread
 import os
 
+# List of allowed file types
 EXTENSIONS = ['.jpg', '.jpeg', '.png', '.tif', '.tiff', '.JPG', '.JPEG', '.PNG', '.TIF', '.TIFF']
 
+# TODO: Need to be a class?
 class PhotoManager():    
 
     def __init__(self, imgdir):
@@ -12,6 +14,7 @@ class PhotoManager():
         self.num_images(imgdir)
     
     # Helper function to get the GPS coords of a specific image
+    # TODO: remove method?
     def _extract_gps(self, imgpath):
         with open(imgpath, 'rb') as f:
             tags = exifread.process_file(f)

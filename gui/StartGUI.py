@@ -2,6 +2,7 @@ from tkinter import Button
 from tkinter.ttk import Label, Frame
 from gui.AppWindow import AppWindow
 
+# TODO: Class description
 class StartGUI(AppWindow):
 
     def __init__(self, parent, controller, recents):
