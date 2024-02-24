@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import simpledialog
 
+# TODO: Header comments
 class BoundsDialog(simpledialog.Dialog):
     def body(self, master):
         self.title("Remove Points:")
