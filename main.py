@@ -9,10 +9,9 @@ from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
 import pickle
-import ctypes   # for adding icon to taskbar
+import ctypes
 import scripts.PointCloudManager as pcm
 from scripts.RecentsManager import RecentsManager
-
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -31,15 +30,14 @@ class main(Tk):
         # Controller Variables
         self.projdir = None
         self.imgdir = ""
-        self.image = None
         self.recon = None
         self.state = STARTED
 
-        # recents
+        # Create recents
         self.recents = RecentsManager()
         self.recents.get_recent()
 
-        # for loading icon on taskbar, basically just says we aren't doing only python.
+        # Sets app icon and identifier
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
         
@@ -47,7 +45,7 @@ class main(Tk):
         self.projectname = "project"
         self.picklepath = ""
         self.minsize(500, 300)
-        centerdim = self.open_middle(1000,700)
+        centerdim = self._open_middle(1000,700)
         self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
         self.title("VirtualRocks")
         icon = PhotoImage(file=Path(r"gui\placeholder\logo.png").resolve())
@@ -59,6 +57,7 @@ class main(Tk):
         self.style = Style("darkly")
         self.styleflag = "dark"
 
+        # TODO: duplicate code?
         # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
@@ -83,20 +82,9 @@ class main(Tk):
         self.page1.grid(row=0, column=0, sticky="nsew")
         self.page1.tkraise()
 
-        #toggling fullscreen and escaping
-        self.bind("<F11>", self.toggle_fullscreen)
-        self.bind("<Escape>", self.end_fullscreen)
-
-    #key binding 
-    def toggle_fullscreen(self, event=None):
-        self.fullscreen = not self.fullscreen  # Just toggling the boolean
-        self.attributes("-fullscreen", self.fullscreen)
-        return "break"
-
-    def end_fullscreen(self, event=None):
-        self.fullscreen = False
-        self.attributes("-fullscreen", False)
-        return "break"
+        # Binding for fullscreen toggle
+        self.bind("<F11>", self._toggle_fullscreen)
+        self.bind("<Escape>", self._end_fullscreen)
 
     # Common startup tasks for both opening and creating projects
     def _startup(self):
@@ -156,27 +144,18 @@ class main(Tk):
             self.page2.update_text(pm.numimg)
             self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
         except Exception as e:
-            self.recon._send_log("Could not find image directory")
+            self.page2._log("Could not find image directory")
             self._update_state(STARTED)
             print(e)
 
-
-    # opens a new window at the middle of the screen.
-    def open_middle(self, windoww, windowh):
-        sw = self.winfo_screenwidth()    # screen width
-        sh = self.winfo_screenheight()   # screen height
-        midx = (sw/2) - (windoww/2)                # middle x based on size of window
-        midy = (sh/2) - (windowh/2)                # middle y based on size of window
-        return (midx, midy-50)                        # return the new coordinates for the middle
-
-
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.
-    def start_menu(self):
+    def start_menu(self): # TODO: back_to_start() rename?
         self.page1.tkraise()
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
         self.title("VirtualRocks")
 
+    # TODO: remove method and just create helper called _get_progress() and move to end
     # Saving value of progress to make progress bar after style update accurate.
     #   used by AppWindow.py.
     def swtich_style(self):
@@ -193,18 +172,17 @@ class main(Tk):
         self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = Path(imgdir).resolve()
-        pm = PhotoManager(self.imgdir)
+        pm = PhotoManager(self.imgdir) # TODO: Look into simplifying photo manager, prob doesnt need to be a class
         self.recon._send_log("$Image Loading..100$")
         self.page2.update_text(pm.numimg)
         self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
         self._update_state(PHOTOS)
             
-        # not sure if we need this since updating in new works.
+        # not sure if we need this since updating in new works. # TODO: Do we need this?
         self.recents.update_recent(self.picklepath)
 
-    # Handler for seeting the project bounds
-    #   Set the controller variables acording to bounds specified by the user
-    #   This method should not open a dialogue, the is the role of the GUI classes
+    # Removes points from dense point cloud as specified by bounds
+    #   Handler in PipelineGUI creates dialog and passes bounds here
     def set_bounds(self, minx, maxx, miny, maxy):      
         self.recon._send_log("$$")
         self.recon._send_log("$Setting Bounds..100$")
@@ -213,38 +191,9 @@ class main(Tk):
         pcm.create_heat_map(Path(dense / "fused.ply"), dense)
         self.page2.set_map(Path(dense/ "heat_map.png"))
 
-    # Handler for starting recon
-    #   Start a new thread with the _recon() method
-    def start_matcher(self):
-        self.recon.imgdir = self.imgdir
-        self.thread1 = Thread(target = self.recon.matcher)
-        self.thread1.daemon = True
-        self.thread1.start()
-
-    # Handler for starting recon
-    #   Start a new thread with the _recon() method
-    def start_mesher(self):
-        self.recon.imgdir = self.imgdir
-        self.thread1 = Thread(target = self.recon.mesher)
-        self.thread1.daemon = True
-        self.thread1.start()
-
-    # Handler for canceling recon
-    #   Should kill any active subprocess as well as set the kill flag in dense2mesh.py
-    #   After cancel it should change the action button back to start
-    def cancel_recon(self):
-        self.recon.cancel()
-
-    # Handler for the automatic reconstruction feature
-    def auto_recon(self):
-        if not self.imgdir:
-            self.recon._send_log("No images loaded")
-            return
-        self.recon.imgdir = self.imgdir
-        self.thread1 = Thread(target = self.recon.auto)
-        self.thread1.daemon = True
-        self.thread1.start()
-
+    # Handler for the restore point cloud menu item
+    #   Should overwrite the current fused.ply with the un-edited save.ply
+    #   Serves to undo the set bounds
     def restore(self):
         if self.state >= MATCHER:
             dense = Path(self.projdir / "dense")
@@ -255,7 +204,42 @@ class main(Tk):
         else:
             self.page2._log("Nothing to restore, run matcher to create a point cloud")
 
-    def _update_state(self, state):
+    # Handler for starting matcher
+    #   Starts a new thread for the ReconManager.matcher() method
+    def start_matcher(self):
+        self.recon.imgdir = self.imgdir
+        self.thread1 = Thread(target = self.recon.matcher)
+        self.thread1.daemon = True
+        self.thread1.start()
+
+    # Handler for starting mesher
+    #   Starts a new thread for the ReconManager.mesher() method
+    def start_mesher(self):
+        self.recon.imgdir = self.imgdir
+        self.thread1 = Thread(target = self.recon.mesher)
+        self.thread1.daemon = True
+        self.thread1.start()
+
+    # Handler for the automatic reconstruction feature
+    #   Starts a new thread for the ReconManager.auto() method
+    def auto_recon(self):
+        if not self.imgdir:
+            self.page2._log("No images loaded")
+            return
+        self.recon.imgdir = self.imgdir
+        self.thread1 = Thread(target = self.recon.auto)
+        self.thread1.daemon = True
+        self.thread1.start()
+
+    # Handler for canceling recon
+    #   Should call the recon managers cancel() method
+    #   TODO: that actual reconmanager is running in its own thread, so can this be done with events and a handler rather than a call?
+    def cancel_recon(self):
+        self.recon.cancel()
+
+    # Method for updating the state of the application
+    #   Should set the map image acordingly as well as activate and deactivate buttons
+    def _update_state(self, state): #TODO: If this is called externally it isnt really a helper method and shouldnt have the underscore
         self.state = state
         self.page2.progresstotal.config(value=state)
         if state == STARTED:
@@ -284,15 +268,38 @@ class main(Tk):
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
-
-        # save to pickle
+        # TODO: Would there be any benefits to doing some progress bar management here with the progress text?
+        # save to pickle after chnaging state
         try:
             path = self.imgdir.relative_to(self.projdir)
         except:
             path = self.imgdir
         with open(self.picklepath, 'wb') as file:
             pickle.dump((path,state), file)
+        
+    # TODO: fix erros and check to make sure state is always being set correctly
+    # TODO: add comments for following functions (these are event handlers and not helpers)
+    def _toggle_fullscreen(self, e=None):
+        self.fullscreen = not self.fullscreen
+        self.attributes("-fullscreen", self.fullscreen)
+        return "break"
 
+    def _end_fullscreen(self, e=None):
+        self.fullscreen = False
+        self.attributes("-fullscreen", False)
+        return "break"
+    
+    # opens a new window at the middle of the screen. # TODO: improve comments
+    def _open_middle(self, windoww, windowh):
+        sw = self.winfo_screenwidth()
+        sh = self.winfo_screenheight()  
+        midx = (sw/2) - (windoww/2)
+        midy = (sh/2) - (windowh/2)
+        return (midx, midy-50)
+
+    # Handler for app shutdown
+    #   Cancel any living subprocesses
+    #   Save recents and then kill tkinter
     def _shutdown(self):
         try:
             self.recon.cancel()
@@ -306,3 +313,29 @@ if __name__ == "__main__":
     app = main()
     app.protocol("WM_DELETE_WINDOW", app._shutdown)
     app.mainloop()
+
+# TODO: Many things are labeled as handlers when really the handlers are in the 
+    # GUI and the mathods here are secondary calls
+
+# TODO: all non helper methods need docs formatted for the auto docs
+
+# TODO: Style guidelines:
+    # Method names use underscores: foo_bar()
+    # variables are all lowercase one word: varname
+    # Handlers are any method directly bound to a button or event
+    # Helper functions are any which are never called externally from the class and start with _foo_bar() also not event halders
+    # Classes are camel case: MethodName
+
+# TODO: Software Design
+    # GUI never interacts with file system, recon manager, or any other scripting classes directly
+    # All classes that can be static should be
+    # Methods should either return a value or update state/ perform an operation, never both
+    # Classes should have as few fields as possible
+
+# TODO: All python files should be in an scr folder
+    # Outside the src folder there should be a single executeable, license, and the README
+
+# TODO: Colmap should be in its own subfolder with its license info in a text file
+# TODO: darkmap.png should be renamed to something more logical like blankmap.png
+# TODO: following style the heat_map.png should be heatmap.png
+# TODO: placeholder photo should have a better name bc thats not all it is

@@ -17,6 +17,11 @@ class Mesher():
         self.projdir = projdir
         self.dense2mesh()
 
+    # Main function of the mesher using pymeshlab
+    #   Should import point cloud, create the full resolution mesh,
+    #   cut mesh into tiles until tiles have below TILE_SIZE verts
+    #   create a low res mesh with 100k verts total
+    #   apply textures to tiles and 100k mesh
     def dense2mesh(self):
         print("$$", flush=True)
         # Path to Colmap dense folder
@@ -184,8 +189,8 @@ class Mesher():
         self.ms.compute_selection_by_condition_per_vertex(condselect=f"(x < {minx} || x > {maxx}) || (y < {miny} || y > {maxy})")
         self.ms.meshing_remove_selected_vertices()
 
+# Get args from caller (recon manager) and start mesher code
 projdir = sys.argv[1]
-
 try:
     Mesher(projdir)
 except Exception as e:

@@ -8,6 +8,7 @@ from gui.AppWindow import AppWindow
 from gui.BoundsDialog import BoundsDialog
 from showinfm import show_in_file_manager
 
+# TODO: header comments
 class PipelineGUI(AppWindow):
     
     # GUI constants
@@ -47,13 +48,11 @@ class PipelineGUI(AppWindow):
         
         # status elements
         self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_MAP))
-        self.map = Canvas(self.left)
+        self.map = Canvas(self.left) # TODO: Should these be renamed?
         self.map_image_id = self.map.create_image(0, 0, image=self.temp, anchor='nw')
-        #self.map.update()
         self.map.bind('<Configure>', self._resizer)
         self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
-
         self.logtext = Text(right, width=50, background=self.controller.logbackground)
         scrollbar = Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
@@ -89,7 +88,7 @@ class PipelineGUI(AppWindow):
         self.progress.pack(fill="both", expand=True)
         scrollbar.pack(side='right', fill='y')
         
-        # dissable buttons
+        # dissable buttons # TODO: Can this be moved into the initial creation?
         self.matcher.config(state="disabled")
         self.setbounds.config(state="disabled")
         self.matcher.config(state="disabled")
@@ -149,7 +148,7 @@ class PipelineGUI(AppWindow):
             except:
                 self._log("All fields must contain numbers")
 
-    # Method to be called externally for updating text related to user input
+    # Method to be called externally for updating text related to user input #TODO: needs much better explanation
     def update_text(self, numimg=None, outres=None):
         if numimg:
             self.numimages.config(text=f"Num images: {numimg}")
@@ -157,6 +156,8 @@ class PipelineGUI(AppWindow):
             self.outres.config(text=f"Output resolution: {outres}")
 
     # Method to be called externally for setting map image in GUI
+    #   Sets the currentmap variable
+    #   Requests a RefreshMap event
     def set_map(self, mapdir):
         self.currentmap = mapdir
         self.event_generate("<<RefreshMap>>")
@@ -187,6 +188,8 @@ class PipelineGUI(AppWindow):
                 print("om nom nom nom nom nom")
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
+    # Event handler for the show files button
+    #   Should openthe out dir in file explorer
     def show_files(self):
         show_in_file_manager(str(self.controller.projdir) + "/out")
 
@@ -197,11 +200,15 @@ class PipelineGUI(AppWindow):
         resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
         self.temp = ImageTk.PhotoImage(resized_image)
         self.map.itemconfigure(self.map_image_id, image=self.temp)
-        
-    def _log(self, msg):
+    
+    # Method writes strings to the log
+    def _log(self, msg): #TODO: Called externally so not a helper
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
 
+    # Handles map refresh event
+    #    Sets the canvas image to the currentmap
+    #    If app has been resized, resizes image to fit
     def _refresh_map(self, e):
         if self.map.winfo_width() > 1 and self.map.winfo_height() > 1:
             image = Image.open(self.currentmap)
@@ -211,6 +218,8 @@ class PipelineGUI(AppWindow):
             self.temp = ImageTk.PhotoImage(Image.open(self.currentmap))
         self.map.itemconfigure(self.map_image_id, image=self.temp)
 
+    # Scales an image so that it will fit in a window defined by wwidth and wheight
+    #   Image scaled without distortion (preserves aspect ratio)
     def _scale_image(self, wwidth, wheight, iwidth, iheight, image):
         width_scale = wwidth / iwidth
         height_scale = wheight / iheight
