@@ -23,3 +23,9 @@ If you're a try-hard, then it technically works on Linux too.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Just run "pip install pymeshlab -U".
+
+
+using Sphinx for documentation.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Go into the docs directory and type "make clean html" to clear the _build directory. After it's done,
+run "make html". If any errors pop up,,, they shouldn't be there.
