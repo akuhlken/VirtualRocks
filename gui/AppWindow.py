@@ -2,7 +2,6 @@ from ttkbootstrap import Style
 import webbrowser as wb
 from pathlib import Path
 from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
-from scripts.RecentsManager import RecentsManager
 
 # TODO: lots of header comments needed
 
