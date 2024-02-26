@@ -15,6 +15,13 @@ MESHER = 100
 class ReconManager():
 
     def __init__(self, controller, projdir):
+        """
+        description about the whole class
+
+        Args:
+            controller (type?): what is it?
+            projdir (type?): what is it?
+        """
         self.controller = controller
         self.imgdir = None
         self.projdir = projdir
@@ -27,6 +34,9 @@ class ReconManager():
     #   in a desnse reconstruction
     #   Runs matcher.py as a subprocess tracked by self.p
     def matcher(self):
+        """
+        description
+        """
         clean = 'T'
         if (self.projdir / Path(r"database.db")).is_file():
             response = mb.askyesnocancel("Start Matcher", "Start clean and remove old database?")
@@ -68,6 +78,9 @@ class ReconManager():
     #   NOTE: This method runs in its own thread
     #   Runs mesher.py as a subprocess tracked by self.p
     def mesher(self):
+        """
+        description
+        """
         try:
             if self.p:
                 self.cancel()
@@ -94,6 +107,9 @@ class ReconManager():
     #   NOTE: When cancelling COLMAP, it may continur to run in the background and no longer be tracked by the app
     #   if the user runs matcher back to back the old process may conflict and need to manually be killed in task manager
     def cancel(self):
+        """
+        description
+        """
         self.controller.page2.cancel.config(state="disabled")
         try:
             try:
@@ -109,6 +125,9 @@ class ReconManager():
     # method to handle auto reconstruction without setting any user bounds
     #   runs both the matcher and mesher in sequence
     def auto(self):
+        """
+        description
+        """
         self.matcher()
         if (self.projdir / Path(r"dense\fused.ply")).is_file(): 
             self.mesher()
@@ -117,6 +136,12 @@ class ReconManager():
     #   when a process completes messages should be sent in the form: "$nextstep$""
     #   To reset the progress bar, send message "$$"
     def _update_progress(self, msg):
+        """
+        description
+
+        Args:
+            msg (string): what is it?
+        """
         if msg == "$$":
             self.controller.page2.progress.stop()
             self.controller.style.configure('prog.Horizontal.TProgressbar', text='')
@@ -141,6 +166,12 @@ class ReconManager():
     #   if no args are provided this will capture any messages that self.p sends and send them to the log,
     #   returning when self.p finishes
     def _send_log(self, msg=None):
+        """
+        description
+
+        Args:
+            msg (string): what is it?
+        """
         if msg:
             self.controller.page2._log(msg)
             if msg[0] == '$' and msg[-1] == '$':

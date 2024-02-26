@@ -4,6 +4,12 @@ from tkinter import simpledialog
 # TODO: Header comments
 class BoundsDialog(simpledialog.Dialog):
     def body(self, master):
+        """
+        description
+
+        Args:
+            master (type?): what is it?
+        """
         self.title("Remove Points:")
         self.labels = ["min X:", "max X:", "min Y:", "max Y:"]
         self.entries = []
@@ -15,6 +21,9 @@ class BoundsDialog(simpledialog.Dialog):
         return self.entries[0]  # initial focus
 
     def apply(self):
+        """
+        description
+        """
         try:
             self.result = []
             for entry in self.entries:

@@ -1,0 +1,8 @@
+PipelineGUI module
+==================
+
+.. automodule:: PipelineGUI
+   :members:
+   :private-members:
+   :undoc-members:
+   :show-inheritance:

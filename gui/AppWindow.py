@@ -8,6 +8,14 @@ from scripts.RecentsManager import RecentsManager
 
 class AppWindow(Frame):
     def __init__(self, parent, controller, recents):
+        """
+        description of the class as a whole
+
+        Args:
+            parent (type?): what is it?
+            controller (type?): what is it?
+            recents (type?): what is it?
+        """
         Frame.__init__(self, parent)
         self.controller = controller
         self.recents = recents
@@ -15,6 +23,9 @@ class AppWindow(Frame):
 
     # Setup method for top menu bar
     def create_menu(self):
+        """
+        description
+        """
         self.menubar = Menu(self)
         file = Menu(self.menubar, tearoff=0)  
         file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
@@ -66,6 +77,9 @@ class AppWindow(Frame):
         # Should open a dialogue asking the user to selct a working directory
         # Then call controllers new_project method
     def new_project(self):
+        """
+        description
+        """
         projdir = fd.askdirectory(title='Select Workspace', initialdir='/home/')
         if not projdir:
             return
@@ -81,6 +95,12 @@ class AppWindow(Frame):
         # Should open a dialogue asking the user to selct a project file
         # Then call controllers open_project method
     def open_project(self, projfile=None):
+        """
+        description
+
+        Args:
+            projfile (type?): what is it?
+        """
         if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
             if not projfile:
@@ -88,6 +108,12 @@ class AppWindow(Frame):
         self.controller.open_project(Path(projfile))
         
     def open_recent(self,index=1):
+        """
+        description
+
+        Args:
+            index (int): index of recent file to open in the recents dictionary.
+        """
         index = -index
         try:
             projfile = self.recents.recentlist[index][0]
@@ -101,6 +127,9 @@ class AppWindow(Frame):
     #   changes theme to a dark theme
     #   might be worth adding some flag so that we don't have to switch if we already have one style.
     def start_darkmode(self):
+        """
+        description
+        """
         if (self.controller.styleflag == "dark"):
             return
         self.controller.style = Style("darkly")
@@ -108,6 +137,9 @@ class AppWindow(Frame):
         self.init_common_style()
 
     def start_lightmode(self):
+        """
+        description
+        """
         if (self.controller.styleflag == "light"):
             return
         self.controller.style = Style("lumen")
@@ -115,6 +147,9 @@ class AppWindow(Frame):
         self.init_common_style()
 
     def init_common_style(self): # TODO: Rename, this isnt super clear cut
+        """
+        description
+        """
         temp = self.controller.swtich_style()
         self.controller.style.configure("TButton", width=16)
         self.controller.style.configure("cancel.TButton", width=30)
@@ -137,6 +172,9 @@ class AppWindow(Frame):
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.
     def open_helpmenu(self, docpage = "index.html"):
+        """
+        description
+        """
         try:
             wb.open_new(('file:///' + str(Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
         except:

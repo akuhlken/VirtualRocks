@@ -9,9 +9,18 @@ class RecentsManager():
     RECENT_PATH = Path('gui/recents.json')
 
     def __init__(self):
+        """
+        description about the whole class
+        """
         self.recentlist = self.get_recent() 
 
-    def update_recent(self, pklpath):         
+    def update_recent(self, pklpath):    
+        """
+        description
+
+        Args:
+            pklpath (int): what is it?
+        """     
         while len(self.recentlist) > 4:
             del self.recentlist[0]
         for rectup in self.recentlist:
@@ -21,6 +30,9 @@ class RecentsManager():
             self.recentlist.append((str(Path(pklpath).as_posix()), 1))  
 
     def get_recent(self):
+        """
+        description
+        """
         if not os.path.isfile(self.RECENT_PATH):
             f = open(self.RECENT_PATH, "x")
             f.write("[]")

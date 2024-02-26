@@ -1,3 +1,6 @@
+import os
+import sys
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -23,6 +26,12 @@ extensions = [
     "sphinx_rtd_theme",
     'sphinx.ext.autosectionlabel'
 ]
+
+#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../'))
+#sys.path.insert(0, os.path.abspath('../main.py'))
+sys.path.insert(0, os.path.abspath('../gui/'))
+sys.path.insert(0, os.path.abspath('../scripts/'))
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

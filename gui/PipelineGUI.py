@@ -16,6 +16,15 @@ class PipelineGUI(AppWindow):
     DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, projdir, recents):
+        """
+        description of the whole class
+
+        Args:
+            parent (type?): what is it?
+            controller (type?): what is it?
+            projdir (type?): what is it?
+            recents (type?): what is it?
+        """
         AppWindow.__init__(self, parent, controller, recents)
         self.setup_layout()
         self.projdir = projdir
@@ -25,6 +34,9 @@ class PipelineGUI(AppWindow):
 
     # Setup method for GUI layout and elements
     def setup_layout(self):
+        """
+        description, sets everything up
+        """
         # Layout framework
         self.left = Frame(self)
         right = Frame(self)
@@ -101,6 +113,9 @@ class PipelineGUI(AppWindow):
         # Then it should do basically the same thing as the new_project method
         # in StartGUI.
     def new_proj_handler(self):
+        """
+        description
+        """
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
         if not projdir:
             return
@@ -112,6 +127,9 @@ class PipelineGUI(AppWindow):
 
     # Event handler for "Start Menu" in the dropdown menu
     def startmenu_handler(self):
+        """
+        description
+        """
         self.controller.config(menu=Menu(self))
         self.controller.start_menu()
 
@@ -119,7 +137,9 @@ class PipelineGUI(AppWindow):
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
-        # starting progress bar
+        """
+        description
+        """
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.projdir)
         if not imgdir:
             return
@@ -137,6 +157,9 @@ class PipelineGUI(AppWindow):
         # Method should open a dialogue prompting the user to enter bounds
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
+        """
+        Description.
+        """
         dialog = BoundsDialog(self)
         if dialog.result: 
             try:
@@ -150,6 +173,14 @@ class PipelineGUI(AppWindow):
 
     # Method to be called externally for updating text related to user input #TODO: needs much better explanation
     def update_text(self, numimg=None, outres=None):
+        """
+        description
+
+        Args:
+            numimg (type?): what is it?
+            outres (type?): what is it?
+        """
+
         if numimg:
             self.numimages.config(text=f"Num images: {numimg}")
         if outres:
@@ -159,11 +190,23 @@ class PipelineGUI(AppWindow):
     #   Sets the currentmap variable
     #   Requests a RefreshMap event
     def set_map(self, mapdir):
+        """
+        description
+
+        Args:
+            mapdir (type?): what is it?
+        """
         self.currentmap = mapdir
         self.event_generate("<<RefreshMap>>")
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
+        """
+        description
+
+        Args:
+            imagefile (type?): what is it?
+        """
         img = Image.open(imagefile)
         img = img.resize((150, 100), Image.Resampling.LANCZOS)
         img = ImageTk.PhotoImage(img)
@@ -174,6 +217,9 @@ class PipelineGUI(AppWindow):
     #   If no savefile this will refresh and create a new project
     #   If chosen dir has a savefile this will load the existing project
     def change_projdir(self):
+        """
+        description
+        """
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
         if not projdir:
             return
@@ -191,11 +237,20 @@ class PipelineGUI(AppWindow):
     # Event handler for the show files button
     #   Should openthe out dir in file explorer
     def show_files(self):
+        """
+        description
+        """
         show_in_file_manager(str(self.controller.projdir) + "/out")
 
     # Event handler to be called whenever the window is resized
     #   Updates and scales the map image with window
     def _resizer(self, e):
+        """
+        description
+
+        Args:
+            e (event): an event?
+        """
         image = Image.open(self.currentmap)
         resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
         self.temp = ImageTk.PhotoImage(resized_image)
@@ -203,13 +258,25 @@ class PipelineGUI(AppWindow):
     
     # Method writes strings to the log
     def _log(self, msg): #TODO: Called externally so not a helper
+        """
+        description
+
+        Args:
+            msg (type?): what is it?
+        """
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
 
     # Handles map refresh event
     #    Sets the canvas image to the currentmap
     #    If app has been resized, resizes image to fit
-    def _refresh_map(self, e):
+    def _refresh_map(self, e): # TODO: do we still need to pass in e?
+        """
+        description
+
+        Args:
+            e (event): do we need event? doesn't seem to be used?
+        """
         if self.map.winfo_width() > 1 and self.map.winfo_height() > 1:
             image = Image.open(self.currentmap)
             resized_image = self._scale_image(self.map.winfo_width(), self.map.winfo_height(), image.width, image.height, image)
@@ -221,6 +288,16 @@ class PipelineGUI(AppWindow):
     # Scales an image so that it will fit in a window defined by wwidth and wheight
     #   Image scaled without distortion (preserves aspect ratio)
     def _scale_image(self, wwidth, wheight, iwidth, iheight, image):
+        """
+        description
+
+        Args:
+            wwidth (int): window width
+            wheight (int): window height
+            iwidth (int): ?????
+            iheight (int): ?????
+            image (image): ?????
+        """
         width_scale = wwidth / iwidth
         height_scale = wheight / iheight
         scale = min(width_scale, height_scale)
