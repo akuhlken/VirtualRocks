@@ -1,3 +1,6 @@
+import os
+import sys
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -7,14 +10,28 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'VirtualRocks'
-copyright = '2024, Andrew Kuhlken, Connor Scott, Coden Stark, Yorng Chhieng Chheng'
-author = 'Andrew Kuhlken, Connor Scott, Coden Stark, Yorng Chhieng Chheng'
+copyright = '2024, Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng'
+author = 'Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng'
 release = '1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary',
+    'sphinx.ext.napoleon',
+    "sphinx_rtd_theme",
+    'sphinx.ext.autosectionlabel'
+]
+
+#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../'))
+#sys.path.insert(0, os.path.abspath('../main.py'))
+sys.path.insert(0, os.path.abspath('../gui/'))
+sys.path.insert(0, os.path.abspath('../scripts/'))
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
@@ -25,4 +42,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-#html_static_path = ['_static']
+
+autosectionlabel_prefix_document = True
+
+autoclass_content = 'both'

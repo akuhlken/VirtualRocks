@@ -6,6 +6,12 @@ import pathlib as pl
 
 # Extract the x,y coordiantes from the .ply file at filename
 def get_coordinates(filename):
+    """
+        description
+
+        Args:
+            filename (type?): what is it? (str or path?)
+        """
     plydata = PlyData.read(filename)
     vertex = plydata['vertex']
     x = vertex['x']
@@ -15,6 +21,13 @@ def get_coordinates(filename):
 # Create a heat map of the point cloud at filename
 #   Save as heat_map.png in the dense directory
 def create_heat_map(filename, outdir):
+    """
+        description
+
+        Args:
+            filename (type?): what is it?
+            outdir (type?): what is it?
+        """
     x, y = get_coordinates(filename)
     pyplot.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
     pyplot.xlabel('X')
@@ -28,6 +41,16 @@ def create_heat_map(filename, outdir):
 # Remove all points from point cloud at filename which are outside bounds
 #   Save as fused.ply in the dense dir
 def remove_points(filename, minx, maxx, miny, maxy):
+    """
+        description
+
+        Args:
+            filename (type?): what is it?
+            maxx (int): what is it?
+            minx (int): what is it?
+            maxy (int): what is it?
+            miny (int): what is it?
+        """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):
         os.remove(tempfile)

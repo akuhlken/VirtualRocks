@@ -14,6 +14,12 @@ VERBOSE = False
 class Mesher():
 
     def __init__(self, projdir):
+        """
+        description of the whole class
+
+        Args:
+            projdir (type?): what is it?
+        """
         self.projdir = projdir
         self.dense2mesh()
 
@@ -23,6 +29,9 @@ class Mesher():
     #   create a low res mesh with 100k verts total
     #   apply textures to tiles and 100k mesh
     def dense2mesh(self):
+        """
+        description
+        """
         print("$$", flush=True)
         # Path to Colmap dense folder
         base_path = self.projdir + r"\dense"
@@ -120,6 +129,15 @@ class Mesher():
         return True
     
     def _quad_slice(self, maxx, minx, maxy, miny):
+        """
+        description
+
+        Args:
+            maxx (int): what is it?
+            minx (int): what is it?
+            maxy (int): what is it?
+            miny (int): what is it?
+        """
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)
         self.ms.set_selection_none()
@@ -177,6 +195,9 @@ class Mesher():
 
     # This will crop the current mesh to the bounds from the dense point cloud
     def _crop(self):
+        """
+        description
+        """
         min=self.bounds.min()
         max=self.bounds.max()
 

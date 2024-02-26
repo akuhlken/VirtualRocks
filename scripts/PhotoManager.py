@@ -8,6 +8,12 @@ EXTENSIONS = ['.jpg', '.jpeg', '.png', '.tif', '.tiff', '.JPG', '.JPEG', '.PNG',
 class PhotoManager():    
 
     def __init__(self, imgdir):
+        """
+        description of the whole class
+
+        Args:
+            imgdir (path): what is it?
+        """
         self.metadict = {}
         self.numimg = 0
         self.imgdir = imgdir
@@ -16,6 +22,12 @@ class PhotoManager():
     # Helper function to get the GPS coords of a specific image
     # TODO: remove method?
     def _extract_gps(self, imgpath):
+        """
+        description
+
+        Args:
+            imgpath (type?): what is it?
+        """
         with open(imgpath, 'rb') as f:
             tags = exifread.process_file(f)
             if 'GPS GPSLatitude' in tags and 'GPS GPSLongitude' in tags:
@@ -33,6 +45,9 @@ class PhotoManager():
     # Sets the imgdict variable with a dictionary of metadata for each image
     #   Uses the filename as the key in the dict and the value is a GPS struct
     def make_dict(self):
+        """
+        description
+        """
         for filename in os.listdir(self.imgdir):
             if filename.endswith(tuple(EXTENSIONS)):
                 imgpath = os.path.join(self.imgdir, filename)
@@ -44,6 +59,12 @@ class PhotoManager():
 
     # Returns the number of valid images contained within the imgdir
     def num_images(self, imgdir):
+        """
+        description
+
+        Args:
+            imgdir (path): what is it?
+        """
         self.numimg = 0
         for filename in os.listdir(imgdir):
             if filename.endswith(tuple(EXTENSIONS)):
@@ -51,6 +72,12 @@ class PhotoManager():
 
     # Return the path to an image in the imgdir
     def get_example(self, imgdir=None):
+        """
+        description
+
+        Args:
+            imgdir (path): what is it?
+        """
         if not imgdir:
             imgdir = self.imgdir
         for filename in os.listdir(imgdir):

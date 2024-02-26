@@ -6,6 +6,14 @@ from gui.AppWindow import AppWindow
 class StartGUI(AppWindow):
 
     def __init__(self, parent, controller, recents):
+        """
+        description of the whole class
+
+        Args:
+            parent (type?): what is it?
+            controller (type?): what is it?
+            recents (type?): what is it?
+        """
         AppWindow.__init__(self, parent, controller, recents)
         self.controller = controller
         label = Label(self, text="Choose Project:", anchor="center", style="title.TLabel")

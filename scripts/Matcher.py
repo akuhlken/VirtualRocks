@@ -7,6 +7,14 @@ import sys
 class Matcher:
     
     def __init__(self, projdir, imgdir, clean):
+        """
+        description of the whole class
+
+        Args:
+            projdir (type?): what is it?
+            imgdir (type?): what is it?
+            clean (type?): what is it?
+        """
         self.projdir = projdir
         self.imgdir = imgdir
         self.image2dense(clean) # TODO: clean arg should tell mesher wether to remove old db and folders
@@ -15,6 +23,12 @@ class Matcher:
     #   method should run all scripts accosiated with Colmap and result
     #   in a dense reconstruction
     def image2dense(self, clean):
+        """
+        description, cleaning, colmap recon
+
+        Args:
+            clean (type?): what is it?
+        """
         print("$$", flush=True)
         rcode = 0
         # clean old database
@@ -84,6 +98,7 @@ class Matcher:
             rcode = p.wait()
         if rcode == 0:
             print("$Matcher..100$", flush=True)
+
 
 # Get args from the caller (recon manager)
 projdir = sys.argv[1]
