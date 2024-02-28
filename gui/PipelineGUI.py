@@ -50,7 +50,6 @@ class PipelineGUI(AppWindow):
         right.pack(side='right', fill='y', anchor="e", expand=False)
         sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
-        chartbuttons.pack(side="bottom", fill="x", anchor='center')
         
         # control elements
         self.exampleimage = Label(right)
@@ -112,7 +111,8 @@ class PipelineGUI(AppWindow):
         self.dirtext.pack()
         self.changebtn.pack()
         self.chart.pack(fill='both', expand=True, anchor='center')
-        # need to do grid for whatever I have to do with the buttons, using spacer inbetween.
+        
+        chartbuttons.pack(side="bottom")
         self.previewcloud.grid(row=0, column=0)
         chartbuttonspacer.grid(row=0, column=1)
         self.chartswitch.grid(row=0, column=2)
