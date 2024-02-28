@@ -35,13 +35,14 @@ class PipelineGUI(AppWindow):
     # Setup method for GUI layout and elements
     def setup_layout(self):
         """
-        description, sets everything up
+        description, sets everything up. probs needs a lot of desc.
         """
         # Layout framework
         self.left = Frame(self)
         right = Frame(self)
         prog = Frame(self.left)
         sep = Frame(right)
+        chartbuttons = Frame(self.left, padding='3p')
         addphotosframe = Frame(right, padding='3p')
         bounds = Frame(right, padding='3p')
         showframe = Frame(right, padding='3p')
@@ -49,6 +50,7 @@ class PipelineGUI(AppWindow):
         right.pack(side='right', fill='y', anchor="e", expand=False)
         sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
+        chartbuttons.pack(side="bottom", fill="x", anchor='center')
         
         # control elements
         self.exampleimage = Label(right)
@@ -56,8 +58,10 @@ class PipelineGUI(AppWindow):
         self.numimages = Label(right, text="Number of images:")
         self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
         self.trimbounds = Button(bounds, text="Trim", width=7, command=lambda: self.bounds_handler())
-        spacer = Label(bounds, text=" ", font=('Helvetica', 1))
         self.resetbounds = Button(bounds, text="Reset", width=7, command=lambda: self.controller.restore())
+        self.previewcloud = Button(chartbuttons, width=20, text="Preview Point Cloud")  # TODO: need to add the handler/command to open the preview.
+        self.chartswitch = Button(chartbuttons, width=20, text="Switch Chart")  # TODO: need to add the handler/command to switch chart
+
         self.mesher = Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
         self.show = Button(showframe, text="Show Files", command=lambda: self.show_files())
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
@@ -67,8 +71,8 @@ class PipelineGUI(AppWindow):
         self.chart = Canvas(self.left)
         self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
         self.chart.bind('<Configure>', self._resizer)
-        self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
-        self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
+        self.dirtext = Label(prog, text="Project Directory: Test/test/test/test/test")
+        self.changebtn = Button(prog, text="Change", command=lambda: self.change_projdir())
         self.logtext = Text(right, width=50, background=self.controller.logbackground)
         scrollbar = Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
@@ -81,10 +85,15 @@ class PipelineGUI(AppWindow):
         self.progresstext = Label(prog, text="Progress on Current Step:")
 
         # separator, for style
-        self.separator = Separator(right, bootstyle="info", orient="vertical")
+        self.vertseparator = Separator(right, bootstyle="info", orient="vertical")
+        self.horiseparator = Separator(prog, bootstyle="info", orient="horizontal")
+
+        # spacers, for style
+        boundsspacer = Label(bounds, text=" ", font=('Helvetica', 1))
+        chartbuttonspacer = Label(chartbuttons, text=" ", font=('Helvetica', 1))
 
         # packing
-        self.separator.pack(side="left", fill="y", padx=5)
+        self.vertseparator.pack(side="left", fill="y", padx=5)
         self.exampleimage.pack()
         self.numimages.pack()
         addphotosframe.pack()
@@ -92,16 +101,21 @@ class PipelineGUI(AppWindow):
         self.matcher.pack()
         bounds.pack()
         self.trimbounds.grid(row=0, column=0)
-        spacer.grid(row=0, column=1)
+        boundsspacer.grid(row=0, column=1)
         self.resetbounds.grid(row=0, column=2)
         self.mesher.pack()
         showframe.pack()
         self.show.pack()
         self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
-        self.changebtn.pack(side='bottom')
-        self.dirtext.pack(side='bottom')
-        self.chart.pack(fill='both', expand=True, side='right')
+        self.horiseparator.pack(side='top', fill="x", pady=5)
+        self.dirtext.pack()
+        self.changebtn.pack()
+        self.chart.pack(fill='both', expand=True, anchor='center')
+        # need to do grid for whatever I have to do with the buttons, using spacer inbetween.
+        self.previewcloud.grid(row=0, column=0)
+        chartbuttonspacer.grid(row=0, column=1)
+        self.chartswitch.grid(row=0, column=2)
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
