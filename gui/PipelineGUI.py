@@ -161,7 +161,7 @@ class PipelineGUI(AppWindow):
                 maxy= dialog.result[3]
                 self.controller.set_bounds(minx, maxx, miny, maxy)
             except Exception as e:
-                print(e)
+                self.log(e)
                 self.log("All fields must contain numbers")
 
     # Method to be called externally for updating text related to user input
