@@ -90,7 +90,7 @@ class ReconManager():
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
-            if (self.projdir / Path(r"out\100k.obj")).is_file(): # If reconstruction exited normally
+            if (self.projdir / Path(r"out\low_poly.obj")).is_file(): # If reconstruction exited normally
                 self.controller.update_state(MESHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
