@@ -328,12 +328,16 @@ class main(Tk):
         description
 
         Args:
-            e (event): what is it?
+            e(event): what is it?
         """
-        
+        if self.fullscreen:
+            self.attributes('-fullscreen', False)
+            self.fullscreen = False
+            return 'break'
         if not self.fullscreen:
             self.attributes('-fullscreen', True)
             self.fullscreen = True
+            return 'break'
     def _end_fullscreen(self, event=None):
         """
         description
@@ -341,7 +345,7 @@ class main(Tk):
         Args:
             e (event): what is it?
         """
-        print(self.state)
+       
         if self.fullscreen:
             self.attributes('-fullscreen',False)
             self.fullscreen = False
