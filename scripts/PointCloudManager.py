@@ -7,13 +7,12 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# Extract the x,y coordiantes from the .ply file at filename
 def get_coordinates(filename):
     """
-        description
+        Helper method which extract the x,y coordiantes from the .ply file
 
         Args:
-            filename (type?): what is it? (str or path?)
+            filename (pathlib.Path): Path to a .ply point cloud file
         """
     plydata = PlyData.read(filename)
     vertex = plydata['vertex']
@@ -21,15 +20,14 @@ def get_coordinates(filename):
     y = vertex['y']
     return x, y
 
-# Create a heat map of the point cloud at filename
-#   Save as heat_map.png in the dense directory
 def create_heat_map(filename, outdir):
     """
-        description
+        Creates a heat map of the dense point cloud and exports it as heat_map.png 
+        in the dense directory.
 
         Args:
-            filename (type?): what is it?
-            outdir (type?): what is it?
+            filename (pathlib.Path): Path to a .ply point cloud file
+            outdir (pathlib.Path): Output directory.
         """
     x, y = get_coordinates(filename)
     pyplot.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
@@ -39,18 +37,17 @@ def create_heat_map(filename, outdir):
     pyplot.savefig(pl.Path(str(outdir)) / "heat_map.png")
     pyplot.close('all')
 
-# Remove all points from point cloud at filename which are outside bounds
-#   Save as fused.ply in the dense dir
 def remove_points(filename, minx, maxx, miny, maxy):
     """
-        description
+        Method removes points from .ply point cloud that lie outside the provided 
+        bounds and exports as fused.ply into the dense directory.
 
         Args:
-            filename (type?): what is it?
-            maxx (int): what is it?
-            minx (int): what is it?
-            maxy (int): what is it?
-            miny (int): what is it?
+            filename (pathlib.Path): Path to a .ply point cloud file
+            maxx (int): 
+            minx (int): 
+            maxy (int): 
+            miny (int): 
         """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):

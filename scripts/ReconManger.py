@@ -16,11 +16,12 @@ class ReconManager():
 
     def __init__(self, controller, projdir):
         """
-        description about the whole class
+        Recon manager is a controller class that manages the subprocesses for the 
+        Matcher and Mesher
 
         Args:
-            controller (type?): what is it?
-            projdir (type?): what is it?
+            controller (Main): Reference to the main TK app
+            projdir (pathlib.Path): Project directory containing .pkl file
         """
         self.controller = controller
         self.imgdir = None
@@ -28,14 +29,11 @@ class ReconManager():
         self.progresspercent = 0
         self._update_progress("$$")
 
-    # Main matcher pipeliningg code
-    #   NOTE: This method runs in its own thread
-    #   method should run all scripts accosiated with Colmap and result
-    #   in a desnse reconstruction
-    #   Runs matcher.py as a subprocess tracked by self.p
     def matcher(self):
         """
-        description
+        Method for starting the subprocess for the matcher, runs Matcher.py and 
+        updates application state after running. Prompts the user on whether to 
+        overwrite database if one exists.
         """
         clean = 'T'
         if (self.projdir / Path(r"database.db")).is_file():
@@ -73,12 +71,10 @@ class ReconManager():
                 self._send_log("Matcher failed, please retry")
         self.p = None
 
-    # Main mesher pipeling code
-    #   NOTE: This method runs in its own thread
-    #   Runs mesher.py as a subprocess tracked by self.p
     def mesher(self):
         """
-        description
+        Method for starting the subprocess for the mesher, runs Mesher.py and 
+        updates application state after running.
         """
         try:
             if self.p:
@@ -100,13 +96,13 @@ class ReconManager():
             else:
                 self._send_log("Mesher failed, please retry")
 
-    #  Methods for canceling current recon
-    #   Should kill any active subprocess
-    #   NOTE: When cancelling COLMAP, it may continur to run in the background and no longer be tracked by the app
-    #   if the user runs matcher back to back the old process may conflict and need to manually be killed in task manager
     def cancel(self):
         """
-        description
+        If one exists, method sends teminate signal to current subprocess. After 
+        a timeout the process will be sent a kill signal. NOTE: When cancelling 
+        COLMAP, it may continue to run in the background and no longer be tracked 
+        by the app. Additionally if the user runs matcher back to back the old 
+        process may conflict and need to manually be killed in task manager.
         """
         self.controller.page2.cancel.config(state="disabled")
         try:
@@ -120,25 +116,24 @@ class ReconManager():
         self._send_log("process was sent kill signal")
         self._send_log("$$")
 
-    # method to handle auto reconstruction without setting any user bounds
-    #   runs both the matcher and mesher in sequence
     def auto(self):
         """
-        description
+        Method runs a full reconstruction from images to tiled meshes automatically. 
+        Does not allow the user to trim point cloud.
         """
         self.matcher()
         if (self.projdir / Path(r"dense\fused.ply")).is_file(): 
             self.mesher()
 
-    # Method for updating progress bar and progress text
-    #   when a process completes messages should be sent in the form: "$nextstep$""
-    #   To reset the progress bar, send message "$$"
     def _update_progress(self, msg):
         """
-        description
+        Helper method for updating the progress bar text and completion.
 
         Args:
-            msg (string): what is it?
+            msg (string): msg should be in the format "$text.50$" where 
+            text will be displayed above the lower progress bar and the 
+            number is the precentage fill of the bar. 
+            Sending the message "$$" will reset the bar and text. 
         """
         if msg == "$$":
             self.controller.page2.progress.stop()
@@ -149,7 +144,7 @@ class ReconManager():
         currentstep = pkg[0]
         currentsubstep = pkg[1]
         percent = pkg[2]
-        self.progresspercent = int(int(percent)/self.controller.page2.progress["maximum"] * 100) # if we only use this variable once, is it worth keeping?
+        self.progresspercent = int(int(percent)/self.controller.page2.progress["maximum"] * 100)
         if currentsubstep == "":
             self.controller.page2.progresstext.config(text=f"Progress on {currentstep}: ")
         else:
@@ -160,15 +155,15 @@ class ReconManager():
         if self.controller.page2.progress["value"] == self.controller.page2.progress["maximum"]:
             self.controller.page2.progresstext.config(text=f"{currentstep} complete!")
         
-    # Method has two behaviors, if passed a string this method will act like a print() to the log
-    #   if no args are provided this will capture any messages that self.p sends and send them to the log,
-    #   returning when self.p finishes
     def _send_log(self, msg=None):
         """
-        description
+        Helper method to send a message to the pipelineGUI log. If message starts 
+        and ends with $ it will go to the log and also be used to update the progress bar.
+        If no message is provided this method will wait for the current process 
+        to exit and capture any messages sent through STDOUT by that process.
 
         Args:
-            msg (string): what is it?
+            msg (string): Optional
         """
         if msg:
             self.controller.page2.log(msg)
