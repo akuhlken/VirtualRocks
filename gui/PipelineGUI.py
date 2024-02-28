@@ -1,4 +1,4 @@
-from tkinter import Canvas, Text, Menu, END
+from tkinter import Canvas, Text, END, Button as tkButton
 from tkinter.ttk import Frame, Label, Button, Scrollbar, Progressbar
 from ttkbootstrap import Separator
 from tkinter import filedialog as fd, messagebox as mb
@@ -42,6 +42,9 @@ class PipelineGUI(AppWindow):
         right = Frame(self)
         prog = Frame(self.left)
         sep = Frame(right)
+        addphotosframe = Frame(right, padding='3p')
+        bounds = Frame(right, padding='3p')
+        showframe = Frame(right, padding='3p')
         self.left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
         sep.pack(side='left', expand=False)
@@ -49,12 +52,14 @@ class PipelineGUI(AppWindow):
         
         # control elements
         self.exampleimage = Label(right)
-        self.addphotos = Button(right, text="Add Photos", command=lambda: self.photos_handler())
+        self.addphotos = Button(addphotosframe, text="Add Photos", command=lambda: self.photos_handler())
         self.numimages = Label(right, text="Number of images:")
         self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
-        self.setbounds = Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
+        self.trimbounds = Button(bounds, text="Trim", width=7, command=lambda: self.bounds_handler())
+        spacer = Label(bounds, text=" ", font=('Helvetica', 1))
+        self.resetbounds = Button(bounds, text="Reset", width=7, command=lambda: self.controller.restore())
         self.mesher = Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
-        self.show = Button(right, text="Show Files", command=lambda: self.show_files())
+        self.show = Button(showframe, text="Show Files", command=lambda: self.show_files())
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
@@ -81,11 +86,16 @@ class PipelineGUI(AppWindow):
         # packing
         self.separator.pack(side="left", fill="y", padx=5)
         self.exampleimage.pack()
-        self.addphotos.pack()
         self.numimages.pack()
+        addphotosframe.pack()
+        self.addphotos.pack()
         self.matcher.pack()
-        self.setbounds.pack()
+        bounds.pack()
+        self.trimbounds.grid(row=0, column=0)
+        spacer.grid(row=0, column=1)
+        self.resetbounds.grid(row=0, column=2)
         self.mesher.pack()
+        showframe.pack()
         self.show.pack()
         self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
