@@ -37,8 +37,9 @@ class Matcher:
             if os.path.exists(database) and clean:
                 os.remove(database)
                 print("Removed old database", flush=True)
-        except:
+        except Exception as e:
             rcode = 1
+            print(e, flush=True)
             print("Database already open (wait for old process to exit)", flush=True)
 
         # Colmap recon
@@ -61,8 +62,9 @@ class Matcher:
                 if not os.path.exists(sparsedir):
                     os.makedirs(sparsedir)
                     print("Created sparse", flush=True)
-            except:
+            except Exception as e:
                 rcode = 1
+                print(e, flush=True)
                 print("Files already open (wait for old process to exit)", flush=True)
         if rcode == 0:
             print("$Matcher.Mapper.33$", flush=True)
@@ -77,8 +79,9 @@ class Matcher:
                 if not os.path.exists(densedir):
                     os.makedirs(densedir)
                     print("Created dense", flush=True)
-            except:
+            except Exception as e:
                 rcode = 1
+                print(e, flush=True)
                 print("Files already open (wait for old process to exit)", flush=True)
         if rcode == 0:
             print("$Matcher.Image Undistorter.33$", flush=True)

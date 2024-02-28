@@ -114,7 +114,8 @@ class AppWindow(Frame):
             if not projfile:
                 return
             self.open_project(projfile)
-        except:
+        except Exception as e:
+            print(e)
             print("Could not find project")
 
     # Handler for setting dark mode
@@ -171,6 +172,6 @@ class AppWindow(Frame):
         """
         try:
             wb.open_new(('file:///' + str(Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
-        except:
-            pass
+        except Exception as e:
+            print(e)
         return

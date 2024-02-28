@@ -28,5 +28,5 @@ class BoundsDialog(simpledialog.Dialog):
             self.result = []
             for entry in self.entries:
                 self.result.append(float(entry.get()))
-        except:
-            print("Could not convert input to floating point number")
+        except Exception as e:
+            print(e)

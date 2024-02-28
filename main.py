@@ -159,9 +159,9 @@ class main(Tk):
             self.page2.update_text(pm.get_num_img(self.imgdir))
             self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(self.imgdir)))
         except Exception as e:
+            self.page2.log(e)
             self.page2.log("Could not find image directory")
             self.update_state(STARTED)
-            print(e)
 
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.

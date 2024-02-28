@@ -5,7 +5,7 @@ import sys
 
 # Default Parameters
 OVERLAP = 0.1 # Overlap ammount between tiles
-TEXTURE_RES = 1024
+TEXTURE_RES = 4096
 CELL_SIZE = 0.0001 # Clustering decimation cell size
 TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
 VERTEX_LIMIT = 2500000
