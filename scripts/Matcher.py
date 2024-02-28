@@ -8,26 +8,26 @@ class Matcher:
     
     def __init__(self, projdir, imgdir, clean):
         """
-        description of the whole class
+        Matcher is a python class designed to be run as a subprocess. Uses Colmap 
+        to create a dense point cloud and database of image data. https://colmap.github.io/
 
         Args:
-            projdir (type?): what is it?
-            imgdir (type?): what is it?
-            clean (type?): what is it?
+            projdir (pathlib.Path): Project directory containing .pkl file
+            imgdir (pathlib.Path): Image directory
+            clean (char): If 'T' will remove database, if 'F' will use existsing 
+            database if one exists
         """
         self.projdir = projdir
         self.imgdir = imgdir
         self.image2dense(clean)
 
-    # Main matcher pipeling code
-    #   method should run all scripts accosiated with Colmap and result
-    #   in a dense reconstruction
     def image2dense(self, clean):
         """
-        description, cleaning, colmap recon
+        Runs the colmap comands sequentially as subprocesses.
 
         Args:
-            clean (type?): what is it?
+            clean (char): If 'T' will remove database, if 'F' will use existsing 
+            database if one exists.
         """
         print("$$", flush=True)
         rcode = 0
@@ -98,7 +98,6 @@ class Matcher:
             rcode = p.wait()
         if rcode == 0:
             print("$Matcher..100$", flush=True)
-
 
 # Get args from the caller (recon manager)
 projdir = sys.argv[1]

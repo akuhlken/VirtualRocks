@@ -15,22 +15,19 @@ class Mesher():
 
     def __init__(self, projdir):
         """
-        description of the whole class
+        Mesher is a python class designed to be run as a subprocess. Uses pymeshlab 
+        library to create mesh, subdivide until tiles have less than 50k verticies, 
+        generate textures, and create a low polygon mesh for the entire model.
 
         Args:
-            projdir (type?): what is it?
+            projdir (pathlib.Path): Project directory containing .pkl file
         """
         self.projdir = projdir
         self.dense2mesh()
 
-    # Main function of the mesher using pymeshlab
-    #   Should import point cloud, create the full resolution mesh,
-    #   cut mesh into tiles until tiles have below TILE_SIZE verts
-    #   create a low res mesh with 100k verts total
-    #   apply textures to tiles and 100k mesh
     def dense2mesh(self):
         """
-        description
+        Function to generate tiles with textures as well as a low poly mesh.
         """
         print("$$", flush=True)
         # Path to Colmap dense folder
@@ -130,13 +127,14 @@ class Mesher():
     
     def _quad_slice(self, minx, maxx, miny, maxy):
         """
-        description
+        Recursive helper method for subdividing mesh into tiles and once tile is 
+        below 50k verts, generate a texture and export.
 
         Args:
-            minx (int): what is it?
-            maxx (int): what is it?
-            miny (int): what is it?
-            maxy (int): what is it?
+            minx (int):
+            maxx (int):
+            miny (int):
+            maxy (int):
         """
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)
@@ -193,10 +191,10 @@ class Mesher():
         self._quad_slice(midx, maxx, miny, midy)
         
 
-    # This will crop the current mesh to the bounds from the dense point cloud
     def _crop(self):
         """
-        description
+        Helper function for cropping any extra points added to the mesh which lie 
+        outside the bounds of the origional point cloud.
         """
         min=self.bounds.min()
         max=self.bounds.max()

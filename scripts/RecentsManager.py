@@ -25,7 +25,7 @@ class RecentsManager():
         is not NULL).
 
         Args:
-            pklpath (path/str): the path `(or string of the path)` to the project file that's being updated.
+            pklpath (pathlib.Path): the path to the project file that's being updated.
         """     
         while len(self.recentlist) > 4:
             del self.recentlist[0]

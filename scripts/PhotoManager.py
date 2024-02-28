@@ -5,13 +5,13 @@ from pathlib import Path
 EXTENSIONS = ['.jpg', '.jpeg', '.png', '.tif', '.tiff', '.JPG', '.JPEG', '.PNG', '.TIF', '.TIFF']
 DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
-
 def get_num_img(imgdir):
     """
-    description
+    Method returns the number of valid images in the image directory as an int. 
+    Valid image types are: jpg, png, and tiff
 
     Args:
-        imgdir (path): what is it?
+        imgdir (pathlib.Path): Image directory
     """
     numimg = 0
     for filename in os.listdir(imgdir):
@@ -19,13 +19,12 @@ def get_num_img(imgdir):
             numimg += 1
     return numimg
 
-# Return the path to an image in the imgdir
 def get_example_img(imgdir):
     """
-    description
+    Gets the path for the first valid image in the image directory.
 
     Args:
-        imgdir (path): what is it?
+        imgdir (pathlib.Path): Image directory
     """
     for filename in os.listdir(imgdir):
         if filename.endswith(tuple(EXTENSIONS)):
