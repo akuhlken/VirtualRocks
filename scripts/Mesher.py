@@ -120,10 +120,10 @@ class Mesher():
         self.ms.meshing_repair_non_manifold_edges()
 
         print("Building texture for low poly mesh", flush=True)
-        self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "100k.jpg", usedistanceweight=False)
+        self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = "low_poly.jpg", usedistanceweight=False)
         # Export mesh
-        print(fr"Exporting mesh to {self.outdir}\100k.obj", flush=True)
-        self.ms.save_current_mesh(fr"{self.outdir}\100k.obj")
+        print(fr"Exporting mesh to {self.outdir}\low_poly.obj", flush=True)
+        self.ms.save_current_mesh(fr"{self.outdir}\low_poly.obj")
         print("$Mesher..100$", flush=True)
         print("$$", flush=True)
         return True
@@ -154,10 +154,10 @@ class Mesher():
             self.ms.meshing_remove_selected_vertices()
 
             # Build texture
-            self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"land_{self.tile}.jpg", usedistanceweight=False)
+            self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"tile_{self.tile}.jpg", usedistanceweight=False)
 
             # Export mesh
-            self.ms.save_current_mesh(fr"{self.outdir}\land_{self.tile}.obj")
+            self.ms.save_current_mesh(fr"{self.outdir}\tile_{self.tile}.obj")
             self.ms.set_selection_all()
             self.ms.meshing_remove_selected_vertices()
             # scaled_value = ((self.percentdone) * (70) / (100)) + 20

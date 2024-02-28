@@ -122,9 +122,11 @@ class main(Tk):
         self.title("VirtualRocks: " + self.projectname)
         if imgdir:
             self.imgdir = imgdir
-            self.page2.update_text(pm.get_num_img(imgdir))
+            numimg = pm.get_num_img(imgdir)
+            self.page2.update_text(numimg)
             self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(imgdir)))
-            self.update_state(PHOTOS)
+            if numimg > 0:
+                self.update_state(PHOTOS)
         else:
             self.update_state(STARTED)
         
@@ -185,9 +187,11 @@ class main(Tk):
         self.projdir.resolve()
         self.imgdir = Path(imgdir).resolve()
         self.recon._send_log("$Image Loading..100$")
-        self.page2.update_text(pm.get_num_img(self.imgdir))
+        numimg = pm.get_num_img(self.imgdir)
+        self.page2.update_text(numimg)
         self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(self.imgdir)))
-        self.update_state(PHOTOS)
+        if numimg > 0:
+            self.update_state(PHOTOS)
 
     # Removes points from dense point cloud as specified by bounds
     #   Handler in PipelineGUI creates dialog and passes bounds here

@@ -53,7 +53,6 @@ class PipelineGUI(AppWindow):
         self.numimages = Label(right, text="Number of images:")
         self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
         self.setbounds = Button(right, text="Set Bounds", command=lambda: self.bounds_handler())
-        self.outres = Label(right, text="Output Resulution:")
         self.mesher = Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
         self.show = Button(right, text="Show Files", command=lambda: self.show_files())
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
@@ -86,7 +85,6 @@ class PipelineGUI(AppWindow):
         self.numimages.pack()
         self.matcher.pack()
         self.setbounds.pack()
-        self.outres.pack()
         self.mesher.pack()
         self.show.pack()
         self.cancel.pack(anchor="s", side="bottom")
@@ -152,23 +150,20 @@ class PipelineGUI(AppWindow):
                 miny= dialog.result[2]
                 maxy= dialog.result[3]
                 self.controller.set_bounds(minx, maxx, miny, maxy)
-            except:
+            except Exception as e:
+                print(e)
                 self.log("All fields must contain numbers")
 
     # Method to be called externally for updating text related to user input
-    def update_text(self, numimg=None, outres=None):
+    def update_text(self, numimg):
         """
         description
 
         Args:
             numimg (type?): what is it?
-            outres (type?): what is it?
         """
-
-        if numimg:
-            self.numimages.config(text=f"Num images: {numimg}")
-        if outres:
-            self.outres.config(text=f"Output resolution: {outres}")
+        self.numimages.config(text=f"Num images: {numimg}")
+        
 
     # Method to be called externally for setting chart image in GUI
     #   Sets the currentchart variable

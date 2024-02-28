@@ -65,4 +65,3 @@ def remove_points(filename, minx, maxx, miny, maxy):
     new_vertex = PlyElement.describe(vertex, 'vertex')
     new_plydata = PlyData([new_vertex], text=plydata.text)
     new_plydata.write(filename)
-    os.remove(tempfile)
