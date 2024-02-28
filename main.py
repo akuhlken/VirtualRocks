@@ -310,9 +310,7 @@ class main(Tk):
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
-        if state == FULLSCREEN:
-            self.attributes("-fullscreen", True)
-            self.fullscreen = True
+        
         # TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN
         # save to pickle after chnaging state
         try:
@@ -332,7 +330,7 @@ class main(Tk):
         Args:
             e (event): what is it?
         """
-        print (self.state)
+        
         if not self.fullscreen:
             self.attributes('-fullscreen', True)
             self.fullscreen = True
