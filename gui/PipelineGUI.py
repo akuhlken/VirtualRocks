@@ -35,78 +35,109 @@ class PipelineGUI(AppWindow):
     # Setup method for GUI layout and elements
     def setup_layout(self):
         """
-        description, sets everything up
+        description, sets everything up. probs needs a lot of desc.
         """
-        # Layout framework
+        ### Frames:
         self.left = Frame(self)
         right = Frame(self)
         prog = Frame(self.left)
-        sep = Frame(right)
-        addphotosframe = Frame(right, padding='3p')
-        bounds = Frame(right, padding='3p')
-        showframe = Frame(right, padding='3p')
+
+        # packing the main frames
         self.left.pack(side='left', fill='both', anchor="e", expand=True)
         right.pack(side='right', fill='y', anchor="e", expand=False)
-        sep.pack(side='left', expand=False)
         prog.pack(side='bottom', fill='x', anchor="s", expand=False)
         
-        # control elements
+        # subframes, for alignment + spacing
+        chartbuttonsframe = Frame(self.left, padding='3p')
+        addphotosframe = Frame(right, padding='3p')
+        boundsframe = Frame(right, padding='3p')
+        showframe = Frame(right, padding='3p')
+
+        
+        ### Right: elements + buttons on the right bar
         self.exampleimage = Label(right)
         self.addphotos = Button(addphotosframe, text="1: Add Photos", command=lambda: self.photos_handler())
         self.numimages = Label(right, text="Number of images:")
         self.matcher = Button(right, text="2: Matcher", command=lambda: self.controller.start_matcher())
-        self.trimbounds = Button(bounds, text="Trim", width=8, command=lambda: self.bounds_handler())
-        spacer = Label(bounds, text=" ", font=('Helvetica', 1))
-        self.resetbounds = Button(bounds, text="Reset", width=8, command=lambda: self.controller.restore())
+        self.trimbounds = Button(boundsframe, text="Trim", width=8, command=lambda: self.bounds_handler())
+        self.resetbounds = Button(boundsframe, text="Reset", width=8, command=lambda: self.controller.restore())
         self.mesher = Button(right, text="3: Mesher", command=lambda: self.controller.start_mesher())
         self.show = Button(showframe, text="4: Show Files", command=lambda: self.show_files())
-        self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
-        
-        # status elements
-        self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_CHART))
-        self.chart = Canvas(self.left)
-        self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
-        self.chart.bind('<Configure>', self._resizer)
-        self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
-        self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
+
+        # the log, scrollbar, and cancel button for recon.
         self.logtext = Text(right, width=50, background=self.controller.logbackground)
         scrollbar = Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview
+        self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
+        
 
-        # progress bar elements
-        self.progresstotal = Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
+        ### Left: charts and progress
+        self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_CHART))
+        self.chart = Canvas(self.left)
+        self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
+        self.chart.bind('<Configure>', self._resizer)
+        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud")  # TODO: need to add the handler/command to open the preview.
+        self.chartswitch = Button(chartbuttonsframe, width=20, text="Switch Chart")  # TODO: need to add the handler/command to switch chart
+
+        # progress bar frame elements
+        self.dirtext = Label(prog, text="Project Directory: Test/test/test/test/test")
+        self.changebtn = Button(prog, text="Change", command=lambda: self.change_projdir())
         self.progresstotaltext = Label(prog, text="Total Progress:")
-        self.progress = Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
+        self.progresstotal = Progressbar(prog, length=280, mode='determinate', max=100, style="Horizontal.TProgressbar")
         self.progresstext = Label(prog, text="Progress on Current Step:")
+        self.progress = Progressbar(prog, length=280, mode='determinate', max=100, style="prog.Horizontal.TProgressbar")
 
-        # separator, for style
-        self.separator = Separator(right, bootstyle="info", orient="vertical")
 
-        # packing
-        self.separator.pack(side="left", fill="y", padx=5)
+        ### Misc style elements:
+        # separators (bars)
+        self.vertseparator = Separator(right, bootstyle="info", orient="vertical")
+        self.horiseparator = Separator(prog, bootstyle="info", orient="horizontal")
+
+        # spacers
+        boundsspacer = Label(boundsframe, text=" ", font=('Helvetica', 1))
+        chartbuttonspacer = Label(chartbuttonsframe, text=" ", font=('Helvetica', 1))
+
+
+        ### packing
+        ## Right:
+        self.vertseparator.pack(side="left", fill="y", padx=5)
         self.exampleimage.pack()
         self.numimages.pack()
         addphotosframe.pack()
         self.addphotos.pack()
         self.matcher.pack()
-        bounds.pack()
+        # bounds buttons, gridded to be inline
+        boundsframe.pack()
         self.trimbounds.grid(row=0, column=0)
-        spacer.grid(row=0, column=1)
+        boundsspacer.grid(row=0, column=1)
         self.resetbounds.grid(row=0, column=2)
         self.mesher.pack()
         showframe.pack()
         self.show.pack()
         self.cancel.pack(anchor="s", side="bottom")
         self.logtext.pack(side='left', fill='both', expand=True)
-        self.changebtn.pack(side='bottom')
-        self.dirtext.pack(side='bottom')
-        self.chart.pack(fill='both', expand=True, side='right')
+        scrollbar.pack(side='right', fill='y')
+
+        ## Left:
+        # progress bar
+        self.horiseparator.pack(side='top', fill="x", pady=5)
+        self.dirtext.pack()
+        self.changebtn.pack()
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
         self.progress.pack(fill="both", expand=True)
-        scrollbar.pack(side='right', fill='y')
+
+        # chart
+        self.chart.pack(fill='both', expand=True, anchor='center')
+
+        # chart buttons
+        chartbuttonsframe.pack(side="bottom")
+        self.previewcloud.grid(row=0, column=0)
+        chartbuttonspacer.grid(row=0, column=1)
+        self.chartswitch.grid(row=0, column=2)
+        
 
     # Event handler for "New" in the dropdown menu
         # Method should first check to make sure nothing is running.

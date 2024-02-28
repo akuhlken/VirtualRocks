@@ -24,6 +24,7 @@ high quality texture, and turns that 3D mesh into a VR headset-ready experience.
    Samples
    colmap
    meshlab
+   unity
    reference/modules
    
 
