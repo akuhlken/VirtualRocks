@@ -52,14 +52,14 @@ class PipelineGUI(AppWindow):
         
         # control elements
         self.exampleimage = Label(right)
-        self.addphotos = Button(addphotosframe, text="Add Photos", command=lambda: self.photos_handler())
+        self.addphotos = Button(addphotosframe, text="1: Add Photos", command=lambda: self.photos_handler())
         self.numimages = Label(right, text="Number of images:")
-        self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
-        self.trimbounds = Button(bounds, text="Trim", width=7, command=lambda: self.bounds_handler())
+        self.matcher = Button(right, text="2: Matcher", command=lambda: self.controller.start_matcher())
+        self.trimbounds = Button(bounds, text="Trim", width=8, command=lambda: self.bounds_handler())
         spacer = Label(bounds, text=" ", font=('Helvetica', 1))
-        self.resetbounds = Button(bounds, text="Reset", width=7, command=lambda: self.controller.restore())
-        self.mesher = Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
-        self.show = Button(showframe, text="Show Files", command=lambda: self.show_files())
+        self.resetbounds = Button(bounds, text="Reset", width=8, command=lambda: self.controller.restore())
+        self.mesher = Button(right, text="3: Mesher", command=lambda: self.controller.start_mesher())
+        self.show = Button(showframe, text="4: Show Files", command=lambda: self.show_files())
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
