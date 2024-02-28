@@ -206,7 +206,7 @@ class main(Tk):
             maxy (int): what is it?
         """
         self.recon._send_log("$$")
-        self.recon._send_log("$Setting Bounds..100$")
+        self.recon._send_log("$Trimming Bounds..100$")
         dense = Path(self.projdir / "dense")
         pcm.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
         pcm.create_heat_map(Path(dense / "fused.ply"), dense)
@@ -286,12 +286,14 @@ class main(Tk):
         if state == STARTED:
             self.page2.set_chart(self.page2.DEFAULT_CHART)
             self.page2.matcher.config(state='disabled')
-            self.page2.setbounds.config(state='disabled')
+            self.page2.trimbounds.config(state='disabled')
+            self.page2.resetbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.show.config(state='disabled')
         if state == PHOTOS:
             self.page2.set_chart(self.page2.DEFAULT_CHART)
-            self.page2.setbounds.config(state='disabled')
+            self.page2.trimbounds.config(state='disabled')
+            self.page2.resetbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
@@ -300,13 +302,15 @@ class main(Tk):
             self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
-            self.page2.setbounds.config(state='active')
+            self.page2.resetbounds.config(state='active')
+            self.page2.trimbounds.config(state='active')
             self.page2.mesher.config(state='active')
         if state == MESHER:
             dense = Path(self.projdir / "dense")
             self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.matcher.config(state='active')
-            self.page2.setbounds.config(state='active')
+            self.page2.trimbounds.config(state='active')
+            self.page2.resetbounds.config(state='active')
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
         # TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN

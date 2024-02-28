@@ -60,8 +60,7 @@ class AppWindow(Frame):
         info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
     
         recon = Menu(self.menubar, tearoff=0)
-        recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon()) 
-        recon.add_command(label="Restore Point Cloud", command=lambda: self.controller.restore())
+        recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon())
 
         # Add menues as cascades
         self.menubar.add_cascade(label="File", menu=file)
