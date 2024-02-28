@@ -12,7 +12,7 @@ from showinfm import show_in_file_manager
 class PipelineGUI(AppWindow):
     
     # GUI constants
-    DEFAULT_MAP = Path(f"gui/placeholder/darkmap.jpg").resolve()
+    DEFAULT_CHART = Path(f"gui/placeholder/blankchart.jpg").resolve()
     DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
     def __init__(self, parent, controller, projdir, recents):
@@ -29,8 +29,8 @@ class PipelineGUI(AppWindow):
         self.setup_layout()
         self.projdir = projdir
         self.controller = controller
-        self.currentmap = self.DEFAULT_MAP
-        self.bind("<<RefreshMap>>", self._refresh_map)
+        self.currentchart = self.DEFAULT_CHART
+        self.bind("<<RefreshChart>>", self._refresh_chart)
 
     # Setup method for GUI layout and elements
     def setup_layout(self):
@@ -59,10 +59,10 @@ class PipelineGUI(AppWindow):
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
-        self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_MAP))
-        self.map = Canvas(self.left) # TODO: Should these be renamed?
-        self.map_image_id = self.map.create_image(0, 0, image=self.temp, anchor='nw')
-        self.map.bind('<Configure>', self._resizer)
+        self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_CHART))
+        self.chart = Canvas(self.left)
+        self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
+        self.chart.bind('<Configure>', self._resizer)
         self.dirtext = Label(self.left, text="Project Directory: Test/test/test/test/test")
         self.changebtn = Button(self.left, text="Change", command=lambda: self.change_projdir())
         self.logtext = Text(right, width=50, background=self.controller.logbackground)
@@ -93,20 +93,12 @@ class PipelineGUI(AppWindow):
         self.logtext.pack(side='left', fill='both', expand=True)
         self.changebtn.pack(side='bottom')
         self.dirtext.pack(side='bottom')
-        self.map.pack(fill='both', expand=True, side='right')
+        self.chart.pack(fill='both', expand=True, side='right')
         self.progresstotaltext.pack()
         self.progresstotal.pack(fill="both", expand=True)
         self.progresstext.pack()
         self.progress.pack(fill="both", expand=True)
         scrollbar.pack(side='right', fill='y')
-        
-        # dissable buttons # TODO: Can this be moved into the initial creation?
-        self.matcher.config(state="disabled")
-        self.setbounds.config(state="disabled")
-        self.matcher.config(state="disabled")
-        self.mesher.config(state="disabled")
-        self.show.config(state="disabled")
-        self.cancel.config(state="disabled")
 
     # Event handler for "New" in the dropdown menu
         # Method should first check to make sure nothing is running.
@@ -124,14 +116,6 @@ class PipelineGUI(AppWindow):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.new_project(projdir)
-
-    # Event handler for "Start Menu" in the dropdown menu
-    def startmenu_handler(self):
-        """
-        description
-        """
-        self.controller.config(menu=Menu(self))
-        self.controller.start_menu()
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
@@ -169,9 +153,9 @@ class PipelineGUI(AppWindow):
                 maxy= dialog.result[3]
                 self.controller.set_bounds(minx, maxx, miny, maxy)
             except:
-                self._log("All fields must contain numbers")
+                self.log("All fields must contain numbers")
 
-    # Method to be called externally for updating text related to user input #TODO: needs much better explanation
+    # Method to be called externally for updating text related to user input
     def update_text(self, numimg=None, outres=None):
         """
         description
@@ -186,18 +170,18 @@ class PipelineGUI(AppWindow):
         if outres:
             self.outres.config(text=f"Output resolution: {outres}")
 
-    # Method to be called externally for setting map image in GUI
-    #   Sets the currentmap variable
-    #   Requests a RefreshMap event
-    def set_map(self, mapdir):
+    # Method to be called externally for setting chart image in GUI
+    #   Sets the currentchart variable
+    #   Requests a Refreshchart event
+    def set_chart(self, chartdir):
         """
         description
 
         Args:
-            mapdir (type?): what is it?
+            chartdir (type?): what is it?
         """
-        self.currentmap = mapdir
-        self.event_generate("<<RefreshMap>>")
+        self.currentchart = chartdir
+        self.event_generate("<<RefreshChart>>")
 
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
@@ -243,7 +227,7 @@ class PipelineGUI(AppWindow):
         show_in_file_manager(str(self.controller.projdir) + "/out")
 
     # Event handler to be called whenever the window is resized
-    #   Updates and scales the map image with window
+    #   Updates and scales the chart image with window
     def _resizer(self, e):
         """
         description
@@ -251,13 +235,13 @@ class PipelineGUI(AppWindow):
         Args:
             e (event): an event?
         """
-        image = Image.open(self.currentmap)
+        image = Image.open(self.currentchart)
         resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
         self.temp = ImageTk.PhotoImage(resized_image)
-        self.map.itemconfigure(self.map_image_id, image=self.temp)
+        self.chart.itemconfigure(self.chart_image_id, image=self.temp)
     
     # Method writes strings to the log
-    def _log(self, msg): #TODO: Called externally so not a helper
+    def log(self, msg):
         """
         description
 
@@ -267,23 +251,23 @@ class PipelineGUI(AppWindow):
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
 
-    # Handles map refresh event
-    #    Sets the canvas image to the currentmap
+    # Handles chart refresh event
+    #    Sets the canvas image to the currentchart
     #    If app has been resized, resizes image to fit
-    def _refresh_map(self, e): # TODO: do we still need to pass in e?
+    def _refresh_chart(self, e):
         """
         description
 
         Args:
             e (event): do we need event? doesn't seem to be used?
         """
-        if self.map.winfo_width() > 1 and self.map.winfo_height() > 1:
-            image = Image.open(self.currentmap)
-            resized_image = self._scale_image(self.map.winfo_width(), self.map.winfo_height(), image.width, image.height, image)
+        if self.chart.winfo_width() > 1 and self.chart.winfo_height() > 1:
+            image = Image.open(self.currentchart)
+            resized_image = self._scale_image(self.chart.winfo_width(), self.chart.winfo_height(), image.width, image.height, image)
             self.temp = ImageTk.PhotoImage(resized_image)
         else:
-            self.temp = ImageTk.PhotoImage(Image.open(self.currentmap))
-        self.map.itemconfigure(self.map_image_id, image=self.temp)
+            self.temp = ImageTk.PhotoImage(Image.open(self.currentchart))
+        self.chart.itemconfigure(self.chart_image_id, image=self.temp)
 
     # Scales an image so that it will fit in a window defined by wwidth and wheight
     #   Image scaled without distortion (preserves aspect ratio)

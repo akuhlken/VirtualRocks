@@ -3,6 +3,9 @@ import shutil
 from matplotlib import pyplot
 from plyfile import PlyData, PlyElement
 import pathlib as pl
+import warnings
+
+warnings.filterwarnings("ignore")
 
 # Extract the x,y coordiantes from the .ply file at filename
 def get_coordinates(filename):
@@ -35,8 +38,6 @@ def create_heat_map(filename, outdir):
     pyplot.title('Dense Point Cloud')
     pyplot.savefig(pl.Path(str(outdir)) / "heat_map.png")
     pyplot.close('all')
-    # TODO: Warning created when using Matplotlib outside of main thread, works for me but needs testing
-    # Can warning be supressed if we're sure it works??
 
 # Remove all points from point cloud at filename which are outside bounds
 #   Save as fused.ply in the dense dir
@@ -64,4 +65,4 @@ def remove_points(filename, minx, maxx, miny, maxy):
     new_vertex = PlyElement.describe(vertex, 'vertex')
     new_plydata = PlyData([new_vertex], text=plydata.text)
     new_plydata.write(filename)
-    # TODO: Remove temp.ply as end if possible
+    os.remove(tempfile)

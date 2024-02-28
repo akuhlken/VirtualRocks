@@ -104,7 +104,7 @@ class Mesher():
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
         self.ms.set_verbosity(False)
-        self._quad_slice(maxx, minx, maxy, miny)
+        self._quad_slice(minx, maxx, miny, maxy)
         print(f"Created {self.tile} tiles", flush=True)
         self.ms.set_current_mesh(self.fullmodel)
         self.ms.set_verbosity(VERBOSE)
@@ -128,15 +128,15 @@ class Mesher():
         print("$$", flush=True)
         return True
     
-    def _quad_slice(self, maxx, minx, maxy, miny):
+    def _quad_slice(self, minx, maxx, miny, maxy):
         """
         description
 
         Args:
-            maxx (int): what is it?
             minx (int): what is it?
-            maxy (int): what is it?
+            maxx (int): what is it?
             miny (int): what is it?
+            maxy (int): what is it?
         """
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)
@@ -181,16 +181,16 @@ class Mesher():
         midy = (maxy + miny) / 2.0
 
         # topleft
-        self._quad_slice(midx, minx, maxy, midy)
+        self._quad_slice(minx, midx, midy, maxy)
 
         # topright
-        self._quad_slice(maxx, midx, maxy, midy)
+        self._quad_slice(midx, maxx, midy, maxy)
 
         # bottomleft
-        self._quad_slice(midx, minx, midy, miny)
+        self._quad_slice(minx, midx, miny, midy)
 
         # bottomright
-        self._quad_slice(maxx, midx, midy, miny)
+        self._quad_slice(midx, maxx, miny, midy)
         
 
     # This will crop the current mesh to the bounds from the dense point cloud

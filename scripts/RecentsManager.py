@@ -2,8 +2,6 @@ from pathlib import Path
 import json
 import os
 
-# TODO: add comments for things, probs wait until we understand what the auto-documentation wants.
-
 class RecentsManager():
 
     RECENT_PATH = Path('gui/recents.json')

@@ -51,12 +51,11 @@ class ReconManager():
                 self.cancel()
         except:
             pass
-        self.controller._update_state(PHOTOS)
+        self.controller.update_state(PHOTOS)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Matcher__________")
         colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        # TODO have next line run specific python version?
         self.p = subprocess.Popen(['python', 'Matcher.py', self.projdir, self.imgdir, clean], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
@@ -68,7 +67,7 @@ class ReconManager():
                 if os.path.isfile(savefile):
                     os.remove(savefile)
                 shutil.copy(Path(dense / "fused.ply"), savefile)
-                self.controller._update_state(MATCHER)
+                self.controller.update_state(MATCHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Matcher failed, please retry")
@@ -86,18 +85,17 @@ class ReconManager():
                 self.cancel()
         except:
             pass
-        self.controller._update_state(MATCHER)
+        self.controller.update_state(MATCHER)
         self.controller.page2.cancel.config(state="active")
         self._send_log("__________Starting Mesher__________")
         colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        # TODO have next line run specific python version?
         self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
             if (self.projdir / Path(r"out\100k.obj")).is_file(): # If reconstruction exited normally
-                self.controller._update_state(MESHER)
+                self.controller.update_state(MESHER)
                 self.controller.page2.cancel.config(state="disabled")
             else:
                 self._send_log("Mesher failed, please retry")
@@ -173,13 +171,13 @@ class ReconManager():
             msg (string): what is it?
         """
         if msg:
-            self.controller.page2._log(msg)
+            self.controller.page2.log(msg)
             if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)
             return
         while self.p.poll() is None:
             msg = self.p.stdout.readline().strip() # read a line from the process output
             if msg:
-                self.controller.page2._log(msg)
+                self.controller.page2.log(msg)
                 if msg[0] == '$' and msg[-1] == '$':
                     self._update_progress(msg)

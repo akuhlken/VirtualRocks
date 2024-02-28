@@ -18,16 +18,16 @@ class AppWindow(Frame):
         Frame.__init__(self, parent)
         self.controller = controller
         self.recents = recents
-        self.create_menu()
+        self._create_menu()
 
     # Setup method for top menu bar
-    def create_menu(self):
+    def _create_menu(self):
         """
         description
         """
         self.menubar = Menu(self)
         file = Menu(self.menubar, tearoff=0)  
-        file.add_command(label="Back to Start", command=lambda: self.controller.start_menu())
+        file.add_command(label="Back to Start", command=lambda: self.controller.back_to_start())
         file.add_command(label="New", command=lambda: self.new_project())  
         file.add_command(label="Open", command=lambda: self.open_project())
         file.add_command(label="Save")  
@@ -40,8 +40,6 @@ class AppWindow(Frame):
         styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
         file.add_separator()
 
-        # add try/except statements for like 3 tabs, if they appear depends on if the command works # TODO: does this still need to be done?
-        # not sure what the function should be at this point # TODO: Ummmm what...?
         recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
         file.add_cascade(label="Open Recent...", menu=recents)
         numrecents = len(self.recents.recentlist)
@@ -87,8 +85,6 @@ class AppWindow(Frame):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.new_project(projdir)
-        #print("in new: " + str(self.controller.picklepath))
-        #RecentsManager.update_recent()     # TODO: Important?
 
     # Event handler for the "open project" menu item
         # Should open a dialogue asking the user to selct a project file
@@ -120,7 +116,7 @@ class AppWindow(Frame):
                 return
             self.open_project(projfile)
         except:
-            print("file not saved to history") # TODO: is isnt a very informative error message
+            print("Could not find project")
 
     # Handler for setting dark mode
     #   changes theme to a dark theme
@@ -133,7 +129,7 @@ class AppWindow(Frame):
             return
         self.controller.style = Style("darkly")
         self.controller.styleflag = "dark"
-        self.init_common_style()
+        self._init_common_style()
 
     def start_lightmode(self):
         """
@@ -143,18 +139,18 @@ class AppWindow(Frame):
             return
         self.controller.style = Style("lumen")
         self.controller.styleflag = "light"
-        self.init_common_style()
+        self._init_common_style()
 
-    def init_common_style(self): # TODO: Rename, this isnt super clear cut
+    def _init_common_style(self):
         """
         description
         """
-        temp = self.controller.swtich_style()
+        #temp = self.controller.swtich_style()
         self.controller.style.configure("TButton", width=16)
         self.controller.style.configure("cancel.TButton", width=30)
         self.controller.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
 
-        # progress bar # TODO: is this exact same thing in main or am I crazy?
+        # progress bar # TODO: is this exact same thing in main or am I crazy? CODEN
         self.controller.style.layout("prog.Horizontal.TProgressbar",
              [('Horizontal.Progressbar.trough',
                {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
@@ -163,10 +159,10 @@ class AppWindow(Frame):
         self.controller.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
 
         # progress bar progress % text
-        if 0 < temp < 100: 
-            self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(temp))
-        else:
-            return
+        #if 0 < temp < 100: 
+            #self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(temp))
+        #else:
+           # return
 
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.

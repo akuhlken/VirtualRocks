@@ -4,7 +4,7 @@ from ttkbootstrap import Style
 from tkinter import simpledialog, PhotoImage, Frame, Tk
 from pathlib import Path
 from threading import Thread
-from scripts.PhotoManager import PhotoManager
+import  scripts.PhotoManager as pm
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
@@ -57,7 +57,7 @@ class main(Tk):
         self.style = Style("darkly")
         self.styleflag = "dark"
 
-        # TODO: duplicate code?
+        # TODO: duplicate code? CODEN
         # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
         self.style.configure("TButton", width=16)
         self.style.configure("cancel.TButton", width=30)
@@ -97,6 +97,7 @@ class main(Tk):
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
         self.page2.menubar.entryconfig("Reconstruction", state="normal")
+        self.recents.update_recent(self.picklepath)
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
@@ -121,12 +122,11 @@ class main(Tk):
         self.title("VirtualRocks: " + self.projectname)
         if imgdir:
             self.imgdir = imgdir
-            pm = PhotoManager(self.imgdir)
-            self.page2.update_text(pm.numimg)
-            self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
-            self._update_state(PHOTOS)
+            self.page2.update_text(pm.get_num_img(imgdir))
+            self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(imgdir)))
+            self.update_state(PHOTOS)
         else:
-            self._update_state(STARTED)
+            self.update_state(STARTED)
         
     # Handler for loading an existing project
     #   Method should read a project save file and create a PipelineGUI object
@@ -141,7 +141,6 @@ class main(Tk):
         self.picklepath = projfile
         self.projectname = Path(projfile).stem
         # Load the path variables from the file
-        #print(projfile)
         self.projdir = Path(projfile).parent
         with open(projfile, 'rb') as file:
             (path,self.state) = pickle.load(file)
@@ -150,42 +149,26 @@ class main(Tk):
         else:
             self.imgdir = self.projdir / path
         self._startup()
-        self._update_state(self.state)
+        self.update_state(self.state)
         self.title("VirtualRocks: " + self.projectname)
-
-        #print("in update: " + str(self.picklepath))
-        self.recents.update_recent(self.picklepath)
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         try:
-            pm = PhotoManager(self.imgdir)
-            self.page2.update_text(pm.numimg)
-            self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
+            self.page2.update_text(pm.get_num_img(self.imgdir))
+            self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(self.imgdir)))
         except Exception as e:
-            self.page2._log("Could not find image directory")
-            self._update_state(STARTED)
+            self.page2.log("Could not find image directory")
+            self.update_state(STARTED)
             print(e)
 
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.
-    def start_menu(self): # TODO: back_to_start() rename?
+    def back_to_start(self):
         """
         description
         """
         self.page1.tkraise()
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
         self.title("VirtualRocks")
-
-    # TODO: remove method and just create helper called _get_progress() and move to end
-    # Saving value of progress to make progress bar after style update accurate.
-    #   used by AppWindow.py.
-    def swtich_style(self):
-        """
-        description
-        """
-        if self.recon:
-            return self.recon.progresspercent
-        else:
-            return -1
 
     # Handler for adding photos
     #   Set the controller variable for image directory
@@ -201,33 +184,29 @@ class main(Tk):
         self.recon._send_log("$.Image Loading.0$")
         self.projdir.resolve()
         self.imgdir = Path(imgdir).resolve()
-        pm = PhotoManager(self.imgdir) # TODO: Look into simplifying photo manager, prob doesnt need to be a class
         self.recon._send_log("$Image Loading..100$")
-        self.page2.update_text(pm.numimg)
-        self.page2.set_example_image(self.imgdir / Path(pm.get_example()))
-        self._update_state(PHOTOS)
-            
-        # not sure if we need this since updating in new works. # TODO: Do we need this?
-        self.recents.update_recent(self.picklepath)
+        self.page2.update_text(pm.get_num_img(self.imgdir))
+        self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(self.imgdir)))
+        self.update_state(PHOTOS)
 
     # Removes points from dense point cloud as specified by bounds
     #   Handler in PipelineGUI creates dialog and passes bounds here
-    def set_bounds(self, minx, maxx, miny, maxy):   # TODO: this comes up multiple times and it would be nice for it to be consistent.
+    def set_bounds(self, minx, maxx, miny, maxy):
         """
         description
 
         Args:
-            maxx (int): what is it?
             minx (int): what is it?
-            maxy (int): what is it?
+            maxx (int): what is it?
             miny (int): what is it?
-        """   
+            maxy (int): what is it?
+        """
         self.recon._send_log("$$")
         self.recon._send_log("$Setting Bounds..100$")
         dense = Path(self.projdir / "dense")
         pcm.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
         pcm.create_heat_map(Path(dense / "fused.ply"), dense)
-        self.page2.set_map(Path(dense/ "heat_map.png"))
+        self.page2.set_chart(Path(dense/ "heat_map.png"))
 
     # Handler for the restore point cloud menu item
     #   Should overwrite the current fused.ply with the un-edited save.ply
@@ -241,9 +220,9 @@ class main(Tk):
             savefile = Path(dense / "save.ply")
             shutil.copy(savefile, Path(dense / "fused.ply"))
             pcm.create_heat_map(Path(dense / "fused.ply"), dense)
-            self.page2.set_map(Path(dense/ "heat_map.png"))
+            self.page2.set_chart(Path(dense/ "heat_map.png"))
         else:
-            self.page2._log("Nothing to restore, run matcher to create a point cloud")
+            self.page2.log("Nothing to restore, run matcher to create a point cloud")
 
     # Handler for starting matcher
     #   Starts a new thread for the ReconManager.matcher() method
@@ -274,7 +253,7 @@ class main(Tk):
         description
         """
         if not self.imgdir:
-            self.page2._log("No images loaded")
+            self.page2.log("No images loaded")
             return
         self.recon.imgdir = self.imgdir
         self.thread1 = Thread(target = self.recon.auto)
@@ -283,7 +262,6 @@ class main(Tk):
 
     # Handler for canceling recon
     #   Should call the recon managers cancel() method
-    #   TODO: that actual reconmanager is running in its own thread, so can this be done with events and a handler rather than a call?
     def cancel_recon(self):
         """
         description
@@ -292,7 +270,7 @@ class main(Tk):
 
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
-    def _update_state(self, state): #TODO: If this is called externally it isnt really a helper method and shouldnt have the underscore
+    def update_state(self, state):
         """
         description
 
@@ -302,32 +280,32 @@ class main(Tk):
         self.state = state
         self.page2.progresstotal.config(value=state)
         if state == STARTED:
-            self.page2.set_map(self.page2.DEFAULT_MAP)
+            self.page2.set_chart(self.page2.DEFAULT_CHART)
             self.page2.matcher.config(state='disabled')
             self.page2.setbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.show.config(state='disabled')
         if state == PHOTOS:
-            self.page2.set_map(self.page2.DEFAULT_MAP)
+            self.page2.set_chart(self.page2.DEFAULT_CHART)
             self.page2.setbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
         if state == MATCHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_map(Path(dense/ "heat_map.png"))
+            self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
         if state == MESHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_map(Path(dense/ "heat_map.png"))
+            self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.matcher.config(state='active')
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
-        # TODO: Would there be any benefits to doing some progress bar management here with the progress text?
+        # TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN
         # save to pickle after chnaging state
         try:
             path = self.imgdir.relative_to(self.projdir)
@@ -360,7 +338,7 @@ class main(Tk):
         self.attributes("-fullscreen", False)
         return "break"
     
-    # opens a new window at the middle of the screen. # TODO: improve comments
+    # opens a new window at the middle of the screen.
     def _open_middle(self, windoww, windowh):
         """
         description

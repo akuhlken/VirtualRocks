@@ -17,7 +17,7 @@ class Matcher:
         """
         self.projdir = projdir
         self.imgdir = imgdir
-        self.image2dense(clean) # TODO: clean arg should tell mesher wether to remove old db and folders
+        self.image2dense(clean)
 
     # Main matcher pipeling code
     #   method should run all scripts accosiated with Colmap and result
