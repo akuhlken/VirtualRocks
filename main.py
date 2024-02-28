@@ -32,6 +32,7 @@ class main(Tk):
         self.imgdir = ""
         self.recon = None
         self.state = STARTED
+        self.fullscreen = False
 
         # Create recents
         self.recents = RecentsManager()
@@ -309,6 +310,9 @@ class main(Tk):
             self.page2.setbounds.config(state='active')
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
+        if state == FULLSCREEN:
+            self.attributes("-fullscreen", True)
+            self.fullscreen = True
         # TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN
         # save to pickle after chnaging state
         try:
@@ -320,27 +324,29 @@ class main(Tk):
         
     # TODO: fix erros and check to make sure state is always being set correctly
     # TODO: add comments for following functions (these are event handlers and not helpers)
-    def _toggle_fullscreen(self, e=None):
+    
+    def _toggle_fullscreen(self, event=None):
         """
         description
 
         Args:
             e (event): what is it?
         """
-        self.fullscreen = not self.fullscreen
-        self.attributes("-fullscreen", self.fullscreen)
-        return "break"
-
-    def _end_fullscreen(self, e=None):
+        print (self.state)
+        if not self.fullscreen:
+            self.attributes('-fullscreen', True)
+            self.fullscreen = True
+    def _end_fullscreen(self, event=None):
         """
         description
 
         Args:
             e (event): what is it?
         """
-        self.fullscreen = False
-        self.attributes("-fullscreen", False)
-        return "break"
+        print(self.state)
+        if self.fullscreen:
+            self.attributes('-fullscreen',False)
+            self.fullscreen = False
     
     # opens a new window at the middle of the screen.
     def _open_middle(self, windoww, windowh):
