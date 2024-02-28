@@ -54,16 +54,16 @@ class PipelineGUI(AppWindow):
         
         # control elements
         self.exampleimage = Label(right)
-        self.addphotos = Button(addphotosframe, text="Add Photos", command=lambda: self.photos_handler())
+        self.addphotos = Button(addphotosframe, text="1: Add Photos", command=lambda: self.photos_handler())
         self.numimages = Label(right, text="Number of images:")
-        self.matcher = Button(right, text="Matcher", command=lambda: self.controller.start_matcher())
-        self.trimbounds = Button(bounds, text="Trim", width=7, command=lambda: self.bounds_handler())
-        self.resetbounds = Button(bounds, text="Reset", width=7, command=lambda: self.controller.restore())
+        self.matcher = Button(right, text="2: Matcher", command=lambda: self.controller.start_matcher())
+        self.trimbounds = Button(bounds, text="Trim", width=8, command=lambda: self.bounds_handler())
+        self.resetbounds = Button(bounds, text="Reset", width=8, command=lambda: self.controller.restore())
         self.previewcloud = Button(chartbuttons, width=20, text="Preview Point Cloud")  # TODO: need to add the handler/command to open the preview.
         self.chartswitch = Button(chartbuttons, width=20, text="Switch Chart")  # TODO: need to add the handler/command to switch chart
 
-        self.mesher = Button(right, text="Mesher", command=lambda: self.controller.start_mesher())
-        self.show = Button(showframe, text="Show Files", command=lambda: self.show_files())
+        self.mesher = Button(right, text="3: Mesher", command=lambda: self.controller.start_mesher())
+        self.show = Button(showframe, text="4: Show Files", command=lambda: self.show_files())
         self.cancel = Button(right, text="Cancel", style="cancel.TButton", command=lambda: self.controller.cancel_recon())
         
         # status elements
@@ -175,7 +175,7 @@ class PipelineGUI(AppWindow):
                 maxy= dialog.result[3]
                 self.controller.set_bounds(minx, maxx, miny, maxy)
             except Exception as e:
-                print(e)
+                self.log(e)
                 self.log("All fields must contain numbers")
 
     # Method to be called externally for updating text related to user input

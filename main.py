@@ -32,6 +32,7 @@ class main(Tk):
         self.imgdir = ""
         self.recon = None
         self.state = STARTED
+        self.fullscreen = False
 
         # Create recents
         self.recents = RecentsManager()
@@ -158,9 +159,9 @@ class main(Tk):
             self.page2.update_text(pm.get_num_img(self.imgdir))
             self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(self.imgdir)))
         except Exception as e:
+            self.page2.log(e)
             self.page2.log("Could not find image directory")
             self.update_state(STARTED)
-            print(e)
 
     # Handler for reopening the starting page
     #   since there's an option for it in the menu, it must be done.
@@ -313,6 +314,7 @@ class main(Tk):
             self.page2.resetbounds.config(state='active')
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
+        
         # TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN
         # save to pickle after chnaging state
         try:
@@ -324,27 +326,33 @@ class main(Tk):
         
     # TODO: fix erros and check to make sure state is always being set correctly
     # TODO: add comments for following functions (these are event handlers and not helpers)
-    def _toggle_fullscreen(self, e=None):
+    
+    def _toggle_fullscreen(self, event=None):
+        """
+        description
+
+        Args:
+            e(event): what is it?
+        """
+        if self.fullscreen:
+            self.attributes('-fullscreen', False)
+            self.fullscreen = False
+            return 'break'
+        if not self.fullscreen:
+            self.attributes('-fullscreen', True)
+            self.fullscreen = True
+            return 'break'
+    def _end_fullscreen(self, event=None):
         """
         description
 
         Args:
             e (event): what is it?
         """
-        self.fullscreen = not self.fullscreen
-        self.attributes("-fullscreen", self.fullscreen)
-        return "break"
-
-    def _end_fullscreen(self, e=None):
-        """
-        description
-
-        Args:
-            e (event): what is it?
-        """
-        self.fullscreen = False
-        self.attributes("-fullscreen", False)
-        return "break"
+       
+        if self.fullscreen:
+            self.attributes('-fullscreen',False)
+            self.fullscreen = False
     
     # opens a new window at the middle of the screen.
     def _open_middle(self, windoww, windowh):
