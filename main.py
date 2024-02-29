@@ -11,7 +11,11 @@ from scripts.ReconManger import ReconManager
 import pickle
 import ctypes
 import scripts.PointCloudManager as pcm
+import scripts.CloudPreviewer as CloudPreviewer
 from scripts.RecentsManager import RecentsManager
+
+# Compiler run: pyinstaller --onefile main.py -w -p "scripts" -p "gui" -c
+# After compiles move main.exe into the VirtualRocks directory
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -159,7 +163,7 @@ class main(Tk):
             self.page2.update_text(pm.get_num_img(self.imgdir))
             self.page2.set_example_image(self.imgdir / Path(pm.get_example_img(self.imgdir)))
         except Exception as e:
-            self.page2.log(e)
+            self.page2.log(str(e))
             self.page2.log("Could not find image directory")
             self.update_state(STARTED)
 
@@ -273,6 +277,16 @@ class main(Tk):
         """
         self.recon.cancel()
 
+    def preview_cloud(self):
+        try:
+            self.withdraw()
+            path = Path(self.projdir / 'dense' / 'fused.ply')
+            CloudPreviewer.show(str(path))
+        except Exception as e:
+            self.page2.log(str(e))
+            self.page2.log("Failed to preview point cloud")
+        self.deiconify()
+
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
     def update_state(self, state):
@@ -290,12 +304,16 @@ class main(Tk):
             self.page2.trimbounds.config(state='disabled')
             self.page2.resetbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
+            self.page2.previewcloud.config(state='disabled')
+            self.page2.chartswitch.config(state='disabled')
             self.page2.show.config(state='disabled')
         if state == PHOTOS:
             self.page2.set_chart(self.page2.DEFAULT_CHART)
             self.page2.trimbounds.config(state='disabled')
             self.page2.resetbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
+            self.page2.previewcloud.config(state='disabled')
+            self.page2.chartswitch.config(state='disabled')
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
         if state == MATCHER:
@@ -303,6 +321,8 @@ class main(Tk):
             self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
+            self.page2.previewcloud.config(state='active')
+            self.page2.chartswitch.config(state='active')
             self.page2.resetbounds.config(state='active')
             self.page2.trimbounds.config(state='active')
             self.page2.mesher.config(state='active')
@@ -310,6 +330,8 @@ class main(Tk):
             dense = Path(self.projdir / "dense")
             self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.matcher.config(state='active')
+            self.page2.chartswitch.config(state='active')
+            self.page2.resetbounds.config(state='active')
             self.page2.trimbounds.config(state='active')
             self.page2.resetbounds.config(state='active')
             self.page2.mesher.config(state='active')

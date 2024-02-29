@@ -77,7 +77,7 @@ class PipelineGUI(AppWindow):
         self.chart = Canvas(self.left)
         self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
         self.chart.bind('<Configure>', self._resizer)
-        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud")  # TODO: need to add the handler/command to open the preview.
+        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud", command=lambda: self.controller.preview_cloud())  # TODO: need to add the handler/command to open the preview.
         self.chartswitch = Button(chartbuttonsframe, width=20, text="Switch Chart")  # TODO: need to add the handler/command to switch chart
 
         # progress bar frame elements
@@ -192,7 +192,7 @@ class PipelineGUI(AppWindow):
                 maxy= dialog.result[3]
                 self.controller.set_bounds(minx, maxx, miny, maxy)
             except Exception as e:
-                self.log(e)
+                self.log(str(e))
                 self.log("All fields must contain numbers")
 
     # Method to be called externally for updating text related to user input
