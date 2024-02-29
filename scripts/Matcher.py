@@ -15,7 +15,7 @@ class Matcher:
         Args:
             projdir (pathlib.Path): Project directory containing .pkl file
             imgdir (pathlib.Path): Image directory
-            clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists)
+            clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists). A command-line flag.
         """
         self.projdir = projdir
         self.imgdir = imgdir
@@ -26,7 +26,7 @@ class Matcher:
         Runs the colmap comands sequentially as subprocesses.
 
         Args:
-            clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists)
+            clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists). A command-line flag.
         """
         print("$$", flush=True)
         rcode = 0
