@@ -56,6 +56,7 @@ def create_height_map(filename, outdir):
     max_val = max(np.max(x), np.max(y))
     plt.hexbin(x, y, C=z, gridsize=50, cmap='viridis', mincnt=1)
     plt.colorbar(label='Height')
+    #plt.caxis([np.min(z), np.max(z)])
     plt.xlabel('X')
     plt.ylabel('Y')
     plt.title('Dense Point Cloud')
