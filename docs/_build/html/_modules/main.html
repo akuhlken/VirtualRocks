@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>main &mdash; VirtualRocks 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VirtualRocks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VirtualRocks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for main</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Style</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">simpledialog</span><span class="p">,</span> <span class="n">PhotoImage</span><span class="p">,</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Tk</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">threading</span> <span class="kn">import</span> <span class="n">Thread</span>
+<span class="kn">import</span>  <span class="nn">scripts.PhotoManager</span> <span class="k">as</span> <span class="nn">pm</span>
+<span class="kn">from</span> <span class="nn">gui.PipelineGUI</span> <span class="kn">import</span> <span class="n">PipelineGUI</span>
+<span class="kn">from</span> <span class="nn">gui.StartGUI</span> <span class="kn">import</span> <span class="n">StartGUI</span>
+<span class="kn">from</span> <span class="nn">scripts.ReconManger</span> <span class="kn">import</span> <span class="n">ReconManager</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">scripts.PointCloudManager</span> <span class="k">as</span> <span class="nn">pcm</span>
+<span class="kn">from</span> <span class="nn">scripts.RecentsManager</span> <span class="kn">import</span> <span class="n">RecentsManager</span>
+
+<span class="c1"># DEBUG = True will cause the application to skip over recon scripts for testing</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="c1"># Progress Constants</span>
+<span class="n">STARTED</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">PHOTOS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">MATCHER</span> <span class="o">=</span> <span class="mi">70</span>
+<span class="n">MESHER</span> <span class="o">=</span> <span class="mi">100</span>
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../reference/main.html#main.main">[docs]</a>
+<span class="k">class</span> <span class="nc">main</span><span class="p">(</span><span class="n">Tk</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">Tk</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Controller Variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">STARTED</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Create recents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span> <span class="o">=</span> <span class="n">RecentsManager</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">get_recent</span><span class="p">()</span>
+
+        <span class="c1"># Sets app icon and identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">myappid</span> <span class="o">=</span> <span class="sa">u</span><span class="s1">&#39;o7.VirtualRocks.PipelineApp.version-1.0&#39;</span> <span class="c1"># arbitrary string</span>
+        <span class="n">ctypes</span><span class="o">.</span><span class="n">windll</span><span class="o">.</span><span class="n">shell32</span><span class="o">.</span><span class="n">SetCurrentProcessExplicitAppUserModelID</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">myappid</span><span class="p">)</span>
+        
+        <span class="c1"># Configuration variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectname</span> <span class="o">=</span> <span class="s2">&quot;project&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minsize</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">300</span><span class="p">)</span>
+        <span class="n">centerdim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_middle</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">700</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geometry</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%d</span><span class="s1">x</span><span class="si">%d</span><span class="s1">+</span><span class="si">%d</span><span class="s1">+</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">700</span><span class="p">,</span> <span class="n">centerdim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">centerdim</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;VirtualRocks&quot;</span><span class="p">)</span>
+        <span class="n">icon</span> <span class="o">=</span> <span class="n">PhotoImage</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;gui\placeholder\logo.png&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iconphoto</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">icon</span><span class="p">)</span>
+
+        <span class="c1"># Application styling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttoncolor</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>  <span class="c1"># for the buttons on page 1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logbackground</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">(</span><span class="s2">&quot;darkly&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">=</span> <span class="s2">&quot;dark&quot;</span>
+
+        <span class="c1"># TODO: duplicate code? CODEN</span>
+        <span class="c1"># setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;cancel.TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;title.TLabel&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">))</span>
+
+        <span class="c1"># Progress bar styling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span>
+             <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.trough&#39;</span><span class="p">,</span>
+               <span class="p">{</span><span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.pbar&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;side&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;ns&#39;</span><span class="p">})],</span>
+                <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;nswe&#39;</span><span class="p">}),</span>
+              <span class="p">(</span><span class="s1">&#39;Horizontal.Progressbar.label&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;goldenrod1&quot;</span><span class="p">)</span>
+
+        <span class="c1"># container is a stack of frames (aka our two main pages)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">grid_rowconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="o">.</span><span class="n">grid_columnconfigure</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Load staring page and start application</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page1</span> <span class="o">=</span> <span class="n">StartGUI</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">,</span> <span class="n">controller</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">recents</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page1</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;nsew&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page1</span><span class="o">.</span><span class="n">tkraise</span><span class="p">()</span>
+
+        <span class="c1"># Binding for fullscreen toggle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;F11&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_toggle_fullscreen</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;Escape&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_end_fullscreen</span><span class="p">)</span>
+
+    <span class="c1"># Common startup tasks for both opening and creating projects</span>
+<div class="viewcode-block" id="main._startup">
+<a class="viewcode-back" href="../reference/main.html#main.main._startup">[docs]</a>
+    <span class="k">def</span> <span class="nf">_startup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span> <span class="o">=</span> <span class="n">PipelineGUI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">container</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sticky</span><span class="o">=</span><span class="s2">&quot;nsew&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">DEFAULT_PREVIEW</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">tkraise</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span> <span class="o">=</span> <span class="n">ReconManager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">entryconfig</span><span class="p">(</span><span class="s2">&quot;Reconstruction&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">update_recent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Handler for creating of a new project</span>
+    <span class="c1">#   Create a PipelineGUI object and load it onto the application</span>
+<div class="viewcode-block" id="main.new_project">
+<a class="viewcode-back" href="../reference/main.html#main.main.new_project">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projdir</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">imgdir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            projdir (type?): what is it?</span>
+<span class="sd">            name (str): what is it?</span>
+<span class="sd">            imgdir (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;creating new project&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projectname</span> <span class="o">=</span> <span class="n">simpledialog</span><span class="o">.</span><span class="n">askstring</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;Name Project As...&quot;</span><span class="p">,</span> <span class="n">prompt</span><span class="o">=</span><span class="s2">&quot;Enter a name for this project:&quot;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">page1</span><span class="p">,</span> <span class="n">initialvalue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">projectname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projectname</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projectname</span> <span class="o">+</span> <span class="s1">&#39;.pkl&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">dirtext</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Workspace: [ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="si">}</span><span class="s2"> ]&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;VirtualRocks: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">projectname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">imgdir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="n">imgdir</span>
+            <span class="n">numimg</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">get_num_img</span><span class="p">(</span><span class="n">imgdir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">update_text</span><span class="p">(</span><span class="n">numimg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">get_example_img</span><span class="p">(</span><span class="n">imgdir</span><span class="p">)))</span>
+            <span class="k">if</span> <span class="n">numimg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">PHOTOS</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">STARTED</span><span class="p">)</span></div>
+
+        
+    <span class="c1"># Handler for loading an existing project</span>
+    <span class="c1">#   Method should read a project save file and create a PipelineGUI object</span>
+<div class="viewcode-block" id="main.open_project">
+<a class="viewcode-back" href="../reference/main.html#main.main.open_project">[docs]</a>
+    <span class="k">def</span> <span class="nf">open_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projfile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            projfile (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opening project&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span> <span class="o">=</span> <span class="n">projfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">projfile</span><span class="p">)</span><span class="o">.</span><span class="n">stem</span>
+        <span class="c1"># Load the path variables from the file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">projfile</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">projfile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startup</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;VirtualRocks: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">projectname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">dirtext</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Workspace: [ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="si">}</span><span class="s2"> ]&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">update_text</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">get_num_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">get_example_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">)))</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Could not find image directory&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">STARTED</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Handler for reopening the starting page</span>
+    <span class="c1">#   since there&#39;s an option for it in the menu, it must be done.</span>
+<div class="viewcode-block" id="main.back_to_start">
+<a class="viewcode-back" href="../reference/main.html#main.main.back_to_start">[docs]</a>
+    <span class="k">def</span> <span class="nf">back_to_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page1</span><span class="o">.</span><span class="n">tkraise</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">entryconfig</span><span class="p">(</span><span class="s2">&quot;Reconstruction&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;VirtualRocks&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Handler for adding photos</span>
+    <span class="c1">#   Set the controller variable for image directory</span>
+    <span class="c1">#   This method should not open a dialogue, the is the role of the GUI classes</span>
+<div class="viewcode-block" id="main.add_photos">
+<a class="viewcode-back" href="../reference/main.html#main.main.add_photos">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_photos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imgdir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            imgdir (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$.Image Loading.0$&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">imgdir</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$Image Loading..100$&quot;</span><span class="p">)</span>
+        <span class="n">numimg</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">get_num_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">update_text</span><span class="p">(</span><span class="n">numimg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">get_example_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">numimg</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">PHOTOS</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Removes points from dense point cloud as specified by bounds</span>
+    <span class="c1">#   Handler in PipelineGUI creates dialog and passes bounds here</span>
+<div class="viewcode-block" id="main.set_bounds">
+<a class="viewcode-back" href="../reference/main.html#main.main.set_bounds">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            minx (int): what is it?</span>
+<span class="sd">            maxx (int): what is it?</span>
+<span class="sd">            miny (int): what is it?</span>
+<span class="sd">            maxy (int): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$Trimming Bounds..100$&quot;</span><span class="p">)</span>
+        <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
+        <span class="n">pcm</span><span class="o">.</span><span class="n">remove_points</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+        <span class="n">pcm</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span></div>
+
+
+    <span class="c1"># Handler for the restore point cloud menu item</span>
+    <span class="c1">#   Should overwrite the current fused.ply with the un-edited save.ply</span>
+    <span class="c1">#   Serves to undo the set bounds</span>
+<div class="viewcode-block" id="main.restore">
+<a class="viewcode-back" href="../reference/main.html#main.main.restore">[docs]</a>
+    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">&gt;=</span> <span class="n">MATCHER</span><span class="p">:</span>
+            <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
+            <span class="n">savefile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;save.ply&quot;</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">savefile</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">))</span>
+            <span class="n">pcm</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Nothing to restore, run matcher to create a point cloud&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Handler for starting matcher</span>
+    <span class="c1">#   Starts a new thread for the ReconManager.matcher() method</span>
+<div class="viewcode-block" id="main.start_matcher">
+<a class="viewcode-back" href="../reference/main.html#main.main.start_matcher">[docs]</a>
+    <span class="k">def</span> <span class="nf">start_matcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">matcher</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Handler for starting mesher</span>
+    <span class="c1">#   Starts a new thread for the ReconManager.mesher() method</span>
+<div class="viewcode-block" id="main.start_mesher">
+<a class="viewcode-back" href="../reference/main.html#main.main.start_mesher">[docs]</a>
+    <span class="k">def</span> <span class="nf">start_mesher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">mesher</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Handler for the automatic reconstruction feature</span>
+    <span class="c1">#   Starts a new thread for the ReconManager.auto() method</span>
+<div class="viewcode-block" id="main.auto_recon">
+<a class="viewcode-back" href="../reference/main.html#main.main.auto_recon">[docs]</a>
+    <span class="k">def</span> <span class="nf">auto_recon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;No images loaded&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span> <span class="o">=</span> <span class="n">Thread</span><span class="p">(</span><span class="n">target</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">auto</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thread1</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Handler for canceling recon</span>
+    <span class="c1">#   Should call the recon managers cancel() method</span>
+<div class="viewcode-block" id="main.cancel_recon">
+<a class="viewcode-back" href="../reference/main.html#main.main.cancel_recon">[docs]</a>
+    <span class="k">def</span> <span class="nf">cancel_recon</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
+
+
+    <span class="c1"># Method for updating the state of the application</span>
+    <span class="c1">#   Should set the map image acordingly as well as activate and deactivate buttons</span>
+<div class="viewcode-block" id="main.update_state">
+<a class="viewcode-back" href="../reference/main.html#main.main.update_state">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            state (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progresstotal</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">STARTED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">DEFAULT_CHART</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">PHOTOS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">DEFAULT_CHART</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">MATCHER</span><span class="p">:</span>
+            <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">MESHER</span><span class="p">:</span>
+            <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN</span>
+        <span class="c1"># save to pickle after chnaging state</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">path</span><span class="p">,</span><span class="n">state</span><span class="p">),</span> <span class="n">file</span><span class="p">)</span></div>
+
+        
+    <span class="c1"># TODO: fix erros and check to make sure state is always being set correctly</span>
+    <span class="c1"># TODO: add comments for following functions (these are event handlers and not helpers)</span>
+    
+<div class="viewcode-block" id="main._toggle_fullscreen">
+<a class="viewcode-back" href="../reference/main.html#main.main._toggle_fullscreen">[docs]</a>
+    <span class="k">def</span> <span class="nf">_toggle_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            e(event): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="s1">&#39;-fullscreen&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="s1">&#39;break&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="s1">&#39;-fullscreen&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="s1">&#39;break&#39;</span></div>
+
+<div class="viewcode-block" id="main._end_fullscreen">
+<a class="viewcode-back" href="../reference/main.html#main.main._end_fullscreen">[docs]</a>
+    <span class="k">def</span> <span class="nf">_end_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            e (event): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+       
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">(</span><span class="s1">&#39;-fullscreen&#39;</span><span class="p">,</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+    
+    <span class="c1"># opens a new window at the middle of the screen.</span>
+<div class="viewcode-block" id="main._open_middle">
+<a class="viewcode-back" href="../reference/main.html#main.main._open_middle">[docs]</a>
+    <span class="k">def</span> <span class="nf">_open_middle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">windoww</span><span class="p">,</span> <span class="n">windowh</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            windoww (int): width of the window</span>
+<span class="sd">            windowh (int): height of the window</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winfo_screenwidth</span><span class="p">()</span>
+        <span class="n">sh</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">winfo_screenheight</span><span class="p">()</span>  
+        <span class="n">midx</span> <span class="o">=</span> <span class="p">(</span><span class="n">sw</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">windoww</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">midy</span> <span class="o">=</span> <span class="p">(</span><span class="n">sh</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">windowh</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">midx</span><span class="p">,</span> <span class="n">midy</span><span class="o">-</span><span class="mi">50</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Handler for app shutdown</span>
+    <span class="c1">#   Cancel any living subprocesses</span>
+    <span class="c1">#   Save recents and then kill tkinter</span>
+<div class="viewcode-block" id="main._shutdown">
+<a class="viewcode-back" href="../reference/main.html#main.main._shutdown">[docs]</a>
+    <span class="k">def</span> <span class="nf">_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;no active processes&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;exiting app&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">save_recent</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span></div>
+</div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">main</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">protocol</span><span class="p">(</span><span class="s2">&quot;WM_DELETE_WINDOW&quot;</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">_shutdown</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">mainloop</span><span class="p">()</span>
+
+<span class="c1"># TODO: Many things are labeled as handlers when really the handlers are in the </span>
+    <span class="c1"># GUI and the mathods here are secondary calls</span>
+
+<span class="c1"># TODO: all non helper methods need docs formatted for the auto docs</span>
+
+<span class="c1"># TODO: Style guidelines:</span>
+    <span class="c1"># Method names use underscores: foo_bar()</span>
+    <span class="c1"># variables are all lowercase one word: varname</span>
+    <span class="c1"># Handlers are any method directly bound to a button or event</span>
+    <span class="c1"># Helper functions are any which are never called externally from the class and start with _foo_bar() also not event halders</span>
+    <span class="c1"># Classes are camel case: MethodName</span>
+
+<span class="c1"># TODO: Software Design</span>
+    <span class="c1"># GUI never interacts with file system, recon manager, or any other scripting classes directly</span>
+    <span class="c1"># All classes that can be static should be</span>
+    <span class="c1"># Methods should either return a value or update state/ perform an operation, never both</span>
+    <span class="c1"># Classes should have as few fields as possible</span>
+
+<span class="c1"># TODO: All python files should be in an scr folder</span>
+    <span class="c1"># Outside the src folder there should be a single executeable, license, and the README</span>
+
+<span class="c1"># TODO: Colmap should be in its own subfolder with its license info in a text file</span>
+<span class="c1"># TODO: darkmap.png should be renamed to something more logical like blankmap.png</span>
+<span class="c1"># TODO: following style the heat_map.png should be heatmap.png</span>
+<span class="c1"># TODO: placeholder photo should have a better name bc thats not all it is</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

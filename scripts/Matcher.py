@@ -8,14 +8,14 @@ class Matcher:
     
     def __init__(self, projdir, imgdir, clean):
         """
-        Matcher is a python class designed to be run as a subprocess. Uses Colmap 
-        to create a dense point cloud and database of image data. https://colmap.github.io/
+        Matcher is a python class designed to be run as a subprocess. It uses :ref:`Colmap <colmap>` 
+        to create a dense point cloud and database of image data from the
+        images in the user-selected image directory.
 
         Args:
             projdir (pathlib.Path): Project directory containing .pkl file
             imgdir (pathlib.Path): Image directory
-            clean (char): If 'T' will remove database, if 'F' will use existsing 
-            database if one exists
+            clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists)
         """
         self.projdir = projdir
         self.imgdir = imgdir
@@ -26,8 +26,7 @@ class Matcher:
         Runs the colmap comands sequentially as subprocesses.
 
         Args:
-            clean (char): If 'T' will remove database, if 'F' will use existsing 
-            database if one exists.
+            clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists)
         """
         print("$$", flush=True)
         rcode = 0

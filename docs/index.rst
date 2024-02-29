@@ -13,7 +13,25 @@ high quality texture, and turns that 3D mesh into a VR headset-ready experience.
 
    This project is under active development.
 
+About
+-----
+it an app. 
+
+Download
+--------
+go to github and download the zip.
+
+Getting Started
+---------------
+do the download stuff. might change if andrew gets the installer working.
+
+Acknowledgments
+---------------
+Who/where we got the models from. maybe last years team as well.
+
+
 .. toctree::
+   :hidden:
    :caption: Contents:
    :maxdepth: 2
 

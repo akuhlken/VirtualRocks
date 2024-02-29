@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PipelineGUI &mdash; VirtualRocks 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VirtualRocks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VirtualRocks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PipelineGUI</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PipelineGUI</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">Canvas</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">END</span><span class="p">,</span> <span class="n">Button</span> <span class="k">as</span> <span class="n">tkButton</span>
+<span class="kn">from</span> <span class="nn">tkinter.ttk</span> <span class="kn">import</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Scrollbar</span><span class="p">,</span> <span class="n">Progressbar</span>
+<span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Separator</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">filedialog</span> <span class="k">as</span> <span class="n">fd</span><span class="p">,</span> <span class="n">messagebox</span> <span class="k">as</span> <span class="n">mb</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">ImageTk</span><span class="p">,</span> <span class="n">Image</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">gui.AppWindow</span> <span class="kn">import</span> <span class="n">AppWindow</span>
+<span class="kn">from</span> <span class="nn">gui.BoundsDialog</span> <span class="kn">import</span> <span class="n">BoundsDialog</span>
+<span class="kn">from</span> <span class="nn">showinfm</span> <span class="kn">import</span> <span class="n">show_in_file_manager</span>
+
+<span class="c1"># TODO: header comments</span>
+<div class="viewcode-block" id="PipelineGUI">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI">[docs]</a>
+<span class="k">class</span> <span class="nc">PipelineGUI</span><span class="p">(</span><span class="n">AppWindow</span><span class="p">):</span>
+    
+    <span class="c1"># GUI constants</span>
+    <span class="n">DEFAULT_CHART</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gui/placeholder/blankchart.jpg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">DEFAULT_PREVIEW</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gui/placeholder/drone.jpg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">projdir</span><span class="p">,</span> <span class="n">recents</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description of the whole class</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            parent (type?): what is it?</span>
+<span class="sd">            controller (type?): what is it?</span>
+<span class="sd">            projdir (type?): what is it?</span>
+<span class="sd">            recents (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">AppWindow</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">recents</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_layout</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">projdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_CHART</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span> <span class="o">=</span> <span class="n">recents</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_chart</span><span class="p">)</span>
+
+    <span class="c1"># Setup method for GUI layout and elements</span>
+<div class="viewcode-block" id="PipelineGUI.setup_layout">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.setup_layout">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description, sets everything up. probs needs a lot of desc.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">### Frames:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">prog</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+
+        <span class="c1"># packing the main frames</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">right</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">prog</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        
+        <span class="c1"># subframes, for alignment + spacing</span>
+        <span class="n">chartbuttonsframe</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;3p&#39;</span><span class="p">)</span>
+        <span class="n">addphotosframe</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;3p&#39;</span><span class="p">)</span>
+        <span class="n">boundsframe</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;3p&#39;</span><span class="p">)</span>
+        <span class="n">showframe</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s1">&#39;3p&#39;</span><span class="p">)</span>
+
+        
+        <span class="c1">### Right: elements + buttons on the right bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exampleimage</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addphotos</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">addphotosframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;1: Add Photos&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">photos_handler</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numimages</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Number of images:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;2: Matcher&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">start_matcher</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trimbounds</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">boundsframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Trim&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds_handler</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetbounds</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">boundsframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Reset&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">restore</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesher</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;3: Mesher&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">start_mesher</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">showframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;4: Show Files&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_files</span><span class="p">())</span>
+
+        <span class="c1"># the log, scrollbar, and cancel button for recon.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">logbackground</span><span class="p">)</span>
+        <span class="n">scrollbar</span> <span class="o">=</span> <span class="n">Scrollbar</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="p">[</span><span class="s1">&#39;yscrollcommand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scrollbar</span><span class="o">.</span><span class="n">set</span>
+        <span class="n">scrollbar</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">yview</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Cancel&quot;</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;cancel.TButton&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">cancel_recon</span><span class="p">())</span>
+        
+
+        <span class="c1">### Left: charts and progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_CHART</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span> <span class="o">=</span> <span class="n">Canvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart_image_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">create_image</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;nw&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Configure&gt;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previewcloud</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preview Point Cloud&quot;</span><span class="p">)</span>  <span class="c1"># TODO: need to add the handler/command to open the preview.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chartswitch</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Switch Chart&quot;</span><span class="p">)</span>  <span class="c1"># TODO: need to add the handler/command to switch chart</span>
+
+        <span class="c1"># progress bar frame elements</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirtext</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Project Directory: Test/test/test/test/test&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changebtn</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Change&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_projdir</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresstotaltext</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Total Progress:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresstotal</span> <span class="o">=</span> <span class="n">Progressbar</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">280</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;determinate&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;Horizontal.TProgressbar&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresstext</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Progress on Current Step:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span> <span class="o">=</span> <span class="n">Progressbar</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">280</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;determinate&#39;</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">)</span>
+
+
+        <span class="c1">### Misc style elements:</span>
+        <span class="c1"># separators (bars)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertseparator</span> <span class="o">=</span> <span class="n">Separator</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">bootstyle</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;vertical&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horiseparator</span> <span class="o">=</span> <span class="n">Separator</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">bootstyle</span><span class="o">=</span><span class="s2">&quot;info&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;horizontal&quot;</span><span class="p">)</span>
+
+        <span class="c1"># spacers</span>
+        <span class="n">boundsspacer</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">boundsframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">chartbuttonspacer</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+
+        <span class="c1">### packing</span>
+        <span class="c1">## Right:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertseparator</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">padx</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exampleimage</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numimages</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="n">addphotosframe</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addphotos</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="c1"># bounds buttons, gridded to be inline</span>
+        <span class="n">boundsframe</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">boundsspacer</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="n">showframe</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">anchor</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">scrollbar</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+
+        <span class="c1">## Left:</span>
+        <span class="c1"># progress bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">horiseparator</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">pady</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dirtext</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changebtn</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresstotaltext</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresstotal</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresstext</span><span class="o">.</span><span class="n">pack</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># chart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fill</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">expand</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">)</span>
+
+        <span class="c1"># chart buttons</span>
+        <span class="n">chartbuttonsframe</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previewcloud</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">chartbuttonspacer</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chartswitch</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+
+        
+
+    <span class="c1"># Event handler for &quot;New&quot; in the dropdown menu</span>
+        <span class="c1"># Method should first check to make sure nothing is running.</span>
+        <span class="c1"># Then it should do basically the same thing as the new_project method</span>
+        <span class="c1"># in StartGUI.</span>
+<div class="viewcode-block" id="PipelineGUI.new_proj_handler">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.new_proj_handler">[docs]</a>
+    <span class="k">def</span> <span class="nf">new_proj_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">projdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;select workspace&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="s1">&#39;/home/&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">projdir</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">projdir</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Path must not contain white spaces&quot;</span><span class="p">)</span>
+            <span class="n">mb</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Paths cannot contain whitespace                           &quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Event handler for &quot;Add Photos&quot; button</span>
+        <span class="c1"># Method should open a dialogue prompting the user to select img dir</span>
+        <span class="c1"># Pass directory to controllers add_photos handler</span>
+<div class="viewcode-block" id="PipelineGUI.photos_handler">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.photos_handler">[docs]</a>
+    <span class="k">def</span> <span class="nf">photos_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">imgdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;select folder of images&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">imgdir</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">imgdir</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Path must not contain white spaces&quot;</span><span class="p">)</span>
+            <span class="n">mb</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Paths cannot contain whitespace                           &quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">add_photos</span><span class="p">(</span><span class="n">imgdir</span><span class="p">)</span>
+        <span class="c1"># updating progress bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">])</span>
+        <span class="c1">#self.progresstotal.step(10)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;prog.Horizontal.TProgressbar&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Event handler for &quot;Set Bounds&quot; button</span>
+        <span class="c1"># Method should open a dialogue prompting the user to enter bounds</span>
+        <span class="c1"># Pass bounds A and B to controllers set_bounds handler</span>
+<div class="viewcode-block" id="PipelineGUI.bounds_handler">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.bounds_handler">[docs]</a>
+    <span class="k">def</span> <span class="nf">bounds_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Description.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dialog</span> <span class="o">=</span> <span class="n">BoundsDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> 
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">minx</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">maxx</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">miny</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">maxy</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;All fields must contain numbers&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Method to be called externally for updating text related to user input</span>
+<div class="viewcode-block" id="PipelineGUI.update_text">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.update_text">[docs]</a>
+    <span class="k">def</span> <span class="nf">update_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numimg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            numimg (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">numimages</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Num images: </span><span class="si">{</span><span class="n">numimg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+        
+
+    <span class="c1"># Method to be called externally for setting chart image in GUI</span>
+    <span class="c1">#   Sets the currentchart variable</span>
+    <span class="c1">#   Requests a Refreshchart event</span>
+<div class="viewcode-block" id="PipelineGUI.set_chart">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.set_chart">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chartdir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chartdir (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">chartdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Method to be called externally for setting example image</span>
+<div class="viewcode-block" id="PipelineGUI.set_example_image">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.set_example_image">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagefile</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            imagefile (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">imagefile</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exampleimage</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">image</span><span class="o">=</span><span class="n">img</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exampleimage</span><span class="o">.</span><span class="n">image</span> <span class="o">=</span> <span class="n">img</span></div>
+
+
+    <span class="c1"># Gives the user an option to chnage the main project directory</span>
+    <span class="c1">#   If no savefile this will refresh and create a new project</span>
+    <span class="c1">#   If chosen dir has a savefile this will load the existing project</span>
+<div class="viewcode-block" id="PipelineGUI.change_projdir">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.change_projdir">[docs]</a>
+    <span class="k">def</span> <span class="nf">change_projdir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">projdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;select workspace&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="s1">&#39;/home/&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">projdir</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">projdir</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Path must not contain white spaces&quot;</span><span class="p">)</span>
+            <span class="n">mb</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Paths cannot contain whitespace                           &quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">cancel_recon</span><span class="p">()</span>   
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">picklepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">remove_recent</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">projdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">projectname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">imgdir</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Event handler for the show files button</span>
+    <span class="c1">#   Should openthe out dir in file explorer</span>
+<div class="viewcode-block" id="PipelineGUI.show_files">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.show_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">show_in_file_manager</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/out&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Event handler to be called whenever the window is resized</span>
+    <span class="c1">#   Updates and scales the chart image with window</span>
+<div class="viewcode-block" id="PipelineGUI._resizer">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI._resizer">[docs]</a>
+    <span class="k">def</span> <span class="nf">_resizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            e (event): an event?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span><span class="p">)</span>
+        <span class="n">resized_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_image</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">resized_image</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">itemconfigure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chart_image_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">)</span></div>
+
+    
+    <span class="c1"># Method writes strings to the log</span>
+<div class="viewcode-block" id="PipelineGUI.log">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.log">[docs]</a>
+    <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">END</span><span class="p">,</span> <span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">see</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Handles chart refresh event</span>
+    <span class="c1">#    Sets the canvas image to the currentchart</span>
+    <span class="c1">#    If app has been resized, resizes image to fit</span>
+<div class="viewcode-block" id="PipelineGUI._refresh_chart">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI._refresh_chart">[docs]</a>
+    <span class="k">def</span> <span class="nf">_refresh_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            e (event): do we need event? doesn&#39;t seem to be used?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">winfo_width</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">winfo_height</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span><span class="p">)</span>
+            <span class="n">resized_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">winfo_width</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">winfo_height</span><span class="p">(),</span> <span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">resized_image</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">itemconfigure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chart_image_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Scales an image so that it will fit in a window defined by wwidth and wheight</span>
+    <span class="c1">#   Image scaled without distortion (preserves aspect ratio)</span>
+<div class="viewcode-block" id="PipelineGUI._scale_image">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI._scale_image">[docs]</a>
+    <span class="k">def</span> <span class="nf">_scale_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wwidth</span><span class="p">,</span> <span class="n">wheight</span><span class="p">,</span> <span class="n">iwidth</span><span class="p">,</span> <span class="n">iheight</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            wwidth (int): window width</span>
+<span class="sd">            wheight (int): window height</span>
+<span class="sd">            iwidth (int): ?????</span>
+<span class="sd">            iheight (int): ?????</span>
+<span class="sd">            image (image): ?????</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">width_scale</span> <span class="o">=</span> <span class="n">wwidth</span> <span class="o">/</span> <span class="n">iwidth</span>
+        <span class="n">height_scale</span> <span class="o">=</span> <span class="n">wheight</span> <span class="o">/</span> <span class="n">iheight</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">width_scale</span><span class="p">,</span> <span class="n">height_scale</span><span class="p">)</span>
+        <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iwidth</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+        <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iheight</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">new_width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
