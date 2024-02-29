@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 from ttkbootstrap import Style
 from tkinter import simpledialog, PhotoImage, Frame, Tk
 from pathlib import Path
@@ -10,8 +11,7 @@ from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
 import pickle
 import ctypes
-import scripts.PointCloudManager as pcm
-import scripts.CloudPreviewer as CloudPreviewer
+import scripts.PointCloudManager as PointCloudManager
 from scripts.RecentsManager import RecentsManager
 
 # Compiler run: pyinstaller --onefile main.py -w -p "scripts" -p "gui" -c
@@ -213,8 +213,8 @@ class main(Tk):
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")
         dense = Path(self.projdir / "dense")
-        pcm.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
-        pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
+        PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
         self.page2.set_chart(Path(dense/ "heat_map.png"))
 
     # Handler for the restore point cloud menu item
@@ -228,7 +228,7 @@ class main(Tk):
             dense = Path(self.projdir / "dense")
             savefile = Path(dense / "save.ply")
             shutil.copy(savefile, Path(dense / "fused.ply"))
-            pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+            PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
             self.page2.set_chart(Path(dense/ "heat_map.png"))
         else:
             self.page2.log("Nothing to restore, run matcher to create a point cloud")
@@ -278,14 +278,29 @@ class main(Tk):
         self.recon.cancel()
 
     def preview_cloud(self):
-        try:
-            self.withdraw()
-            path = Path(self.projdir / 'dense' / 'fused.ply')
-            CloudPreviewer.show(str(path))
-        except Exception as e:
-            self.page2.log(str(e))
-            self.page2.log("Failed to preview point cloud")
-        self.deiconify()
+        path = Path(self.projdir / 'dense' / 'fused.ply')
+        p = subprocess.Popen(['python', 'scripts/CloudPreviewer.py', str(path)])
+        # try:
+        #     #self.withdraw()
+        #     path = Path(self.projdir / 'dense' / 'fused.ply')
+        #     PointCloudManager.show(str(path))
+        # except Exception as e:
+        #     self.page2.log(str(e))
+        #     self.page2.log("Failed to preview point cloud")
+        #centerdim = self._open_middle(1000,700)
+        #self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
+        #self.deiconify()
+
+        # try:
+        #     #self.withdraw()
+        #     path = Path(self.projdir / 'dense' / 'fused.ply')
+        #     CloudPreviewer.show(str(path))
+        # except Exception as e:
+        #     self.page2.log(str(e))
+        #     self.page2.log("Failed to preview point cloud")
+        # centerdim = self._open_middle(1000,700)
+        # self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
+        # #self.deiconify()
 
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
@@ -345,9 +360,6 @@ class main(Tk):
             path = self.imgdir
         with open(self.picklepath, 'wb') as file:
             pickle.dump((path,state), file)
-        
-    # TODO: fix erros and check to make sure state is always being set correctly
-    # TODO: add comments for following functions (these are event handlers and not helpers)
     
     def _toggle_fullscreen(self, event=None):
         """
