@@ -61,20 +61,7 @@ class main(Tk):
         self.logbackground = "#ffffff"
         self.style = Style("darkly")
         self.styleflag = "dark"
-
-        # TODO: duplicate code? CODEN
-        # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
-        self.style.configure("TButton", width=16)
-        self.style.configure("cancel.TButton", width=30)
-        self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
-
-        # Progress bar styling
-        self.style.layout("prog.Horizontal.TProgressbar",
-             [('Horizontal.Progressbar.trough',
-               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
-                'sticky': 'nswe'}),
-              ('Horizontal.Progressbar.label', {'sticky': ''})])
-        self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
+        self.init_style()
 
         # container is a stack of frames (aka our two main pages)
         self.container = Frame(self)
@@ -103,6 +90,30 @@ class main(Tk):
         self.recon = ReconManager(self, self.projdir)
         self.page2.menubar.entryconfig("Reconstruction", state="normal")
         self.recents.update_recent(self.picklepath)
+
+    def init_style(self):
+        """
+        On Tk app start and when switching between light and dark styles, certain elements of the
+        style need to be reassigned for the look to stay consistent. This includes...
+        """
+        # setting initial style stuff
+        self.style.configure("TButton", width=16)
+        self.style.configure("cancel.TButton", width=30)
+        self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
+        # Progress bar styling
+        self.style.layout("prog.Horizontal.TProgressbar",
+             [('Horizontal.Progressbar.trough',
+               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
+                'sticky': 'nswe'}),
+              ('Horizontal.Progressbar.label', {'sticky': ''})])
+        self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
+        #need to add the progress bar update stuff here (own function?).
+        if self.recon:
+            currentpercent = self.recon.progresspercent
+            print("from main: " + str(currentpercent))
+            if 0 < currentpercent < 100: 
+                self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(currentpercent))
+
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
