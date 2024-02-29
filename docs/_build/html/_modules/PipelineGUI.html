@@ -113,6 +113,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">projdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_CHART</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recents</span> <span class="o">=</span> <span class="n">recents</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_chart</span><span class="p">)</span>
 
@@ -163,8 +164,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">chart</span> <span class="o">=</span> <span class="n">Canvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chart_image_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">create_image</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;nw&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Configure&gt;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resizer</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">previewcloud</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preview Point Cloud&quot;</span><span class="p">)</span>  <span class="c1"># TODO: need to add the handler/command to open the preview.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chartswitch</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Switch Chart&quot;</span><span class="p">)</span>  <span class="c1"># TODO: need to add the handler/command to switch chart</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previewcloud</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preview Point Cloud&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">preview_cloud</span><span class="p">())</span>  <span class="c1"># TODO: need to add the handler/command to open the preview.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chartview</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Change View&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_chart_view</span><span class="p">())</span>  <span class="c1"># TODO: need to add the handler/command to switch chart</span>
 
         <span class="c1"># progress bar frame elements</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dirtext</span> <span class="o">=</span> <span class="n">Label</span><span class="p">(</span><span class="n">prog</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Project Directory: Test/test/test/test/test&quot;</span><span class="p">)</span>
@@ -222,7 +223,7 @@
         <span class="n">chartbuttonsframe</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">side</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">previewcloud</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">chartbuttonspacer</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chartswitch</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chartview</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
         
 
@@ -287,7 +288,7 @@
                 <span class="n">maxy</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;All fields must contain numbers&quot;</span><span class="p">)</span></div>
 
 
@@ -318,6 +319,18 @@
 <span class="sd">            chartdir (type?): what is it?</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">chartdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PipelineGUI.change_chart_view">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.change_chart_view">[docs]</a>
+    <span class="k">def</span> <span class="nf">change_chart_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Event handler for the change view button, toggles between the heat map </span>
+<span class="sd">        and elevation map views.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="c1"># Toggle boolean</span>
+        <span class="c1"># TODO: set current chart (self.currentchart) and then refresh chart event will handle the rest</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">)</span></div>
 
 

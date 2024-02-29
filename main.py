@@ -94,7 +94,10 @@ class main(Tk):
     def init_style(self):
         """
         On Tk app start and when switching between light and dark styles, certain elements of the
-        style need to be reassigned for the look to stay consistent. This includes...
+        style need to be reassigned for consistency. This includes the button size, the font size
+        of the title on the start page, and the appearance of the progress bar. Since the user 
+        can switch style while a process is running, this function also reprints the current
+        progress to the restyled lower progress bar.
         """
         # setting initial style stuff
         self.style.configure("TButton", width=16)
@@ -107,12 +110,10 @@ class main(Tk):
                 'sticky': 'nswe'}),
               ('Horizontal.Progressbar.label', {'sticky': ''})])
         self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
-        #need to add the progress bar update stuff here (own function?).
-        if self.recon:
-            currentpercent = self.recon.progresspercent
-            print("from main: " + str(currentpercent))
-            if 0 < currentpercent < 100: 
-                self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(currentpercent))
+        #need to add the progress bar update stuff here.
+        currentprogress = self._get_progress()
+        if 0 < currentprogress < 100: 
+            self.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(currentprogress))
 
 
     # Handler for creating of a new project
@@ -366,6 +367,7 @@ class main(Tk):
             self.attributes('-fullscreen', True)
             self.fullscreen = True
             return 'break'
+        
     def _end_fullscreen(self, event=None):
         """
         description
@@ -392,6 +394,18 @@ class main(Tk):
         midx = (sw/2) - (windoww/2)
         midy = (sh/2) - (windowh/2)
         return (midx, midy-50)
+    
+    def _get_progress(self):
+        """
+        description
+
+        Returns:
+            int: percentage of progress made on the current step.
+        """
+        if self.recon:
+            return self.recon.progresspercent
+        else:
+            return -1
 
     # Handler for app shutdown
     #   Cancel any living subprocesses

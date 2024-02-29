@@ -81,6 +81,7 @@
   <h1>Source code for main</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Style</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">simpledialog</span><span class="p">,</span> <span class="n">PhotoImage</span><span class="p">,</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Tk</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -91,8 +92,11 @@
 <span class="kn">from</span> <span class="nn">scripts.ReconManger</span> <span class="kn">import</span> <span class="n">ReconManager</span>
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">ctypes</span>
-<span class="kn">import</span> <span class="nn">scripts.PointCloudManager</span> <span class="k">as</span> <span class="nn">pcm</span>
+<span class="kn">import</span> <span class="nn">scripts.PointCloudManager</span> <span class="k">as</span> <span class="nn">PointCloudManager</span>
 <span class="kn">from</span> <span class="nn">scripts.RecentsManager</span> <span class="kn">import</span> <span class="n">RecentsManager</span>
+
+<span class="c1"># Compiler run: pyinstaller --onefile main.py -w -p &quot;scripts&quot; -p &quot;gui&quot; -c</span>
+<span class="c1"># After compiles move main.exe into the VirtualRocks directory</span>
 
 <span class="c1"># DEBUG = True will cause the application to skip over recon scripts for testing</span>
 <span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
@@ -140,20 +144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logbackground</span> <span class="o">=</span> <span class="s2">&quot;#ffffff&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">Style</span><span class="p">(</span><span class="s2">&quot;darkly&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">=</span> <span class="s2">&quot;dark&quot;</span>
-
-        <span class="c1"># TODO: duplicate code? CODEN</span>
-        <span class="c1"># setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;cancel.TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;title.TLabel&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">))</span>
-
-        <span class="c1"># Progress bar styling</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span>
-             <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.trough&#39;</span><span class="p">,</span>
-               <span class="p">{</span><span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.pbar&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;side&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;ns&#39;</span><span class="p">})],</span>
-                <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;nswe&#39;</span><span class="p">}),</span>
-              <span class="p">(</span><span class="s1">&#39;Horizontal.Progressbar.label&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;goldenrod1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_style</span><span class="p">()</span>
 
         <span class="c1"># container is a stack of frames (aka our two main pages)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">container</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -184,6 +175,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recon</span> <span class="o">=</span> <span class="n">ReconManager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">entryconfig</span><span class="p">(</span><span class="s2">&quot;Reconstruction&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;normal&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">update_recent</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="main.init_style">
+<a class="viewcode-back" href="../reference/main.html#main.main.init_style">[docs]</a>
+    <span class="k">def</span> <span class="nf">init_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        On Tk app start and when switching between light and dark styles, certain elements of the</span>
+<span class="sd">        style need to be reassigned for the look to stay consistent. This includes the standard </span>
+<span class="sd">        button size, the font size of the title on the start page, and the appearance of the </span>
+<span class="sd">        progress bar. Since the user can switch style while a process is running, this function</span>
+<span class="sd">        also reprints the current progress to the restyled lower progress bar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># setting initial style stuff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;cancel.TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;title.TLabel&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">))</span>
+        <span class="c1"># Progress bar styling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span>
+             <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.trough&#39;</span><span class="p">,</span>
+               <span class="p">{</span><span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.pbar&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;side&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;ns&#39;</span><span class="p">})],</span>
+                <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;nswe&#39;</span><span class="p">}),</span>
+              <span class="p">(</span><span class="s1">&#39;Horizontal.Progressbar.label&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;goldenrod1&quot;</span><span class="p">)</span>
+        <span class="c1">#need to add the progress bar update stuff here.</span>
+        <span class="n">currentprogress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_progress</span><span class="p">()</span>
+        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">currentprogress</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;prog.Horizontal.TProgressbar&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:g}</span><span class="s1"> %&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">currentprogress</span><span class="p">))</span></div>
+
 
 
     <span class="c1"># Handler for creating of a new project</span>
@@ -250,7 +269,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">update_text</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">get_num_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="n">pm</span><span class="o">.</span><span class="n">get_example_img</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">)))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Could not find image directory&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">STARTED</span><span class="p">)</span></div>
 
@@ -309,8 +328,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$Trimming Bounds..100$&quot;</span><span class="p">)</span>
         <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
-        <span class="n">pcm</span><span class="o">.</span><span class="n">remove_points</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
-        <span class="n">pcm</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
+        <span class="n">PointCloudManager</span><span class="o">.</span><span class="n">remove_points</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+        <span class="n">PointCloudManager</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span></div>
 
 
@@ -327,7 +346,7 @@
             <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
             <span class="n">savefile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;save.ply&quot;</span><span class="p">)</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">savefile</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">))</span>
-            <span class="n">pcm</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
+            <span class="n">PointCloudManager</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;Nothing to restore, run matcher to create a point cloud&quot;</span><span class="p">)</span></div>
@@ -389,6 +408,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
 
 
+<div class="viewcode-block" id="main.preview_cloud">
+<a class="viewcode-back" href="../reference/main.html#main.main.preview_cloud">[docs]</a>
+    <span class="k">def</span> <span class="nf">preview_cloud</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s1">&#39;dense&#39;</span> <span class="o">/</span> <span class="s1">&#39;fused.ply&#39;</span><span class="p">)</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;scripts/CloudPreviewer.py&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">)])</span></div>
+
+
     <span class="c1"># Method for updating the state of the application</span>
     <span class="c1">#   Should set the map image acordingly as well as activate and deactivate buttons</span>
 <div class="viewcode-block" id="main.update_state">
@@ -408,12 +434,16 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">previewcloud</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">chartview</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">PHOTOS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">DEFAULT_CHART</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">previewcloud</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">chartview</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="n">MATCHER</span><span class="p">:</span>
@@ -421,6 +451,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">show</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;disabled&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">previewcloud</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">chartview</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
@@ -428,6 +460,8 @@
             <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">set_chart</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span><span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">matcher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">chartview</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">trimbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">resetbounds</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">mesher</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s1">&#39;active&#39;</span><span class="p">)</span>
@@ -442,9 +476,6 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">picklepath</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">path</span><span class="p">,</span><span class="n">state</span><span class="p">),</span> <span class="n">file</span><span class="p">)</span></div>
 
-        
-    <span class="c1"># TODO: fix erros and check to make sure state is always being set correctly</span>
-    <span class="c1"># TODO: add comments for following functions (these are event handlers and not helpers)</span>
     
 <div class="viewcode-block" id="main._toggle_fullscreen">
 <a class="viewcode-back" href="../reference/main.html#main.main._toggle_fullscreen">[docs]</a>
@@ -464,6 +495,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="k">return</span> <span class="s1">&#39;break&#39;</span></div>
 
+        
 <div class="viewcode-block" id="main._end_fullscreen">
 <a class="viewcode-back" href="../reference/main.html#main.main._end_fullscreen">[docs]</a>
     <span class="k">def</span> <span class="nf">_end_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -495,6 +527,21 @@
         <span class="n">midx</span> <span class="o">=</span> <span class="p">(</span><span class="n">sw</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">windoww</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">midy</span> <span class="o">=</span> <span class="p">(</span><span class="n">sh</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">windowh</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">midx</span><span class="p">,</span> <span class="n">midy</span><span class="o">-</span><span class="mi">50</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="main._get_progress">
+<a class="viewcode-back" href="../reference/main.html#main.main._get_progress">[docs]</a>
+    <span class="k">def</span> <span class="nf">_get_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        description</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: percentage of progress made on the current step.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">recon</span><span class="o">.</span><span class="n">progresspercent</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
 
 
     <span class="c1"># Handler for app shutdown</span>

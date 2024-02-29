@@ -36,8 +36,8 @@ class AppWindow(Frame):
  
         styles = Menu(file, tearoff=0)
         file.add_cascade(label="Set Style...", menu=styles)
-        styles.add_command(label="Dark", command=lambda: self.start_darkmode())
-        styles.add_command(label="Light", command=lambda: self.start_lightmode()) 
+        styles.add_command(label="Dark", command=lambda: self._start_darkmode())
+        styles.add_command(label="Light", command=lambda: self._start_lightmode()) 
         file.add_separator()
 
         recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
@@ -121,9 +121,9 @@ class AppWindow(Frame):
     # Handler for setting dark mode
     #   changes theme to a dark theme
     #   might be worth adding some flag so that we don't have to switch if we already have one style.
-    def start_darkmode(self):
+    def _start_darkmode(self):
         """
-        description
+        description. Uses Ttkbootstrap theme `"darkly"`.
         """
         if (self.controller.styleflag == "dark"):
             return
@@ -131,38 +131,15 @@ class AppWindow(Frame):
         self.controller.styleflag = "dark"
         self.controller.init_style()
 
-    def start_lightmode(self):
+    def _start_lightmode(self):
         """
-        description
+        description. Uses Ttkbootstrap theme `"darkly"`.
         """
         if (self.controller.styleflag == "light"):
             return
         self.controller.style = Style("lumen")
         self.controller.styleflag = "light"
         self.controller.init_style()
-
-    def _init_common_style(self):
-        """
-        description
-        """
-        #temp = self.controller.swtich_style()
-        self.controller.style.configure("TButton", width=16)
-        self.controller.style.configure("cancel.TButton", width=30)
-        self.controller.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
-
-        # progress bar # TODO: is this exact same thing in main or am I crazy? CODEN
-        self.controller.style.layout("prog.Horizontal.TProgressbar",
-             [('Horizontal.Progressbar.trough',
-               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
-                'sticky': 'nswe'}),
-              ('Horizontal.Progressbar.label', {'sticky': ''})])
-        self.controller.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
-
-        # progress bar progress % text
-        #if 0 < temp < 100: 
-            #self.controller.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(temp))
-        #else:
-           # return
 
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.

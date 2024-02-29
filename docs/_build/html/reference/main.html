@@ -60,6 +60,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">main module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#main.main"><code class="docutils literal notranslate"><span class="pre">main</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#main.main._end_fullscreen"><code class="docutils literal notranslate"><span class="pre">main._end_fullscreen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#main.main._get_progress"><code class="docutils literal notranslate"><span class="pre">main._get_progress()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main._open_middle"><code class="docutils literal notranslate"><span class="pre">main._open_middle()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main._shutdown"><code class="docutils literal notranslate"><span class="pre">main._shutdown()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main._startup"><code class="docutils literal notranslate"><span class="pre">main._startup()</span></code></a></li>
@@ -68,8 +69,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#main.main.auto_recon"><code class="docutils literal notranslate"><span class="pre">main.auto_recon()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.back_to_start"><code class="docutils literal notranslate"><span class="pre">main.back_to_start()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.cancel_recon"><code class="docutils literal notranslate"><span class="pre">main.cancel_recon()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#main.main.init_style"><code class="docutils literal notranslate"><span class="pre">main.init_style()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.new_project"><code class="docutils literal notranslate"><span class="pre">main.new_project()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.open_project"><code class="docutils literal notranslate"><span class="pre">main.open_project()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#main.main.preview_cloud"><code class="docutils literal notranslate"><span class="pre">main.preview_cloud()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.restore"><code class="docutils literal notranslate"><span class="pre">main.restore()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.set_bounds"><code class="docutils literal notranslate"><span class="pre">main.set_bounds()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#main.main.start_matcher"><code class="docutils literal notranslate"><span class="pre">main.start_matcher()</span></code></a></li>
@@ -129,6 +132,20 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>e</strong> (<em>event</em>) – what is it?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.main._get_progress">
+<span class="sig-name descname"><span class="pre">_get_progress</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main._get_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main._get_progress" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>percentage of progress made on the current step.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
 </dd>
 </dl>
 </dd></dl>
@@ -200,6 +217,16 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="main.main.init_style">
+<span class="sig-name descname"><span class="pre">init_style</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.init_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.init_style" title="Link to this definition"></a></dt>
+<dd><p>On Tk app start and when switching between light and dark styles, certain elements of the
+style need to be reassigned for the look to stay consistent. This includes the standard
+button size, the font size of the title on the start page, and the appearance of the
+progress bar. Since the user can switch style while a process is running, this function
+also reprints the current progress to the restyled lower progress bar.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="main.main.new_project">
 <span class="sig-name descname"><span class="pre">new_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.new_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.new_project" title="Link to this definition"></a></dt>
 <dd><p>description</p>
@@ -224,6 +251,11 @@
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.main.preview_cloud">
+<span class="sig-name descname"><span class="pre">preview_cloud</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.preview_cloud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.preview_cloud" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="main.main.restore">
