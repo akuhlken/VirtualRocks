@@ -280,27 +280,6 @@ class main(Tk):
     def preview_cloud(self):
         path = Path(self.projdir / 'dense' / 'fused.ply')
         p = subprocess.Popen(['python', 'scripts/CloudPreviewer.py', str(path)])
-        # try:
-        #     #self.withdraw()
-        #     path = Path(self.projdir / 'dense' / 'fused.ply')
-        #     PointCloudManager.show(str(path))
-        # except Exception as e:
-        #     self.page2.log(str(e))
-        #     self.page2.log("Failed to preview point cloud")
-        #centerdim = self._open_middle(1000,700)
-        #self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
-        #self.deiconify()
-
-        # try:
-        #     #self.withdraw()
-        #     path = Path(self.projdir / 'dense' / 'fused.ply')
-        #     CloudPreviewer.show(str(path))
-        # except Exception as e:
-        #     self.page2.log(str(e))
-        #     self.page2.log("Failed to preview point cloud")
-        # centerdim = self._open_middle(1000,700)
-        # self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
-        # #self.deiconify()
 
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
@@ -320,7 +299,7 @@ class main(Tk):
             self.page2.resetbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.previewcloud.config(state='disabled')
-            self.page2.chartswitch.config(state='disabled')
+            self.page2.chartview.config(state='disabled')
             self.page2.show.config(state='disabled')
         if state == PHOTOS:
             self.page2.set_chart(self.page2.DEFAULT_CHART)
@@ -328,7 +307,7 @@ class main(Tk):
             self.page2.resetbounds.config(state='disabled')
             self.page2.mesher.config(state='disabled')
             self.page2.previewcloud.config(state='disabled')
-            self.page2.chartswitch.config(state='disabled')
+            self.page2.chartview.config(state='disabled')
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
         if state == MATCHER:
@@ -337,7 +316,7 @@ class main(Tk):
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.previewcloud.config(state='active')
-            self.page2.chartswitch.config(state='active')
+            self.page2.chartview.config(state='active')
             self.page2.resetbounds.config(state='active')
             self.page2.trimbounds.config(state='active')
             self.page2.mesher.config(state='active')
@@ -345,7 +324,7 @@ class main(Tk):
             dense = Path(self.projdir / "dense")
             self.page2.set_chart(Path(dense/ "heat_map.png"))
             self.page2.matcher.config(state='active')
-            self.page2.chartswitch.config(state='active')
+            self.page2.chartview.config(state='active')
             self.page2.resetbounds.config(state='active')
             self.page2.trimbounds.config(state='active')
             self.page2.resetbounds.config(state='active')
