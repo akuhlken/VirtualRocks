@@ -54,8 +54,6 @@ def create_height_map(filename, outdir):
     x, y, z = get_coordinates(filename)
     min_val = min(np.min(x), np.min(y))
     max_val = max(np.max(x), np.max(y))
-    maxz = np.max(z)
-    z = abs(z - maxz)
     plt.hexbin(x, y, C=z, gridsize=50, cmap='viridis', mincnt=1)
     plt.colorbar(label='Height')
     plt.xlabel('X')
