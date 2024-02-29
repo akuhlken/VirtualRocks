@@ -221,8 +221,12 @@ class PipelineGUI(AppWindow):
         self.event_generate("<<RefreshChart>>")
 
     def change_chart_view(self):
+        """
+        Event handler for the change view button, toggles between the heat map 
+        and elevation map views.
+        """
         self.viewtype = ~self.viewtype # Toggle boolean
-        # TODO: set current chart (self.currentchart)
+        # TODO: set current chart (self.currentchart) and then refresh chart event will handle the rest
         self.event_generate("<<RefreshChart>>")
 
     # Method to be called externally for setting example image
