@@ -1,54 +1,84 @@
 import os
 import shutil
-from matplotlib import pyplot
+import numpy as np
+import matplotlib.pyplot as plt
 from plyfile import PlyData, PlyElement
 import pathlib as pl
 import warnings
 
 warnings.filterwarnings("ignore")
 
+# Extract the x,y coordiantes from the .ply file at filename
 def get_coordinates(filename):
     """
-    Helper method which extract the x and y coordinates from the given `.ply` file.
+        description
 
-    Args:
-        filename (pathlib.Path): Path to a .ply point cloud file
-    """
+        Args:
+            filename (type?): what is it? (str or path?)
+        """
     plydata = PlyData.read(filename)
     vertex = plydata['vertex']
     x = vertex['x']
     y = vertex['y']
-    return x, y
+    z = vertex['z']
+    return x, y, z
 
+# Create a heat map of the point cloud at filename
+#   Save as heat_map.png in the dense directory
 def create_heat_map(filename, outdir):
     """
-    Creates a heat map of the dense point cloud and exports it as `heat_map.png` in the dense
-    directory.
+        description
+
+        Args:
+            filename (type?): what is it?
+            outdir (type?): what is it?
+        """
+    x, y, z = get_coordinates(filename)
+    min_val = min(np.min(x), np.min(y))
+    max_val = max(np.max(x), np.max(y))
+    plt.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
+    plt.xlim(min_val, max_val)
+    plt.ylim(min_val, max_val)
+    plt.title('Dense Point Cloud')
+    plt.savefig(pl.Path(str(outdir)) / "heat_map.png")
+    plt.close('all')
+
+def create_height_map(filename, outdir):
+    """
+    description
 
     Args:
-        filename (pathlib.Path): Path to a .ply point cloud file
-        outdir (pathlib.Path): Output directory
+        filename (type?): what is it?
+        outdir (type?): what is it?
     """
-    x, y = get_coordinates(filename)
-    pyplot.hexbin(x, y, gridsize=50, cmap='Blues', mincnt=1)
-    pyplot.xlabel('X')
-    pyplot.ylabel('Y')
-    pyplot.title('Dense Point Cloud')
-    pyplot.savefig(pl.Path(str(outdir)) / "heat_map.png")
-    pyplot.close('all')
+    x, y, z = get_coordinates(filename)
+    min_val = min(np.min(x), np.min(y))
+    max_val = max(np.max(x), np.max(y))
+    maxz = np.max(z)
+    z = abs(z - maxz)
+    plt.hexbin(x, y, C=z, gridsize=50, cmap='viridis', mincnt=1)
+    plt.colorbar(label='Height')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.title('Dense Point Cloud')
+    plt.xlim(min_val, max_val)
+    plt.ylim(min_val, max_val)
+    plt.savefig(pl.Path(str(outdir)) / "height_map.png")
+    plt.close('all')
 
+# Remove all points from point cloud at filename which are outside bounds
+#   Save as fused.ply in the dense dir
 def remove_points(filename, minx, maxx, miny, maxy):
     """
-    Method removes points from .ply point cloud that lie outside the provided 
-    bounds and exports as ``fused.ply`` into the dense directory.
+        description
 
-    Args:
-        filename (pathlib.Path): Path to a .ply point cloud file
-        minx (int): min x value
-        maxx (int): max x value
-        miny (int): min y value
-        maxy (int): max y value
-    """
+        Args:
+            filename (type?): what is it?
+            maxx (int): what is it?
+            minx (int): what is it?
+            maxy (int): what is it?
+            miny (int): what is it?
+        """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):
         os.remove(tempfile)
