@@ -30,6 +30,7 @@ class PipelineGUI(AppWindow):
         self.projdir = projdir
         self.controller = controller
         self.currentchart = self.DEFAULT_CHART
+        self.viewtype = True
         self.bind("<<RefreshChart>>", self._refresh_chart)
 
     # Setup method for GUI layout and elements
@@ -77,8 +78,8 @@ class PipelineGUI(AppWindow):
         self.chart = Canvas(self.left)
         self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
         self.chart.bind('<Configure>', self._resizer)
-        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud")  # TODO: need to add the handler/command to open the preview.
-        self.chartswitch = Button(chartbuttonsframe, width=20, text="Switch Chart")  # TODO: need to add the handler/command to switch chart
+        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud", command=lambda: self.controller.preview_cloud())  # TODO: need to add the handler/command to open the preview.
+        self.chartview = Button(chartbuttonsframe, width=20, text="Change View", command=lambda: self.change_chart_view())  # TODO: need to add the handler/command to switch chart
 
         # progress bar frame elements
         self.dirtext = Label(prog, text="Project Directory: Test/test/test/test/test")
@@ -136,7 +137,7 @@ class PipelineGUI(AppWindow):
         chartbuttonsframe.pack(side="bottom")
         self.previewcloud.grid(row=0, column=0)
         chartbuttonspacer.grid(row=0, column=1)
-        self.chartswitch.grid(row=0, column=2)
+        self.chartview.grid(row=0, column=2)
         
 
     # Event handler for "New" in the dropdown menu
@@ -192,7 +193,7 @@ class PipelineGUI(AppWindow):
                 maxy= dialog.result[3]
                 self.controller.set_bounds(minx, maxx, miny, maxy)
             except Exception as e:
-                self.log(e)
+                self.log(str(e))
                 self.log("All fields must contain numbers")
 
     # Method to be called externally for updating text related to user input
@@ -217,6 +218,11 @@ class PipelineGUI(AppWindow):
             chartdir (type?): what is it?
         """
         self.currentchart = chartdir
+        self.event_generate("<<RefreshChart>>")
+
+    def change_chart_view(self):
+        self.viewtype = ~self.viewtype # Toggle boolean
+        # TODO: set current chart (self.currentchart)
         self.event_generate("<<RefreshChart>>")
 
     # Method to be called externally for setting example image
