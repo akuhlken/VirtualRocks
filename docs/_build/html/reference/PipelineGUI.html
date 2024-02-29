@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PipelineGUI module &mdash; VirtualRocks 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PointCloudManager module" href="PointCloudManager.html" />
+    <link rel="prev" title="PhotoManager module" href="PhotoManager.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VirtualRocks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="AppWindow.html">AppWindow module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BoundsDialog.html">BoundsDialog module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Matcher.html">Matcher module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Mesher.html">Mesher module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PhotoManager.html">PhotoManager module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PipelineGUI module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#PipelineGUI.PipelineGUI"><code class="docutils literal notranslate"><span class="pre">PipelineGUI</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.DEFAULT_CHART"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.DEFAULT_CHART</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.DEFAULT_PREVIEW"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.DEFAULT_PREVIEW</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI._refresh_chart"><code class="docutils literal notranslate"><span class="pre">PipelineGUI._refresh_chart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI._resizer"><code class="docutils literal notranslate"><span class="pre">PipelineGUI._resizer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI._scale_image"><code class="docutils literal notranslate"><span class="pre">PipelineGUI._scale_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.bounds_handler"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.bounds_handler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.change_chart_view"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.change_chart_view()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.change_projdir"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.change_projdir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.log"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.log()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.new_proj_handler"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.new_proj_handler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.photos_handler"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.photos_handler()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.set_chart"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.set_chart()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.set_example_image"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.set_example_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.setup_layout"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.setup_layout()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.show_files"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.show_files()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PipelineGUI.PipelineGUI.update_text"><code class="docutils literal notranslate"><span class="pre">PipelineGUI.update_text()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PointCloudManager.html">PointCloudManager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RecentsManager.html">RecentsManager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ReconManger.html">ReconManger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="StartGUI.html">StartGUI module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VirtualRocks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">References</a></li>
+      <li class="breadcrumb-item active">PipelineGUI module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/reference/PipelineGUI.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PipelineGUI">
+<span id="pipelinegui-module"></span><h1>PipelineGUI module<a class="headerlink" href="#module-PipelineGUI" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PipelineGUI.</span></span><span class="sig-name descname"><span class="pre">PipelineGUI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recents</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AppWindow</span></code></p>
+<p>description of the whole class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>type?</em>) – what is it?</p></li>
+<li><p><strong>controller</strong> (<em>type?</em>) – what is it?</p></li>
+<li><p><strong>projdir</strong> (<em>type?</em>) – what is it?</p></li>
+<li><p><strong>recents</strong> (<em>type?</em>) – what is it?</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.DEFAULT_CHART">
+<span class="sig-name descname"><span class="pre">DEFAULT_CHART</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">WindowsPath('C:/Users/coden/GitHub/VirtualRocks/docs/gui/placeholder/blankchart.jpg')</span></em><a class="headerlink" href="#PipelineGUI.PipelineGUI.DEFAULT_CHART" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.DEFAULT_PREVIEW">
+<span class="sig-name descname"><span class="pre">DEFAULT_PREVIEW</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">WindowsPath('C:/Users/coden/GitHub/VirtualRocks/docs/gui/placeholder/drone.jpg')</span></em><a class="headerlink" href="#PipelineGUI.PipelineGUI.DEFAULT_PREVIEW" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI._refresh_chart">
+<span class="sig-name descname"><span class="pre">_refresh_chart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI._refresh_chart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI._refresh_chart" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<em>event</em>) – do we need event? doesn’t seem to be used?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI._resizer">
+<span class="sig-name descname"><span class="pre">_resizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI._resizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI._resizer" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>e</strong> (<em>event</em>) – an event?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI._scale_image">
+<span class="sig-name descname"><span class="pre">_scale_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wwidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wheight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iwidth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iheight</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI._scale_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI._scale_image" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wwidth</strong> (<em>int</em>) – window width</p></li>
+<li><p><strong>wheight</strong> (<em>int</em>) – window height</p></li>
+<li><p><strong>iwidth</strong> (<em>int</em>) – </p></li>
+<li><p><strong>iheight</strong> (<em>int</em>) – </p></li>
+<li><p><strong>image</strong> (<em>image</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.bounds_handler">
+<span class="sig-name descname"><span class="pre">bounds_handler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.bounds_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.bounds_handler" title="Link to this definition"></a></dt>
+<dd><p>Description.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.change_chart_view">
+<span class="sig-name descname"><span class="pre">change_chart_view</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.change_chart_view"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.change_chart_view" title="Link to this definition"></a></dt>
+<dd><p>Event handler for the change view button, toggles between the heat map
+and elevation map views.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.change_projdir">
+<span class="sig-name descname"><span class="pre">change_projdir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.change_projdir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.change_projdir" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.log" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>msg</strong> (<em>type?</em>) – what is it?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.new_proj_handler">
+<span class="sig-name descname"><span class="pre">new_proj_handler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.new_proj_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.new_proj_handler" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.photos_handler">
+<span class="sig-name descname"><span class="pre">photos_handler</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.photos_handler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.photos_handler" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.set_chart">
+<span class="sig-name descname"><span class="pre">set_chart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chartdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.set_chart"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.set_chart" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>chartdir</strong> (<em>type?</em>) – what is it?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.set_example_image">
+<span class="sig-name descname"><span class="pre">set_example_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagefile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.set_example_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.set_example_image" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>imagefile</strong> (<em>type?</em>) – what is it?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.setup_layout">
+<span class="sig-name descname"><span class="pre">setup_layout</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.setup_layout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.setup_layout" title="Link to this definition"></a></dt>
+<dd><p>description, sets everything up. probs needs a lot of desc.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.show_files">
+<span class="sig-name descname"><span class="pre">show_files</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.show_files"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.show_files" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PipelineGUI.PipelineGUI.update_text">
+<span class="sig-name descname"><span class="pre">update_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">numimg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PipelineGUI.html#PipelineGUI.update_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PipelineGUI.PipelineGUI.update_text" title="Link to this definition"></a></dt>
+<dd><p>description</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>numimg</strong> (<em>type?</em>) – what is it?</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PhotoManager.html" class="btn btn-neutral float-left" title="PhotoManager module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PointCloudManager.html" class="btn btn-neutral float-right" title="PointCloudManager module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

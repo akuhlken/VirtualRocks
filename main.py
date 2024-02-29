@@ -61,20 +61,7 @@ class main(Tk):
         self.logbackground = "#ffffff"
         self.style = Style("darkly")
         self.styleflag = "dark"
-
-        # TODO: duplicate code? CODEN
-        # setting initial style stuff (might be able to clean up bc this is just a copy from AppWindow.py)
-        self.style.configure("TButton", width=16)
-        self.style.configure("cancel.TButton", width=30)
-        self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
-
-        # Progress bar styling
-        self.style.layout("prog.Horizontal.TProgressbar",
-             [('Horizontal.Progressbar.trough',
-               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
-                'sticky': 'nswe'}),
-              ('Horizontal.Progressbar.label', {'sticky': ''})])
-        self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
+        self.init_style()
 
         # container is a stack of frames (aka our two main pages)
         self.container = Frame(self)
@@ -103,6 +90,31 @@ class main(Tk):
         self.recon = ReconManager(self, self.projdir)
         self.page2.menubar.entryconfig("Reconstruction", state="normal")
         self.recents.update_recent(self.picklepath)
+
+    def init_style(self):
+        """
+        On Tk app start and when switching between light and dark styles, certain elements of the
+        style need to be reassigned for consistency. This includes the button size, the font size
+        of the title on the start page, and the appearance of the progress bar. Since the user 
+        can switch style while a process is running, this function also reprints the current
+        progress to the restyled lower progress bar.
+        """
+        # setting initial style stuff
+        self.style.configure("TButton", width=16)
+        self.style.configure("cancel.TButton", width=30)
+        self.style.configure("title.TLabel", font=('Helvetica', 30, "bold"))
+        # Progress bar styling
+        self.style.layout("prog.Horizontal.TProgressbar",
+             [('Horizontal.Progressbar.trough',
+               {'children': [('Horizontal.Progressbar.pbar', {'side': 'left', 'sticky': 'ns'})],
+                'sticky': 'nswe'}),
+              ('Horizontal.Progressbar.label', {'sticky': ''})])
+        self.style.configure("prog.Horizontal.TProgressbar", font=('Helvetica', 11), background="goldenrod1")
+        #need to add the progress bar update stuff here.
+        currentprogress = self._get_progress()
+        if 0 < currentprogress < 100: 
+            self.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(currentprogress))
+
 
     # Handler for creating of a new project
     #   Create a PipelineGUI object and load it onto the application
@@ -355,6 +367,7 @@ class main(Tk):
             self.attributes('-fullscreen', True)
             self.fullscreen = True
             return 'break'
+        
     def _end_fullscreen(self, event=None):
         """
         description
@@ -381,6 +394,18 @@ class main(Tk):
         midx = (sw/2) - (windoww/2)
         midy = (sh/2) - (windowh/2)
         return (midx, midy-50)
+    
+    def _get_progress(self):
+        """
+        description
+
+        Returns:
+            int: percentage of progress made on the current step.
+        """
+        if self.recon:
+            return self.recon.progresspercent
+        else:
+            return -1
 
     # Handler for app shutdown
     #   Cancel any living subprocesses

@@ -15,8 +15,8 @@ class ReconManager():
 
     def __init__(self, controller, projdir):
         """
-        Recon manager is a controller class that manages the subprocesses for the 
-        Matcher and Mesher
+        `ReconManager` is a controller class that manages the subprocesses for the Matcher and
+        Mesher. It also manages the progress bar displayed with projects on the Tk app.
 
         Args:
             controller (Main): Reference to the main TK app
@@ -30,9 +30,9 @@ class ReconManager():
 
     def matcher(self):
         """
-        Method for starting the subprocess for the matcher, runs Matcher.py and 
-        updates application state after running. Prompts the user on whether to 
-        overwrite database if one exists.
+        Method for starting the subprocess for the matcher, runs ``Matcher.py`` and updates 
+        application state after running. Prompts the user on whether or not to overwrite database
+        if one exists.
         """
         clean = 'T'
         if (self.projdir / Path(r"database.db")).is_file():
@@ -72,8 +72,8 @@ class ReconManager():
 
     def mesher(self):
         """
-        Method for starting the subprocess for the mesher, runs Mesher.py and 
-        updates application state after running.
+        Method for starting the subprocess for the mesher, runs ``Mesher.py`` and updates
+        application state after running.
         """
         try:
             if self.p:
@@ -97,11 +97,15 @@ class ReconManager():
 
     def cancel(self):
         """
-        If one exists, method sends teminate signal to current subprocess. After 
-        a timeout the process will be sent a kill signal. NOTE: When cancelling 
-        COLMAP, it may continue to run in the background and no longer be tracked 
-        by the app. Additionally if the user runs matcher back to back the old 
-        process may conflict and need to manually be killed in task manager.
+        If a subprocess exists, this method sends teminate signal to current subprocess. After a
+        timeout, the process will be sent a kill signal `(if it hasn't already terminated on its
+        own)`. 
+
+        .. note:: 
+            When cancelling COLMAP, it may continue to run in the background and would no longer be
+            tracked by the app. Additionally, if the user runs matcher back to back, the processes
+            may conflict. To fix both of these issues, go to Task Manager, find the ``colmap.exe``
+            task and manually end/kill it.
         """
         self.controller.page2.cancel.config(state="disabled")
         try:
@@ -117,8 +121,12 @@ class ReconManager():
 
     def auto(self):
         """
-        Method runs a full reconstruction from images to tiled meshes automatically. 
-        Does not allow the user to trim point cloud.
+        Method runs a full reconstruction from images to tiled meshes automatically.
+
+        .. note::  
+            Using this method does not allow the user to trim point cloud. It's useful when running
+            the app on a large dataset or overnight, but will likely result in a final mesh that 
+            includes outlier points.
         """
         self.matcher()
         if (self.projdir / Path(r"dense\fused.ply")).is_file(): 
@@ -128,11 +136,16 @@ class ReconManager():
         """
         Helper method for updating the progress bar text and completion.
 
+        The message (msg) input should be in the format `"$text1.text2.50$"`. **text1** is the
+        current step being run, and **text2** is the current substep `(text2 can be left blank if
+        there is no substep)`. The text portions of the message will be displayed above the lower 
+        progress bar. The **number** is the percentage fill of the lower progress bar when the
+        current step/substep combination begins. 
+
+        Sending the message **"$$"** will reset the bar and text. 
+
         Args:
-            msg (string): msg should be in the format "$text.50$" where 
-            text will be displayed above the lower progress bar and the 
-            number is the precentage fill of the bar. 
-            Sending the message "$$" will reset the bar and text. 
+            msg (string): a string of form `"$text1.text2.int$"`
         """
         if msg == "$$":
             self.controller.page2.progress.stop()
@@ -156,13 +169,14 @@ class ReconManager():
         
     def _send_log(self, msg=None):
         """
-        Helper method to send a message to the pipelineGUI log. If message starts 
-        and ends with $ it will go to the log and also be used to update the progress bar.
-        If no message is provided this method will wait for the current process 
-        to exit and capture any messages sent through STDOUT by that process.
+        Helper method to send a message to the PipelineGUI log. If message starts and ends with 
+        **$**, it will go to the log and also be used to update the progress bar.
+
+        If no message is provided, this method will wait for the current process to exit and
+        will capture any messages sent through STDOUT by that process.
 
         Args:
-            msg (string): Optional
+            msg (string): Optional string to send to log
         """
         if msg:
             self.controller.page2.log(msg)

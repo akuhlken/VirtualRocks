@@ -15,9 +15,10 @@ class Mesher():
 
     def __init__(self, projdir):
         """
-        Mesher is a python class designed to be run as a subprocess. Uses pymeshlab 
-        library to create mesh, subdivide until tiles have less than 50k verticies, 
-        generate textures, and create a low polygon mesh for the entire model.
+        Mesher is a python class designed to be run as a subprocess. It uses the 
+        :ref:`pymeshlab <meshlab>` library to create the mesh, subdivide the mesh into tiles 
+        until each tile has less than 50k verticies, generate textures, and create a low polygon
+        mesh for the entire model.
 
         Args:
             projdir (pathlib.Path): Project directory containing .pkl file
@@ -27,7 +28,9 @@ class Mesher():
 
     def dense2mesh(self):
         """
-        Function to generate tiles with textures as well as a low poly mesh.
+        Function to generate tiles with textures as well as a low poly mesh. After being started in
+        main, it runs different :ref:`pymeshlab <meshlab>` functions while updating the progress
+        bar for each one.
         """
         print("$$", flush=True)
         # Path to Colmap dense folder
@@ -97,7 +100,7 @@ class Mesher():
             self.ms.meshing_repair_non_manifold_edges()
             self.totalverts = self.ms.current_mesh().vertex_number()
 
-        self.precentdone = 0.0
+        self.percentdone = 0.0
         self.tile = 0
         self.fullmodel = self.ms.current_mesh_id()
         self.ms.set_verbosity(False)
@@ -127,14 +130,20 @@ class Mesher():
     
     def _quad_slice(self, minx, maxx, miny, maxy):
         """
-        Recursive helper method for subdividing mesh into tiles and once tile is 
-        below 50k verts, generate a texture and export.
+        Recursive helper method for subdividing mesh into tiles. Once a tile is below 50k verticies,
+        it generates a texture and export. The passed values allow the method to recurse on smaller
+        portions of the mesh.
+
+        .. note::
+            Exported tiles save to the out folder in the current project directory. Their names
+            follow the `"tile_#.obj"` format, where **#** is a number that distinguishes the tiles
+            from each other.
 
         Args:
-            minx (int):
-            maxx (int):
-            miny (int):
-            maxy (int):
+            minx (int): min x value
+            maxx (int): max x value
+            miny (int): min y value
+            maxy (int): max y value
         """
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)
@@ -160,9 +169,9 @@ class Mesher():
             self.ms.meshing_remove_selected_vertices()
             # scaled_value = ((self.percentdone) * (70) / (100)) + 20
             self.tile += 1
-            self.precentdone += numverts / self.totalverts * 100.0
-            print(f"-----{round(self.precentdone, 2)}%", flush=True)
-            print(f"$Mesher.Tiling.{int(((self.precentdone) * (70) / (100)) + 20)}$", flush=True)
+            self.percentdone += numverts / self.totalverts * 100.0
+            print(f"-----{round(self.percentdone, 2)}%", flush=True)
+            print(f"$Mesher.Tiling.{int(((self.percentdone) * (70) / (100)) + 20)}$", flush=True)
             return
 
         """
@@ -193,8 +202,8 @@ class Mesher():
 
     def _crop(self):
         """
-        Helper function for cropping any extra points added to the mesh which lie 
-        outside the bounds of the origional point cloud.
+        Helper function for cropping any extra points added to the mesh which lie outside the
+        bounds of the original point cloud.
         """
         min=self.bounds.min()
         max=self.bounds.max()

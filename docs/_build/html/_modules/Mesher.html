@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mesher &mdash; VirtualRocks 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VirtualRocks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VirtualRocks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">Mesher</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for Mesher</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">pymeshlab</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># Default Parameters</span>
+<span class="n">OVERLAP</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="c1"># Overlap ammount between tiles</span>
+<span class="n">TEXTURE_RES</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">CELL_SIZE</span> <span class="o">=</span> <span class="mf">0.0001</span> <span class="c1"># Clustering decimation cell size</span>
+<span class="n">TILE_SIZE</span> <span class="o">=</span> <span class="mi">50000</span> <span class="c1"># Will subdivide tiles until they are below this number of verts</span>
+<span class="n">VERTEX_LIMIT</span> <span class="o">=</span> <span class="mi">2000000</span>
+<span class="n">VERBOSE</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Mesher">
+<a class="viewcode-back" href="../reference/Mesher.html#Mesher.Mesher">[docs]</a>
+<span class="k">class</span> <span class="nc">Mesher</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projdir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Mesher is a python class designed to be run as a subprocess. It uses the </span>
+<span class="sd">        :ref:`pymeshlab &lt;meshlab&gt;` library to create the mesh, subdivide the mesh into tiles </span>
+<span class="sd">        until each tile has less than 50k verticies, generate textures, and create a low polygon</span>
+<span class="sd">        mesh for the entire model.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            projdir (pathlib.Path): Project directory containing .pkl file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">projdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dense2mesh</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Mesher.dense2mesh">
+<a class="viewcode-back" href="../reference/Mesher.html#Mesher.Mesher.dense2mesh">[docs]</a>
+    <span class="k">def</span> <span class="nf">dense2mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to generate tiles with textures as well as a low poly mesh. After being started in</span>
+<span class="sd">        main, it runs different :ref:`pymeshlab &lt;meshlab&gt;` functions while updating the progress</span>
+<span class="sd">        bar for each one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Path to Colmap dense folder</span>
+        <span class="n">base_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\dense&quot;</span>
+    
+        <span class="c1"># Create a new MeshSet object</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Loading pymeshlab.0$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span> <span class="o">=</span> <span class="n">pymeshlab</span><span class="o">.</span><span class="n">MeshSet</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="n">VERBOSE</span><span class="p">)</span>
+    
+        <span class="c1"># Open Colmap project from sparse as well as dense recon (fused.ply)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Importing project files.1$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">load_project</span><span class="p">([</span><span class="n">base_path</span><span class="o">+</span><span class="sa">r</span><span class="s2">&quot;\images\project.bundle.out&quot;</span><span class="p">,</span> <span class="n">base_path</span><span class="o">+</span><span class="sa">r</span><span class="s1">&#39;\images\project.list.txt&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">mesh_number</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to load sparse point cloud with rasters&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Import the fused.ply mesh</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Loading dense point cloud.3$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">load_new_mesh</span><span class="p">(</span><span class="n">base_path</span><span class="o">+</span><span class="sa">r</span><span class="s2">&quot;\fused.ply&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">mesh_number</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Failed to load dense point cloud&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Update bounding box for dense poit cloud</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()</span>
+
+        <span class="c1"># Point cloud simplification</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Optimizing Point Cloud.5$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_decimation_clustering</span><span class="p">(</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">pymeshlab</span><span class="o">.</span><span class="n">PureValue</span><span class="p">(</span><span class="n">CELL_SIZE</span><span class="p">))</span>
+
+        <span class="c1"># Mesher (this will retry with lower res if the user runs out of memory)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Poisson Mesher.7$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vertnum</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">depth</span> <span class="o">=</span> <span class="mi">12</span>
+        <span class="k">while</span> <span class="n">vertnum</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">generate_surface_reconstruction_screened_poisson</span><span class="p">(</span><span class="n">depth</span> <span class="o">=</span> <span class="n">depth</span><span class="p">,</span> <span class="n">samplespernode</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span> <span class="n">pointweight</span> <span class="o">=</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">vertnum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">vertex_number</span><span class="p">()</span>
+            <span class="n">depth</span> <span class="o">-=</span> <span class="mi">1</span>
+        
+        <span class="c1"># Crop skirt from model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_crop</span><span class="p">()</span>
+        
+        <span class="c1"># Wipe verticies colors</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Setting vertex colors.18$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_color_per_vertex</span><span class="p">(</span><span class="n">color1</span> <span class="o">=</span> <span class="n">pymeshlab</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\out&quot;</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
+
+        <span class="c1"># Get model bounds</span>
+        <span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">bounding_box</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="n">minx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">maxx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">miny</span> <span class="o">=</span> <span class="nb">min</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Starting tiling.20$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">totalverts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">vertex_number</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">totalverts</span> <span class="o">&gt;</span> <span class="n">VERTEX_LIMIT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Reducing Mesh from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">totalverts</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">VERTEX_LIMIT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_decimation_quadric_edge_collapse</span><span class="p">(</span><span class="n">targetfacenum</span> <span class="o">=</span> <span class="n">VERTEX_LIMIT</span><span class="p">,</span> <span class="n">preserveboundary</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">preservenormal</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removing non-manifold edges&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_repair_non_manifold_edges</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">totalverts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">vertex_number</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">percentdone</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fullmodel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh_id</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quad_slice</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tile</span><span class="si">}</span><span class="s2"> tiles&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_current_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullmodel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="n">VERBOSE</span><span class="p">)</span>
+        
+        <span class="c1">#Mesh simplification</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher.Creating low poly mesh.90$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_decimation_quadric_edge_collapse</span><span class="p">(</span><span class="n">targetfacenum</span> <span class="o">=</span> <span class="mi">100000</span><span class="p">,</span> <span class="n">preserveboundary</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">preservenormal</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Remove non-manifold edges</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Removing non-manifold edges&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">nonman</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">compute_selection_by_non_manifold_per_vertex</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">nonman</span><span class="si">}</span><span class="s2"> non-manifold edges out of 100000 total vertices&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_repair_non_manifold_edges</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Building texture for low poly mesh&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">compute_texcoord_parametrization_and_texture_from_registered_rasters</span><span class="p">(</span><span class="n">texturesize</span> <span class="o">=</span> <span class="n">TEXTURE_RES</span><span class="p">,</span> <span class="n">texturename</span> <span class="o">=</span> <span class="s2">&quot;low_poly.jpg&quot;</span><span class="p">,</span> <span class="n">usedistanceweight</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Export mesh</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;Exporting mesh to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="si">}</span><span class="s2">\low_poly.obj&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">save_current_mesh</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="si">}</span><span class="s2">\low_poly.obj&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$Mesher..100$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+    
+<div class="viewcode-block" id="Mesher._quad_slice">
+<a class="viewcode-back" href="../reference/Mesher.html#Mesher.Mesher._quad_slice">[docs]</a>
+    <span class="k">def</span> <span class="nf">_quad_slice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Recursive helper method for subdividing mesh into tiles. Once a tile is below 50k verticies,</span>
+<span class="sd">        it generates a texture and export. The passed values allow the method to recurse on smaller</span>
+<span class="sd">        portions of the mesh.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Exported tiles save to the out folder in the current project directory. Their names</span>
+<span class="sd">            follow the `&quot;tile_#.obj&quot;` format, where **#** is a number that distinguishes the tiles</span>
+<span class="sd">            from each other.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            minx (int): min x value</span>
+<span class="sd">            maxx (int): max x value</span>
+<span class="sd">            miny (int): min y value</span>
+<span class="sd">            maxy (int): max y value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Select verts in bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_current_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullmodel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_selection_none</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">compute_selection_by_condition_per_vertex</span><span class="p">(</span><span class="n">condselect</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;(x &lt; </span><span class="si">{</span><span class="n">maxx</span><span class="si">}</span><span class="s2"> &amp;&amp; x &gt; </span><span class="si">{</span><span class="n">minx</span><span class="si">}</span><span class="s2">) &amp;&amp; (y &lt; </span><span class="si">{</span><span class="n">maxy</span><span class="si">}</span><span class="s2"> &amp;&amp; y &gt; </span><span class="si">{</span><span class="n">miny</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="n">numverts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">current_mesh</span><span class="p">()</span><span class="o">.</span><span class="n">selected_vertex_number</span><span class="p">()</span>
+
+        <span class="c1"># Base Case (cut and export)</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">numverts</span> <span class="o">&lt;</span> <span class="n">TILE_SIZE</span><span class="p">):</span>
+
+            <span class="c1"># Create new mesh with vertex within bounds + overlap</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">add_mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">mesh</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fullmodel</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">compute_selection_by_condition_per_vertex</span><span class="p">(</span><span class="n">condselect</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;(x &lt; </span><span class="si">{</span><span class="n">maxx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">OVERLAP</span><span class="si">}</span><span class="s2"> &amp;&amp; x &gt; </span><span class="si">{</span><span class="n">minx</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">OVERLAP</span><span class="si">}</span><span class="s2">) &amp;&amp; (y &lt; </span><span class="si">{</span><span class="n">maxy</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">OVERLAP</span><span class="si">}</span><span class="s2"> &amp;&amp; y &gt; </span><span class="si">{</span><span class="n">miny</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">OVERLAP</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">apply_selection_inverse</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_remove_selected_vertices</span><span class="p">()</span>
+
+            <span class="c1"># Build texture</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">compute_texcoord_parametrization_and_texture_from_registered_rasters</span><span class="p">(</span><span class="n">texturesize</span> <span class="o">=</span> <span class="n">TEXTURE_RES</span><span class="p">,</span> <span class="n">texturename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tile_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tile</span><span class="si">}</span><span class="s2">.jpg&quot;</span><span class="p">,</span> <span class="n">usedistanceweight</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># Export mesh</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">save_current_mesh</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outdir</span><span class="si">}</span><span class="s2">\tile_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tile</span><span class="si">}</span><span class="s2">.obj&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_selection_all</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_remove_selected_vertices</span><span class="p">()</span>
+            <span class="c1"># scaled_value = ((self.percentdone) * (70) / (100)) + 20</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tile</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">percentdone</span> <span class="o">+=</span> <span class="n">numverts</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">totalverts</span> <span class="o">*</span> <span class="mf">100.0</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;-----</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">percentdone</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;$Mesher.Tiling.</span><span class="si">{</span><span class="nb">int</span><span class="p">(((</span><span class="bp">self</span><span class="o">.</span><span class="n">percentdone</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="mi">70</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mi">100</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">20</span><span class="p">)</span><span class="si">}</span><span class="s2">$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">return</span>
+
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                    maxy</span>
+<span class="sd">                -----------</span>
+<span class="sd">                |    |    |</span>
+<span class="sd">           minx ----------- maxx</span>
+<span class="sd">                |    |    |</span>
+<span class="sd">                -----------</span>
+<span class="sd">                    miny</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">midx</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxx</span> <span class="o">+</span> <span class="n">minx</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+        <span class="n">midy</span> <span class="o">=</span> <span class="p">(</span><span class="n">maxy</span> <span class="o">+</span> <span class="n">miny</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+        <span class="c1"># topleft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quad_slice</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">midx</span><span class="p">,</span> <span class="n">midy</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+
+        <span class="c1"># topright</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quad_slice</span><span class="p">(</span><span class="n">midx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">midy</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+
+        <span class="c1"># bottomleft</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quad_slice</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">midx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">midy</span><span class="p">)</span>
+
+        <span class="c1"># bottomright</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quad_slice</span><span class="p">(</span><span class="n">midx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">midy</span><span class="p">)</span></div>
+
+        
+
+<div class="viewcode-block" id="Mesher._crop">
+<a class="viewcode-back" href="../reference/Mesher.html#Mesher.Mesher._crop">[docs]</a>
+    <span class="k">def</span> <span class="nf">_crop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function for cropping any extra points added to the mesh which lie outside the</span>
+<span class="sd">        bounds of the original point cloud.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="n">minx</span> <span class="o">=</span> <span class="nb">min</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> 
+        <span class="n">maxx</span> <span class="o">=</span> <span class="nb">max</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">miny</span> <span class="o">=</span> <span class="nb">min</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">maxy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">set_selection_none</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">compute_selection_by_condition_per_vertex</span><span class="p">(</span><span class="n">condselect</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;(x &lt; </span><span class="si">{</span><span class="n">minx</span><span class="si">}</span><span class="s2"> || x &gt; </span><span class="si">{</span><span class="n">maxx</span><span class="si">}</span><span class="s2">) || (y &lt; </span><span class="si">{</span><span class="n">miny</span><span class="si">}</span><span class="s2"> || y &gt; </span><span class="si">{</span><span class="n">maxy</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="o">.</span><span class="n">meshing_remove_selected_vertices</span><span class="p">()</span></div>
+</div>
+
+
+<span class="c1"># Get args from caller (recon manager) and start mesher code</span>
+<span class="n">projdir</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">Mesher</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

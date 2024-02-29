@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ReconManger &mdash; VirtualRocks 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            VirtualRocks
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">VirtualRocks</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ReconManger</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ReconManger</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">messagebox</span> <span class="k">as</span> <span class="n">mb</span>
+<span class="kn">import</span> <span class="nn">scripts.PointCloudManager</span> <span class="k">as</span> <span class="nn">pcm</span>
+
+<span class="c1"># Progress Constants</span>
+<span class="n">STARTED</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">PHOTOS</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">MATCHER</span> <span class="o">=</span> <span class="mi">70</span>
+<span class="n">MESHER</span> <span class="o">=</span> <span class="mi">100</span>
+
+<div class="viewcode-block" id="ReconManager">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager">[docs]</a>
+<span class="k">class</span> <span class="nc">ReconManager</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">projdir</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        `ReconManager` is a controller class that manages the subprocesses for the Matcher and</span>
+<span class="sd">        Mesher. It also manages the progress bar displayed with projects on the Tk app.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            controller (Main): Reference to the main TK app</span>
+<span class="sd">            projdir (pathlib.Path): Project directory containing .pkl file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">projdir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresspercent</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_progress</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReconManager.matcher">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.matcher">[docs]</a>
+    <span class="k">def</span> <span class="nf">matcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for starting the subprocess for the matcher, runs ``Matcher.py`` and updates </span>
+<span class="sd">        application state after running. Prompts the user on whether or not to overwrite database</span>
+<span class="sd">        if one exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">clean</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;database.db&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">mb</span><span class="o">.</span><span class="n">askyesnocancel</span><span class="p">(</span><span class="s2">&quot;Start Matcher&quot;</span><span class="p">,</span> <span class="s2">&quot;Start clean and remove old database?&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">clean</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
+            <span class="k">if</span> <span class="n">response</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                <span class="n">clean</span> <span class="o">=</span> <span class="s1">&#39;F&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">PHOTOS</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">cancel</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;active&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;__________Starting Matcher__________&quot;</span><span class="p">)</span>
+        <span class="n">colmap</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;scripts/COLMAP.bat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">workingdir</span> <span class="o">=</span> <span class="n">colmap</span><span class="o">.</span><span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;Matcher.py&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">,</span> <span class="n">clean</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">workingdir</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">()</span>
+        <span class="n">rcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span> <span class="c1"># If reconstruction exited normally</span>
+                <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
+                <span class="n">pcm</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
+                <span class="n">savefile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;save.ply&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">savefile</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">savefile</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">savefile</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">MATCHER</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">cancel</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;Matcher failed, please retry&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="ReconManager.mesher">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.mesher">[docs]</a>
+    <span class="k">def</span> <span class="nf">mesher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for starting the subprocess for the mesher, runs ``Mesher.py`` and updates</span>
+<span class="sd">        application state after running.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">MATCHER</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">cancel</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;active&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;__________Starting Mesher__________&quot;</span><span class="p">)</span>
+        <span class="n">colmap</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;scripts/COLMAP.bat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">workingdir</span> <span class="o">=</span> <span class="n">colmap</span><span class="o">.</span><span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;Mesher.py&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">workingdir</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">()</span>
+        <span class="n">rcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;out\low_poly.obj&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span> <span class="c1"># If reconstruction exited normally</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">update_state</span><span class="p">(</span><span class="n">MESHER</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">cancel</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;Mesher failed, please retry&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReconManager.cancel">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.cancel">[docs]</a>
+    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If a subprocess exists, this method sends teminate signal to current subprocess. After a</span>
+<span class="sd">        timeout, the process will be sent a kill signal `(if it hasn&#39;t already terminated on its</span>
+<span class="sd">        own)`. </span>
+
+<span class="sd">        .. note:: </span>
+<span class="sd">            When cancelling COLMAP, it may continue to run in the background and would no longer be</span>
+<span class="sd">            tracked by the app. Additionally, if the user runs matcher back to back, the processes</span>
+<span class="sd">            may conflict. To fix both of these issues, go to Task Manager, find the ``colmap.exe``</span>
+<span class="sd">            task and manually end/kill it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">cancel</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">TimeoutExpired</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">kill</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;process was sent kill signal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ReconManager.auto">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.auto">[docs]</a>
+    <span class="k">def</span> <span class="nf">auto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method runs a full reconstruction from images to tiled meshes automatically.</span>
+
+<span class="sd">        .. note::  </span>
+<span class="sd">            Using this method does not allow the user to trim point cloud. It&#39;s useful when running</span>
+<span class="sd">            the app on a large dataset or overnight, but will likely result in a final mesh that </span>
+<span class="sd">            includes outlier points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matcher</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;dense\fused.ply&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">mesher</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ReconManager._update_progress">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager._update_progress">[docs]</a>
+    <span class="k">def</span> <span class="nf">_update_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method for updating the progress bar text and completion.</span>
+
+<span class="sd">        The message (msg) input should be in the format `&quot;$text1.text2.50$&quot;`. **text1** is the</span>
+<span class="sd">        current step being run, and **text2** is the current substep `(text2 can be left blank if</span>
+<span class="sd">        there is no substep)`. The text portions of the message will be displayed above the lower </span>
+<span class="sd">        progress bar. The **number** is the percentage fill of the lower progress bar when the</span>
+<span class="sd">        current step/substep combination begins. </span>
+
+<span class="sd">        Sending the message **&quot;$$&quot;** will reset the bar and text. </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (string): a string of form `&quot;$text1.text2.int$&quot;`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">msg</span> <span class="o">==</span> <span class="s2">&quot;$$&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;prog.Horizontal.TProgressbar&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progresstext</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Nothing&#39;s running...&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="n">pkg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+        <span class="n">currentstep</span> <span class="o">=</span> <span class="n">pkg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">currentsubstep</span> <span class="o">=</span> <span class="n">pkg</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">percent</span> <span class="o">=</span> <span class="n">pkg</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progresspercent</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">percent</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progress</span><span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">currentsubstep</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progresstext</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Progress on </span><span class="si">{</span><span class="n">currentstep</span><span class="si">}</span><span class="s2">: &quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progresstext</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Progress on </span><span class="si">{</span><span class="n">currentstep</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">currentsubstep</span><span class="si">}</span><span class="s2">: &quot;</span><span class="p">)</span>
+            <span class="n">currentstep</span> <span class="o">=</span> <span class="n">currentsubstep</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;prog.Horizontal.TProgressbar&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:g}</span><span class="s1"> %&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">progresspercent</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">percent</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progress</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progress</span><span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">progresstext</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">currentstep</span><span class="si">}</span><span class="s2"> complete!&quot;</span><span class="p">)</span></div>
+
+        
+<div class="viewcode-block" id="ReconManager._send_log">
+<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager._send_log">[docs]</a>
+    <span class="k">def</span> <span class="nf">_send_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method to send a message to the PipelineGUI log. If message starts and ends with </span>
+<span class="sd">        **$**, it will go to the log and also be used to update the progress bar.</span>
+
+<span class="sd">        If no message is provided, this method will wait for the current process to exit and</span>
+<span class="sd">        will capture any messages sent through STDOUT by that process.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            msg (string): Optional string to send to log</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;$&#39;</span> <span class="ow">and</span> <span class="n">msg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;$&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="c1"># read a line from the process output</span>
+            <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;$&#39;</span> <span class="ow">and</span> <span class="n">msg</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;$&#39;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_update_progress</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Andrew Kuhlken, Coden Stark, Connor Scott, Yorng Chhieng Chheng.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
