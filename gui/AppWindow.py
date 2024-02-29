@@ -42,17 +42,17 @@ class AppWindow(Frame):
 
         recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
         file.add_cascade(label="Open Recent...", menu=recents)
-        numrecents = len(self.recents.recentlist)
+        numrecents = len(self.recents.recentdict)
         if numrecents == 0:
             recents.add_command(label="no recents found")
         if numrecents >= 1:
-            recents.add_command(label=str(Path(self.recents.recentlist[-1][0]).stem), command=lambda: self.open_recent())
+            recents.add_command(label=str(Path(self.recents.recentdict[-1][0]).stem), command=lambda: self.open_recent())
         if numrecents >= 2:
-            recents.add_command(label="1 " + str(Path(self.recents.recentlist[-2][0]).stem), command=lambda: self.open_recent(2))
+            recents.add_command(label="1 " + str(Path(self.recents.recentdict[-2][0]).stem), command=lambda: self.open_recent(2))
         if numrecents >= 3:
-            recents.add_command(label="2 " + str(Path(self.recents.recentlist[-3][0]).stem), command=lambda: self.open_recent(3))
+            recents.add_command(label="2 " + str(Path(self.recents.recentdict[-3][0]).stem), command=lambda: self.open_recent(3))
         if numrecents >= 4:
-            recents.add_command(label="3 " + str(Path(self.recents.recentlist[-4][0]).stem), command=lambda: self.open_recent(4))
+            recents.add_command(label="3 " + str(Path(self.recents.recentdict[-4][0]).stem), command=lambda: self.open_recent(4))
 
         info = Menu(self.menubar, tearoff=0)
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
@@ -110,7 +110,7 @@ class AppWindow(Frame):
         """
         index = -index
         try:
-            projfile = self.recents.recentlist[index][0]
+            projfile = self.recents.recentdict[index][0]
             if not projfile:
                 return
             self.open_project(projfile)
