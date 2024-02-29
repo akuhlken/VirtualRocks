@@ -129,7 +129,7 @@ class AppWindow(Frame):
             return
         self.controller.style = Style("darkly")
         self.controller.styleflag = "dark"
-        self._init_common_style()
+        self.controller.init_style()
 
     def start_lightmode(self):
         """
@@ -139,7 +139,7 @@ class AppWindow(Frame):
             return
         self.controller.style = Style("lumen")
         self.controller.styleflag = "light"
-        self._init_common_style()
+        self.controller.init_style()
 
     def _init_common_style(self):
         """
