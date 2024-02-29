@@ -31,6 +31,7 @@ class PipelineGUI(AppWindow):
         self.controller = controller
         self.currentchart = self.DEFAULT_CHART
         self.viewtype = True
+        self.recents = recents
         self.bind("<<RefreshChart>>", self._refresh_chart)
 
     # Setup method for GUI layout and elements
@@ -258,10 +259,9 @@ class PipelineGUI(AppWindow):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.cancel_recon()   
-        for files in self.controller.recentlist:
-            if self.controller.picklepath in files[0]:
-                self.controller.recentlist.remove(files)
-                print("om nom nom nom nom nom")
+        for file in self.recents.recentdict:
+            if str(self.controller.picklepath.as_posix()) in file[0]:
+                self.recents.remove_recent(file[0])
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
     # Event handler for the show files button
