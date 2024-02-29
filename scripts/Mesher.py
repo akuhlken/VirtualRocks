@@ -8,7 +8,7 @@ OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 4096
 CELL_SIZE = 0.0001 # Clustering decimation cell size
 TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
-VERTEX_LIMIT = 2500000
+VERTEX_LIMIT = 2000000
 VERBOSE = False
 
 class Mesher():
