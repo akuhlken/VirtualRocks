@@ -192,7 +192,9 @@ class PipelineGUI(AppWindow):
                 maxx= dialog.result[1]
                 miny= dialog.result[2]
                 maxy= dialog.result[3]
-                self.controller.set_bounds(minx, maxx, miny, maxy)
+                minz= dialog.result[4]
+                maxz= dialog.result[5]
+                self.controller.set_bounds(minx, maxx, miny, maxy, minz, maxz)
             except Exception as e:
                 self.log(str(e))
                 self.log("All fields must contain numbers")

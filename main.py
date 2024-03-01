@@ -211,20 +211,23 @@ class main(Tk):
 
     # Removes points from dense point cloud as specified by bounds
     #   Handler in PipelineGUI creates dialog and passes bounds here
-    def set_bounds(self, minx, maxx, miny, maxy):
+    def set_bounds(self, minx, maxx, miny, maxy, minz, maxz):
         """
-        description
+        Method comunicates between the GUI and the PointCloudManager for trimming models
 
         Args:
-            minx (int): what is it?
-            maxx (int): what is it?
-            miny (int): what is it?
-            maxy (int): what is it?
+            minx (float):
+            maxx (float):
+            miny (float):
+            maxy (float):
+            minz (float):
+            maxz (float):
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")
         dense = Path(self.projdir / "dense")
-        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
+        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy, minz, maxz)
+        self.page2.log("Trimming complete")
         PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
         self.page2.set_chart(Path(dense/ "heat_map.png"))
 
