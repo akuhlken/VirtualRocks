@@ -8,7 +8,7 @@ from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
 class AppWindow(Frame):
     def __init__(self, parent, controller, recents):
         """
-        description of the class as a whole
+        description of the class as a whole.
 
         Args:
             parent (type?): what is it?
@@ -25,49 +25,62 @@ class AppWindow(Frame):
         """
         description
         """
+        # Main menu object (the bar)
         self.menubar = Menu(self)
+
+        # menus that make up the tabs of the menu bar, from left to right.
         file = Menu(self.menubar, tearoff=0)  
+        styles = Menu(file, tearoff=0)
+        self.recent = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
+        info = Menu(self.menubar, tearoff=0)
+        recon = Menu(self.menubar, tearoff=0)
+
+        ## File menu (first tab)
         file.add_command(label="Back to Start", command=lambda: self.controller.back_to_start())
         file.add_command(label="New", command=lambda: self.new_project())  
         file.add_command(label="Open", command=lambda: self.open_project())
         file.add_command(label="Save")  
         file.add_command(label="Save as")    
         file.add_separator()  
- 
-        styles = Menu(file, tearoff=0)
+        # style is cascade, only appears on hover as an offshoot of "Set Style..."
         file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self._start_darkmode())
         styles.add_command(label="Light", command=lambda: self._start_lightmode()) 
         file.add_separator()
+        # recent is also cascade, only appears on hover as an offshoot of "Open Recent..."
+        file.add_cascade(label="Open Recent...", menu=self.recent)
+        # the number of recent files/menu items displayed depends on how many exist.
+        self._menu_recents()
 
-        recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
-        file.add_cascade(label="Open Recent...", menu=recents)
-        numrecents = len(self.recents.recentdict)
-        if numrecents == 0:
-            recents.add_command(label="no recents found")
-        if numrecents >= 1:
-            recents.add_command(label=str(Path(self.recents.recentdict[-1][0]).stem), command=lambda: self.open_recent())
-        if numrecents >= 2:
-            recents.add_command(label="1 " + str(Path(self.recents.recentdict[-2][0]).stem), command=lambda: self.open_recent(2))
-        if numrecents >= 3:
-            recents.add_command(label="2 " + str(Path(self.recents.recentdict[-3][0]).stem), command=lambda: self.open_recent(3))
-        if numrecents >= 4:
-            recents.add_command(label="3 " + str(Path(self.recents.recentdict[-4][0]).stem), command=lambda: self.open_recent(4))
-
-        info = Menu(self.menubar, tearoff=0)
+        # Info menu, access to the docs.
         info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
         info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
         info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
-    
-        recon = Menu(self.menubar, tearoff=0)
+
+        # Recon menu
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon())
 
-        # Add menues as cascades
+        # Add menues to the menu bar as cascades
         self.menubar.add_cascade(label="File", menu=file)
         self.menubar.add_cascade(label="Info", menu=info) 
         self.menubar.add_cascade(label="Reconstruction", menu=recon) 
         self.controller.config(menu=self.menubar)
         self.menubar.entryconfig("Reconstruction", state="disabled")
+
+
+    def _menu_recents(self):
+        """
+        Helper method to display the correct number of recent files in the recent cascade menu.
+        Since the number of filepaths saved in the dictionary of recent values can be anywhere from
+        0 to 4, the number of menu items should match the number of existing recent files. If there
+        aren't any, then there are no clickable menu items displayed under the recent menu.
+        """
+        numrecents = len(self.recents.recentdict)
+        if numrecents == 0:
+            self.recent.add_command(label="no recents found")
+        for x in range(numrecents):
+            recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-x][0]).stem)
+            self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(x))
 
     # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
