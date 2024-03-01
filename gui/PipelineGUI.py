@@ -1,4 +1,4 @@
-from tkinter import Canvas, Text, END, Button as tkButton
+from tkinter import Canvas, Text, END
 from tkinter.ttk import Frame, Label, Button, Scrollbar, Progressbar
 from ttkbootstrap import Separator
 from tkinter import filedialog as fd, messagebox as mb
