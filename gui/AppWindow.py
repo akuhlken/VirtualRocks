@@ -11,9 +11,9 @@ class AppWindow(Frame):
         description of the class as a whole.
 
         Args:
-            parent (type?): what is it?
-            controller (type?): what is it?
-            recents (type?): what is it?
+            parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
+            controller (:ref:`main <main>`\*): a reference to main.
+            recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
         Frame.__init__(self, parent)
         self.controller = controller

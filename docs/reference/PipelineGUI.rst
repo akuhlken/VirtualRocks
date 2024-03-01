@@ -1,4 +1,4 @@
-.. _piplineGUI:
+.. _pipelineGUI:
 
 PipelineGUI
 ==================

@@ -20,7 +20,7 @@ class PipelineGUI(AppWindow):
         description of the whole class
 
         Args:
-            parent (type?): what is it?
+            parent (main): what is it?
             controller (type?): what is it?
             projdir (type?): what is it?
             recents (type?): what is it?
@@ -324,9 +324,9 @@ class PipelineGUI(AppWindow):
         Args:
             wwidth (int): window width
             wheight (int): window height
-            iwidth (int): ?????
-            iheight (int): ?????
-            image (image): ?????
+            iwidth (int): what is
+            iheight (int): what is
+            image (image): what is
         """
         width_scale = wwidth / iwidth
         height_scale = wheight / iheight
