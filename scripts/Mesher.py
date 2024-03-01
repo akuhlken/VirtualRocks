@@ -140,10 +140,10 @@ class Mesher():
             from each other.
 
         Args:
-            minx (int): min x value
-            maxx (int): max x value
-            miny (int): min y value
-            maxy (int): max y value
+            minx (float): min x value
+            maxx (float): max x value
+            miny (float): min y value
+            maxy (float): max y value
         """
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)

@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 from ttkbootstrap import Style
@@ -24,6 +25,9 @@ STARTED = 0
 PHOTOS = 10
 MATCHER = 70
 MESHER = 100
+
+# Path to specific python version installed by the installer
+PYTHONPATH = os.environ['PROGRAMFILES'] + "/python311/python"
 
 class main(Tk):
 
@@ -293,7 +297,7 @@ class main(Tk):
 
     def preview_cloud(self):
         path = Path(self.projdir / 'dense' / 'fused.ply')
-        p = subprocess.Popen(['python', 'scripts/CloudPreviewer.py', str(path)])
+        p = subprocess.Popen([PYTHONPATH, 'scripts/CloudPreviewer.py', str(path)])
 
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
