@@ -121,8 +121,8 @@
  
         <span class="n">styles</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">file</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Set Style...&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">styles</span><span class="p">)</span>
-        <span class="n">styles</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Dark&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_darkmode</span><span class="p">())</span>
-        <span class="n">styles</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Light&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_lightmode</span><span class="p">())</span> 
+        <span class="n">styles</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Dark&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_darkmode</span><span class="p">())</span>
+        <span class="n">styles</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Light&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_lightmode</span><span class="p">())</span> 
         <span class="n">file</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>
 
         <span class="n">recents</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">postcommand</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">update_recent</span><span class="p">(</span><span class="n">pklpath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">picklepath</span><span class="p">))</span>
@@ -216,11 +216,11 @@
     <span class="c1"># Handler for setting dark mode</span>
     <span class="c1">#   changes theme to a dark theme</span>
     <span class="c1">#   might be worth adding some flag so that we don&#39;t have to switch if we already have one style.</span>
-<div class="viewcode-block" id="AppWindow.start_darkmode">
-<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow.start_darkmode">[docs]</a>
-    <span class="k">def</span> <span class="nf">start_darkmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AppWindow._start_darkmode">
+<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._start_darkmode">[docs]</a>
+    <span class="k">def</span> <span class="nf">_start_darkmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        description. Uses Ttkbootstrap theme `&quot;darkly&quot;`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">==</span> <span class="s2">&quot;dark&quot;</span><span class="p">):</span>
             <span class="k">return</span>
@@ -229,11 +229,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">init_style</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="AppWindow.start_lightmode">
-<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow.start_lightmode">[docs]</a>
-    <span class="k">def</span> <span class="nf">start_lightmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AppWindow._start_lightmode">
+<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._start_lightmode">[docs]</a>
+    <span class="k">def</span> <span class="nf">_start_lightmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        description. Uses Ttkbootstrap theme `&quot;darkly&quot;`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">==</span> <span class="s2">&quot;light&quot;</span><span class="p">):</span>
             <span class="k">return</span>
@@ -241,32 +241,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">=</span> <span class="s2">&quot;light&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">init_style</span><span class="p">()</span></div>
 
-
-<div class="viewcode-block" id="AppWindow._init_common_style">
-<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._init_common_style">[docs]</a>
-    <span class="k">def</span> <span class="nf">_init_common_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1">#temp = self.controller.swtich_style()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;cancel.TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;title.TLabel&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">))</span>
-
-        <span class="c1"># progress bar # TODO: is this exact same thing in main or am I crazy? CODEN</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">layout</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span>
-             <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.trough&#39;</span><span class="p">,</span>
-               <span class="p">{</span><span class="s1">&#39;children&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s1">&#39;Horizontal.Progressbar.pbar&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;side&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;ns&#39;</span><span class="p">})],</span>
-                <span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;nswe&#39;</span><span class="p">}),</span>
-              <span class="p">(</span><span class="s1">&#39;Horizontal.Progressbar.label&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;sticky&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">})])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;prog.Horizontal.TProgressbar&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;Helvetica&#39;</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="n">background</span><span class="o">=</span><span class="s2">&quot;goldenrod1&quot;</span><span class="p">)</span></div>
-
-
-        <span class="c1"># progress bar progress % text</span>
-        <span class="c1">#if 0 &lt; temp &lt; 100: </span>
-            <span class="c1">#self.controller.style.configure(&#39;prog.Horizontal.TProgressbar&#39;, text=&#39;{:g} %&#39;.format(temp))</span>
-        <span class="c1">#else:</span>
-           <span class="c1"># return</span>
 
     <span class="c1"># Handler for opening the help menu/docs</span>
     <span class="c1">#   can take argument to specify which page to open if it isn&#39;t the main page.</span>

@@ -1,19 +1,11 @@
-References
-============
+Modules
+=======
 
-should probs separate out into gui and scripts, but will only do once this is working.
+All of the classes that we have in **VirtualRocks**.
 
 .. toctree::
    :maxdepth: 4
 
-   AppWindow
-   BoundsDialog
-   main
-   Matcher
-   Mesher
    PhotoManager
-   PipelineGUI
    PointCloudManager
-   RecentsManager
-   ReconManger
-   StartGUI
+   CloudPreviewer

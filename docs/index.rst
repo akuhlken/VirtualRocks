@@ -43,7 +43,7 @@ Who/where we got the models from. maybe last years team as well.
    colmap
    meshlab
    unity
-   reference/modules
+   reference/references
    
 
 Indices and tables

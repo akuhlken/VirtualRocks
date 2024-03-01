@@ -1,4 +1,4 @@
-PipelineGUI module
+PipelineGUI
 ==================
 
 .. automodule:: PipelineGUI

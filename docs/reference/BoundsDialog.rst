@@ -1,4 +1,4 @@
-BoundsDialog module
+BoundsDialog
 ===================
 
 .. automodule:: BoundsDialog

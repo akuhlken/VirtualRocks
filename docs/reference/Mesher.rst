@@ -1,4 +1,4 @@
-Mesher module
+Mesher
 =============
 
 .. automodule:: Mesher

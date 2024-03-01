@@ -4,7 +4,7 @@ import os
 
 class RecentsManager():
 
-    RECENT_PATH = Path('gui/recents.json')
+    APPDATA_PATH = Path(os.getenv('APPDATA') + '/VirtualRocks/recents.json').as_posix()
 
     def __init__(self):
         """
@@ -15,6 +15,7 @@ class RecentsManager():
         JSON file when used in main and automatically saves on exit.
         """
         self.recentdict = self.get_recent() 
+        print("appdata path: " + self.APPDATA_PATH)
 
     def update_recent(self, pklpath):    
         """
@@ -40,11 +41,11 @@ class RecentsManager():
         blank dictionary inside. Otherwise, the existing recents file is opened and the dictionary
         of recents is saved in the program.
         """
-        if not os.path.isfile(self.RECENT_PATH):
-            f = open(self.RECENT_PATH, "x")
+        if not os.path.isfile(self.APPDATA_PATH):
+            f = open(self.APPDATA_PATH, "x")
             f.write("[]")
             f.close()
-        with open(self.RECENT_PATH) as f:
+        with open(self.APPDATA_PATH) as f:
             self.recentdict = list(dict(json.load(f)).items())
 
     def save_recent(self):
@@ -53,7 +54,7 @@ class RecentsManager():
         JSON file so it's accessible and accurate with the same information the next time the
         app is opened.
         """
-        with open(self.RECENT_PATH, 'w') as f:
+        with open(self.APPDATA_PATH, 'w') as f:
             json.dump(self.recentdict, f)
             print("saved recent files.")
 

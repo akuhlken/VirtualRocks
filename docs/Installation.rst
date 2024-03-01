@@ -11,14 +11,14 @@ everything (colmap).
 
 list things to pip install in a code block.
 
-As of 2/26/24...
+As of 2/29/24... without testing.
 
 * ttkbootstrap
-* exifread
 * show_in_file_manager
 * matplotlib (may run into issues)
 * plyfile
 * pymeshlab
+* open3d
 * CUDA (not something to pip install...)
 
 

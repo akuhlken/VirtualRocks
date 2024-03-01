@@ -1,4 +1,4 @@
-ReconManger module
+ReconManger
 ==================
 
 .. automodule:: ReconManger
