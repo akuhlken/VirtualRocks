@@ -98,7 +98,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            projdir (pathlib.Path): Project directory containing .pkl file</span>
 <span class="sd">            imgdir (pathlib.Path): Image directory</span>
-<span class="sd">            clean (char): `&#39;T&#39;` to remove database, `&#39;F&#39;` to use existing database (if one exists)</span>
+<span class="sd">            clean (char): `&#39;T&#39;` to remove database, `&#39;F&#39;` to use existing database (if one exists). A command-line flag.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">projdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="n">imgdir</span>
@@ -111,7 +111,7 @@
 <span class="sd">        Runs the colmap comands sequentially as subprocesses.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            clean (char): `&#39;T&#39;` to remove database, `&#39;F&#39;` to use existing database (if one exists)</span>
+<span class="sd">            clean (char): `&#39;T&#39;` to remove database, `&#39;F&#39;` to use existing database (if one exists). A command-line flag.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">rcode</span> <span class="o">=</span> <span class="mi">0</span>
