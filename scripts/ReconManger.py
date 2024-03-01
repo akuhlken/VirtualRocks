@@ -31,9 +31,9 @@ class ReconManager():
 
     def matcher(self):
         """
-        Method for starting the subprocess for the matcher, runs ``Matcher.py`` and updates 
-        application state after running. Prompts the user on whether or not to overwrite database
-        if one exists.
+        Method for starting the subprocess for the matcher, runs :ref:`Matcher.py <matcher>`` and
+        updates application state after running. Prompts the user on whether or not to overwrite
+        database if one exists.
         """
         clean = 'T'
         if (self.projdir / Path(r"database.db")).is_file():
@@ -73,8 +73,8 @@ class ReconManager():
 
     def mesher(self):
         """
-        Method for starting the subprocess for the mesher, runs ``Mesher.py`` and updates
-        application state after running.
+        Method for starting the subprocess for the mesher, runs :ref:`Mesher.py <mesher>` and
+        updates application state after running.
         """
         try:
             if self.p:
@@ -170,8 +170,9 @@ class ReconManager():
         
     def _send_log(self, msg=None):
         """
-        Helper method to send a message to the PipelineGUI log. If message starts and ends with 
-        **$**, it will go to the log and also be used to update the progress bar.
+        Helper method to send a message to the :ref:`PipelineGUI <pipelineGUI>` log. If message
+        starts and ends with **$**, it will go to the log and also be used to update the progress
+        bar.
 
         If no message is provided, this method will wait for the current process to exit and
         will capture any messages sent through STDOUT by that process.

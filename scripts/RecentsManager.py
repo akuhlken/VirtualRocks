@@ -62,9 +62,10 @@ class RecentsManager():
 
     def remove_recent(self, pklpath):
         """
-        When changing the directory/workspace a project file is saved in, we need to remove the
-        existing path from the recents directory before a new file is added. Otherwise it could
-        cause confusion as there would be two seemingly identical files in recents.
+        When changing the directory/workspace a project file is saved in 
+        (in :ref:`PipelineGUI <pipelineGUI>`), we need to remove the existing path from the recents
+        directory before a new file is added. Otherwise it could cause confusion as there would be
+        two seemingly identical files in recents despite the user only ever working on one project.
 
         This function also checks to see if a project file is already in recents when updating,
         making it so that the file only appears once in the dictionary after updates.
