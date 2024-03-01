@@ -4,7 +4,7 @@ import os
 
 class RecentsManager():
 
-    APPDATA_PATH = Path(os.getenv('APPDATA') + '/VirtualRocks/recents.json').as_posix()
+    APPDATA_PATH = Path(os.getenv('LOCALAPPDATA') + '/VirtualRocks/recents.json').as_posix()
 
     def __init__(self):
         """
@@ -41,6 +41,8 @@ class RecentsManager():
         blank dictionary inside. Otherwise, the existing recents file is opened and the dictionary
         of recents is saved in the program.
         """
+        if not os.path.isdir(os.path.join(os.getenv('LOCALAPPDATA'), "VirtualRocks")):
+            os.mkdir(os.path.join(os.getenv('LOCALAPPDATA'), "VirtualRocks"))
         if not os.path.isfile(self.APPDATA_PATH):
             f = open(self.APPDATA_PATH, "x")
             f.write("[]")
