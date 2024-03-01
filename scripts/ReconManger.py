@@ -15,11 +15,12 @@ class ReconManager():
 
     def __init__(self, controller, projdir):
         """
-        `ReconManager` is a controller class that manages the subprocesses for the Matcher and
-        Mesher. It also manages the progress bar displayed with projects on the Tk app.
+        `ReconManager` is a controller class that manages the subprocesses for the 
+        :ref:`Matcher <matcher>` and :ref:`Mesher <mesher>`. It also manages the progress bar
+        displayed with projects on the Tk app.
 
         Args:
-            controller (Main): Reference to the main TK app
+            controller (:ref:`Main <main>`): Reference to the main TK app
             projdir (pathlib.Path): Project directory containing .pkl file
         """
         self.controller = controller

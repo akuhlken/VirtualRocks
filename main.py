@@ -270,7 +270,7 @@ class main(Tk):
     #   Starts a new thread for the ReconManager.auto() method
     def auto_recon(self):
         """
-        description
+        description. Called by menu button press in :ref:`AppWindow.py <appwindow>`.
         """
         if not self.imgdir:
             self.page2.log("No images loaded")

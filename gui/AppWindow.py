@@ -50,12 +50,12 @@ class AppWindow(Frame):
         # recent is also cascade, only appears on hover as an offshoot of "Open Recent..."
         file.add_cascade(label="Open Recent...", menu=self.recent)
         # the number of recent files/menu items displayed depends on how many exist.
-        self._menu_recents()
+        self._recent_menu()
 
         # Info menu, access to the docs.
-        info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
-        info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
-        info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
+        info.add_command(label="Common Issues", command=lambda: self._open_helpmenu()) 
+        info.add_command(label="Colmap Info", command=lambda: self._open_helpmenu("colmap.html")) 
+        info.add_command(label="MeshLab Info", command=lambda: self._open_helpmenu("meshlab.html"))
 
         # Recon menu
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon())
@@ -68,7 +68,7 @@ class AppWindow(Frame):
         self.menubar.entryconfig("Reconstruction", state="disabled")
 
 
-    def _menu_recents(self):
+    def _recent_menu(self):
         """
         Helper method to display the correct number of recent files in the recent cascade menu.
         Since the number of filepaths saved in the dictionary of recent values can be anywhere from
@@ -136,7 +136,8 @@ class AppWindow(Frame):
     #   might be worth adding some flag so that we don't have to switch if we already have one style.
     def _start_darkmode(self):
         """
-        description. Uses Ttkbootstrap theme `"darkly"`.
+        description. Uses `ttkbootstrap <https://ttkbootstrap.readthedocs.io/en/latest/themes/>`_
+        theme `"darkly"`.
         """
         if (self.controller.styleflag == "dark"):
             return
@@ -146,7 +147,8 @@ class AppWindow(Frame):
 
     def _start_lightmode(self):
         """
-        description. Uses Ttkbootstrap theme `"darkly"`.
+        description. Uses `ttkbootstrap <https://ttkbootstrap.readthedocs.io/en/latest/themes/>`_
+        theme `"lumen"`.
         """
         if (self.controller.styleflag == "light"):
             return
@@ -156,12 +158,16 @@ class AppWindow(Frame):
 
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.
-    def open_helpmenu(self, docpage = "index.html"):
+    def _open_helpmenu(self, docpage = "index.html"):
         """
-        description
+        Handler for all of the buttons under the info menu on the menu bar. Opens different pages
+        of **VirtualRocks** documentation depending on what value is passed as the `docpage`.
+
+        Args:
+            docpage (string): the name of the documentation page to open. Defaults to the main page, `index.html`.
         """
         try:
-            wb.open_new(('file:///' + str(Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
+            wb.open_new('file:///' + str(Path(f"docs/_build/html").absolute().as_posix()) + "/" + docpage)
         except Exception as e:
             print(e)
         return
