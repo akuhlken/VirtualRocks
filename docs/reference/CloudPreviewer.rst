@@ -1,8 +1,7 @@
-RecentsManager
+CloudPreviewer module
 =====================
 
-.. automodule:: RecentsManager
+.. automodule:: CloudPreviewer
    :members:
-   :private-members:
    :undoc-members:
    :show-inheritance:

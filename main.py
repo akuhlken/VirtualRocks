@@ -4,7 +4,7 @@ from ttkbootstrap import Style
 from tkinter import simpledialog, PhotoImage, Frame, Tk
 from pathlib import Path
 from threading import Thread
-import  scripts.PhotoManager as pm
+import scripts.PhotoManager as pm
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
