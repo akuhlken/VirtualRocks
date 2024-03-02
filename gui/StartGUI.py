@@ -10,9 +10,9 @@ class StartGUI(AppWindow):
         description of the whole class
 
         Args:
-            parent (type?): what is it?
-            controller (type?): what is it?
-            recents (type?): what is it?
+            parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
+            controller (:ref:`main <main>`\*): a reference to main.
+            recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
         AppWindow.__init__(self, parent, controller, recents)
         self.controller = controller

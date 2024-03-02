@@ -31,7 +31,7 @@ class ReconManager():
 
     def matcher(self):
         """
-        Method for starting the subprocess for the matcher, runs :ref:`Matcher.py <matcher>`` and
+        Method for starting the subprocess for the matcher, runs :ref:`Matcher.py <matcher>` and
         updates application state after running. Prompts the user on whether or not to overwrite
         database if one exists.
         """

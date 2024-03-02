@@ -15,7 +15,6 @@ class RecentsManager():
         JSON file when used in main and automatically saves on exit.
         """
         self.recentdict = self.get_recent() 
-        print("appdata path: " + self.APPDATA_PATH)
 
     def update_recent(self, pklpath):    
         """

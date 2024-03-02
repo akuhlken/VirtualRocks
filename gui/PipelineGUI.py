@@ -20,10 +20,10 @@ class PipelineGUI(AppWindow):
         description of the whole class
 
         Args:
-            parent (main): what is it?
-            controller (type?): what is it?
-            projdir (type?): what is it?
-            recents (type?): what is it?
+            parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
+            controller (:ref:`main <main>`\*): a reference to main.
+            projdir (pathlib.Path): Project directory containing .pkl file
+            recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
         AppWindow.__init__(self, parent, controller, recents)
         self.setup_layout()
@@ -139,31 +139,21 @@ class PipelineGUI(AppWindow):
         self.previewcloud.grid(row=0, column=0)
         chartbuttonspacer.grid(row=0, column=1)
         self.chartview.grid(row=0, column=2)
-        
-
-    # Event handler for "New" in the dropdown menu
-        # Method should first check to make sure nothing is running.
-        # Then it should do basically the same thing as the new_project method
-        # in StartGUI.
-    def new_proj_handler(self):
-        """
-        description
-        """
-        projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
-        if not projdir:
-            return
-        if ' ' in projdir:
-            print("Path must not contain white spaces")
-            mb.showerror("Paths cannot contain whitespace                           ")
-            return
-        self.controller.new_project(projdir)
 
     # Event handler for "Add Photos" button
         # Method should open a dialogue prompting the user to select img dir
         # Pass directory to controllers add_photos handler
     def photos_handler(self):
         """
-        description
+        Event handler for the "Add Photos" button, the first step in the pipeline. It opens a
+        dialog box propting the user to select the directory where their images are saved. Once the
+        image directory has been selected, it's passed to the `add_photos()` handler in
+        :ref:`main <main>`.
+
+        .. note::
+            Because of how :ref:`Colmap <colmap>` uses file paths, paths (and all elements of the
+            paths, like folders and files) cannot contain spaces. This method displays an error
+            message when the user tries to use an image directory path that has a space in it.
         """
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.projdir)
         if not imgdir:
@@ -183,7 +173,8 @@ class PipelineGUI(AppWindow):
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         """
-        Description.
+        Event handler for the "Set Bounds" button, the optional step between the 
+        :ref:`Matcher.py <matcher>` and the :ref:`Mesher.py <mesher>`. 
         """
         dialog = BoundsDialog(self)
         if dialog.result: 
@@ -305,7 +296,7 @@ class PipelineGUI(AppWindow):
         description
 
         Args:
-            e (event): do we need event? doesn't seem to be used?
+            e (event): an event.
         """
         if self.chart.winfo_width() > 1 and self.chart.winfo_height() > 1:
             image = Image.open(self.currentchart)
