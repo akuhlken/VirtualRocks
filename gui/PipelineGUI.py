@@ -148,12 +148,13 @@ class PipelineGUI(AppWindow):
         Event handler for the "Add Photos" button, the first step in the pipeline. It opens a
         dialog box propting the user to select the directory where their images are saved. Once the
         image directory has been selected, it's passed to the `add_photos()` handler in
-        :ref:`main <main>`.
+        :ref:`main <main>`. Since it's a quick step with no subprocesses, the handler also deals
+        with updating the progress bar.
 
         .. note::
-            Because of how :ref:`Colmap <colmap>` uses file paths, paths (and all elements of the
-            paths, like folders and files) cannot contain spaces. This method displays an error
-            message when the user tries to use an image directory path that has a space in it.
+            Because of how :ref:`Colmap <colmap>` uses file paths, paths (and therefor folders and
+            files) cannot contain spaces. This method displays an error message when the user tries
+            to use an image directory path that has a space in it.
         """
         imgdir = fd.askdirectory(title='select folder of images', initialdir=self.projdir)
         if not imgdir:
@@ -165,7 +166,6 @@ class PipelineGUI(AppWindow):
         self.controller.add_photos(imgdir)
         # updating progress bar
         self.progress.config(value=self.progress["maximum"])
-        #self.progresstotal.step(10)
         self.controller.style.configure('prog.Horizontal.TProgressbar', text='100%')
 
     # Event handler for "Set Bounds" button
@@ -173,8 +173,13 @@ class PipelineGUI(AppWindow):
         # Pass bounds A and B to controllers set_bounds handler
     def bounds_handler(self):
         """
-        Event handler for the "Set Bounds" button, the optional step between the 
-        :ref:`Matcher.py <matcher>` and the :ref:`Mesher.py <mesher>`. 
+        Event handler for the "Trim Bounds" button, the optional step between the 
+        :ref:`Matcher.py <matcher>` and the :ref:`Mesher.py <mesher>`. It makes a
+        :ref:`BoundsDialog <boundsdialog>` object that prompts the user for inputs to set the
+        minimum and maximum bounds for both the x and y axes.
+
+        .. note::
+            edit to include z bounds when they are 
         """
         dialog = BoundsDialog(self)
         if dialog.result: 
@@ -188,13 +193,25 @@ class PipelineGUI(AppWindow):
                 self.log(str(e))
                 self.log("All fields must contain numbers")
 
+    # Event handler for the show files button
+    #   Should openthe out dir in file explorer
+    def show_files(self):
+        """
+        Event handler for the "Show Files" button, the last step in the pipeline that opens a
+        file explorer window to show the user the contents of the `"out"` folder in the current
+        project directory.
+        """
+        show_in_file_manager(str(self.controller.projdir) + "/out")
+
     # Method to be called externally for updating text related to user input
     def update_text(self, numimg):
         """
-        description
+        Method used to update the text displaying the number of images in the current image
+        directory on the right button bar. Used by :ref:`main <main>` when making a new project,
+        opening an existing project, and when adding images/selecting an image directory. 
 
         Args:
-            numimg (type?): what is it?
+            numimg (int): the number of images in the current image directory.
         """
         self.numimages.config(text=f"Num images: {numimg}")
         
@@ -204,7 +221,7 @@ class PipelineGUI(AppWindow):
     #   Requests a Refreshchart event
     def set_chart(self, chartdir):
         """
-        description
+        description. 
 
         Args:
             chartdir (type?): what is it?
@@ -255,14 +272,6 @@ class PipelineGUI(AppWindow):
                 self.recents.remove_recent(file[0])
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
-    # Event handler for the show files button
-    #   Should openthe out dir in file explorer
-    def show_files(self):
-        """
-        description
-        """
-        show_in_file_manager(str(self.controller.projdir) + "/out")
-
     # Event handler to be called whenever the window is resized
     #   Updates and scales the chart image with window
     def _resizer(self, e):
@@ -280,10 +289,11 @@ class PipelineGUI(AppWindow):
     # Method writes strings to the log
     def log(self, msg):
         """
-        description
+        Method that writes strings to the log for display in the log textbox. Sets the log display
+        to show the bottom/most recent items of the log.
 
         Args:
-            msg (type?): what is it?
+            msg (string): what is it?
         """
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
@@ -296,7 +306,7 @@ class PipelineGUI(AppWindow):
         description
 
         Args:
-            e (event): an event.
+            e (event): a RefreshChart event.
         """
         if self.chart.winfo_width() > 1 and self.chart.winfo_height() > 1:
             image = Image.open(self.currentchart)
@@ -315,9 +325,9 @@ class PipelineGUI(AppWindow):
         Args:
             wwidth (int): window width
             wheight (int): window height
-            iwidth (int): what is
-            iheight (int): what is
-            image (image): what is
+            iwidth (int): image width
+            iheight (int): image height
+            image (image): the image `(chart)` to be scaled
         """
         width_scale = wwidth / iwidth
         height_scale = wheight / iheight

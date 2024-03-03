@@ -8,7 +8,7 @@ from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
 class AppWindow(Frame):
     def __init__(self, parent, controller, recents):
         """
-        description of the class as a whole.
+        `AppWindow` is the parent class.
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
@@ -53,9 +53,9 @@ class AppWindow(Frame):
         self._recent_menu()
 
         # Info menu, access to the docs.
-        info.add_command(label="Common Issues", command=lambda: self._open_helpmenu()) 
-        info.add_command(label="Colmap Info", command=lambda: self._open_helpmenu("colmap.html")) 
-        info.add_command(label="MeshLab Info", command=lambda: self._open_helpmenu("meshlab.html"))
+        info.add_command(label="FAQ", command=lambda: self._open_helpmenu("FAQ.html")) 
+        info.add_command(label="Reference", command=lambda: self._open_helpmenu("reference/references.html"))
+        info.add_command(label="Unity", command=lambda: self._open_helpmenu("unity.html"))
 
         # Recon menu
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon())
@@ -87,7 +87,10 @@ class AppWindow(Frame):
         # Then call controllers new_project method
     def new_project(self):
         """
-        description
+        Event handler for opening new projects. It's handles the "New" menu item under then `File`
+        menu tab and the "New Project" button on the start screen on the Tk app. It opens a dialog
+        that prompts the user to select a workspace/working directory. Once the user selects a
+        valid directory, it calls the controller's `new_project` method in :ref:`main <main>`.
         """
         projdir = fd.askdirectory(title='Select Workspace', initialdir='/home/')
         if not projdir:
