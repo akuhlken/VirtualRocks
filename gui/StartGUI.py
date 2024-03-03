@@ -8,8 +8,8 @@ class StartGUI(AppWindow):
     def __init__(self, parent, controller, recents):
         """
         `StartGUI` is a subclass of :ref:`AppWindow <appwindow>` and creates the front page of the
-        Tk app. It has the menu bar from :ref:`AppWindow <appwindow>` and allows the user to make a
-        new project or open an existing project.
+        Tk app. It has the menu bar from :ref:`AppWindow <appwindow>` and has button to allow the
+        user to make a new project or open an existing project.
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
@@ -17,6 +17,7 @@ class StartGUI(AppWindow):
             recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
         AppWindow.__init__(self, parent, controller, recents)
+
         # making the elements of the start menu
         title = Label(self, text="Choose Project:", anchor="center", style="title.TLabel")
         middleframe = Frame(self)
