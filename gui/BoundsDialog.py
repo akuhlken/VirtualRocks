@@ -1,14 +1,15 @@
-import tkinter as tk
-from tkinter import simpledialog
+from tkinter import simpledialog, Label, Entry
 
 # TODO: Header comments
 class BoundsDialog(simpledialog.Dialog):
     """
-    What if I put the description here?
+    `BoundsDialog` initializes a dialog that prompts the user to input bounds for the current
+    point cloud. 
     """
     def body(self, master):
         """
-        `BoundsDialog`
+        Method that creates the physical dialog box, allowing users to enter the bounds for the x,
+        y, and z axes.
 
         Args:
             master (:ref:`PipelineGUI <pipelineGUI>`\* instance): the current instance of `PipelineGUI` class.
@@ -17,16 +18,18 @@ class BoundsDialog(simpledialog.Dialog):
         self.labels = ["min X:", "max X:", "min Y:", "max Y:", "min Z:", "max Z:"]
         self.entries = []
         for i in range(6):
-            tk.Label(master, text=self.labels[i]).grid(row=i, column=0)
-            entry = tk.Entry(master)
+            Label(master, text=self.labels[i]).grid(row=i, column=0)
+            entry = Entry(master)
             entry.grid(row=i, column=1)
             self.entries.append(entry)
         return self.entries[0]  # initial focus
 
     def apply(self):
         """
-        IDK what this does. Checks if all inputs were ints? If they aren't then print the
-        exception.
+        Method to loop through the inputted values and make the values usable by the app. 
+
+        For boxes that did not get values inputted, their values are set to defaults to avoid
+        undesired crops (min prompts = negative infinity, max prompts = positive infinity).
         """
         try:
             self.result = []
@@ -40,42 +43,3 @@ class BoundsDialog(simpledialog.Dialog):
                     self.result.append(float(entry.get()))
         except Exception as e:
             print(e)
-
-# import tkinter as tk
-# from tkinter import simpledialog, messagebox
-
-# class CustomDialog(simpledialog.Dialog):
-#     def body(self, master):
-#         self.entry_fields = []
-#         for i in range(6):
-#             entry = tk.Entry(master)
-#             entry.insert(0, "10000")
-#             entry.pack()
-#             self.entry_fields.append(entry)
-#         return self.entry_fields[0]  # initial focus
-
-#     def validate(self):
-#         entries = [entry.get() for entry in self.entry_fields]
-#         if self.validate_floats(*entries):
-#             return True
-#         else:
-#             messagebox.showerror("Error", "Invalid input. Please enter floating point numbers only.")
-#             return False
-
-#     def apply(self):
-#         entries = [entry.get() for entry in self.entry_fields]
-#         messagebox.showinfo("Success", f"All inputs are valid: {entries}")
-
-#     @staticmethod
-#     def validate_floats(*args):
-#         for arg in args:
-#             try:
-#                 float(arg) if arg else 10000.0
-#             except ValueError:
-#                 return False
-#         return True
-
-# root = tk.Tk()
-# root.withdraw()  # hide main window
-# dialog = CustomDialog(root)
-# root.mainloop()

@@ -140,10 +140,13 @@ class ReconManager():
         """
         Helper method for updating the progress bar text and completion.
 
-        The message (msg) input should be in the format `"$text1.text2.50$"`. **text1** is the
-        current step being run, and **text2** is the current substep `(text2 can be left blank if
-        there is no substep)`. The text portions of the message will be displayed above the lower 
-        progress bar. The **number** is the percentage fill of the lower progress bar when the
+        The message (msg) input should be in the format `"$text1.text2.50$"`. 
+        
+        **text1** is the current step being run, and **text2** is the current substep `(text2 can
+        be left blank if there is no substep)`. The text portions of the message will be displayed
+        above the lower progress bar.
+        
+        The **number** is the percentage fill of the lower progress bar when the
         current step/substep combination begins. 
 
         Sending the message **"$$"** will reset the bar and text. 

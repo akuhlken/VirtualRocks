@@ -17,7 +17,7 @@ class PipelineGUI(AppWindow):
 
     def __init__(self, parent, controller, projdir, recents):
         """
-        description of the whole class. `PipelineGUI`
+        description of the whole class. `PipelineGUI` is a subclass of :ref:`AppWindow <appwindow>`
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
@@ -178,9 +178,9 @@ class PipelineGUI(AppWindow):
         """
         Event handler for the "Trim Bounds" button, the optional step between the 
         :ref:`Matcher <matcher>` and :ref:`Mesher <mesher>`. It makes a
-        :ref:`BoundsDialog <boundsdialog>` object that prompts the user for inputs to set the
-        minimum and maximum bounds for the x, y, and z axes of the generated point cloud. The
-        inputted values are then passed to the `set_bounds` handler in :ref:`main <main>`.
+        :ref:`BoundsDialog <boundsdialog>` object to prompt the user to set the minimum and maximum
+        bounds for the x, y, and z axes of the generated point cloud. The inputted values are then
+        passed to the `set_bounds` handler in :ref:`main <main>`.
         """
         dialog = BoundsDialog(self)
         if dialog.result: 

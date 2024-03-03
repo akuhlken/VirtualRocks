@@ -60,7 +60,6 @@ class main(Tk):
         self.iconphoto(True, icon)
 
         # Application styling
-        self.buttoncolor = "#ffffff"  # for the buttons on page 1
         self.logbackground = "#ffffff"
         self.style = Style("darkly")
         self.styleflag = "dark"
