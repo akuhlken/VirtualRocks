@@ -37,17 +37,19 @@ def create_heat_map(filename, outdir):
     pyplot.savefig(pl.Path(str(outdir)) / "heat_map.png")
     pyplot.close('all')
 
-def remove_points(filename, minx, maxx, miny, maxy):
+def remove_points(filename, minx, maxx, miny, maxy, minz, maxz):
     """
     Method removes points from .ply point cloud that lie outside the provided bounds and exports as
     ``fused.ply`` into the dense directory.
 
     Args:
         filename (pathlib.Path): Path to a .ply point cloud file
-        minx (int): min x value
-        maxx (int): max x value
-        miny (int): min y value
-        maxy (int): max y value
+        minx (float):
+        maxx (float):
+        miny (float):
+        maxy (float):
+        minz (float):
+        maxz (float):
     """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):
@@ -57,7 +59,8 @@ def remove_points(filename, minx, maxx, miny, maxy):
     vertex = plydata['vertex']
     x = vertex['x']
     y = vertex['y']
-    mask = (x >= minx) & (x <= maxx) & (y >= miny) & (y <= maxy)
+    z = vertex['z']
+    mask = (x >= minx) & (x <= maxx) & (y >= miny) & (y <= maxy) & (z >= minz) & (z <= maxz)
     vertex = vertex[mask]
     new_vertex = PlyElement.describe(vertex, 'vertex')
     new_plydata = PlyData([new_vertex], text=plydata.text)

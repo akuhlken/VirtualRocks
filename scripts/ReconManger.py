@@ -11,6 +11,9 @@ PHOTOS = 10
 MATCHER = 70
 MESHER = 100
 
+# Path to specific python version installed by the installer
+PYTHONPATH = os.environ['PROGRAMFILES'] + "/python311/python"
+
 class ReconManager():
 
     def __init__(self, controller, projdir):
@@ -54,7 +57,7 @@ class ReconManager():
         self._send_log("__________Starting Matcher__________")
         colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen(['python', 'Matcher.py', self.projdir, self.imgdir, clean], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen([PYTHONPATH, 'Matcher.py', self.projdir, self.imgdir, clean], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
@@ -86,7 +89,7 @@ class ReconManager():
         self._send_log("__________Starting Mesher__________")
         colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen([PYTHONPATH, 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:

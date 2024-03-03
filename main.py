@@ -1,3 +1,4 @@
+import os
 import shutil
 import subprocess
 from ttkbootstrap import Style
@@ -24,6 +25,9 @@ STARTED = 0
 PHOTOS = 10
 MATCHER = 70
 MESHER = 100
+
+# Path to specific python version installed by the installer
+PYTHONPATH = os.environ['PROGRAMFILES'] + "/python311/python"
 
 class main(Tk):
 
@@ -211,20 +215,23 @@ class main(Tk):
 
     # Removes points from dense point cloud as specified by bounds
     #   Handler in PipelineGUI creates dialog and passes bounds here
-    def set_bounds(self, minx, maxx, miny, maxy):
+    def set_bounds(self, minx, maxx, miny, maxy, minz, maxz):
         """
-        description
+        Method comunicates between the GUI and the PointCloudManager for trimming models
 
         Args:
-            minx (int): what is it?
-            maxx (int): what is it?
-            miny (int): what is it?
-            maxy (int): what is it?
+            minx (float):
+            maxx (float):
+            miny (float):
+            maxy (float):
+            minz (float):
+            maxz (float):
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")
         dense = Path(self.projdir / "dense")
-        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
+        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy, minz, maxz)
+        self.page2.log("Trimming complete")
         PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
         self.page2.set_chart(Path(dense/ "heat_map.png"))
 
@@ -290,7 +297,7 @@ class main(Tk):
 
     def preview_cloud(self):
         path = Path(self.projdir / 'dense' / 'fused.ply')
-        p = subprocess.Popen(['python', 'scripts/CloudPreviewer.py', str(path)])
+        p = subprocess.Popen([PYTHONPATH, 'scripts/CloudPreviewer.py', str(path)])
 
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
