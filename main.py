@@ -60,7 +60,6 @@ class main(Tk):
         self.iconphoto(True, icon)
 
         # Application styling
-        self.logbackground = "#ffffff"
         self.style = Style("darkly")
         self.styleflag = "dark"
         self.init_style()

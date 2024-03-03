@@ -70,7 +70,7 @@ class PipelineGUI(AppWindow):
         self.show = Button(showframe, text="4: Show Files", command=lambda: self.show_files())
 
         # the log, scrollbar, and cancel button for recon.
-        self.logtext = Text(right, width=50, background=self.controller.logbackground)
+        self.logtext = Text(right, width=50)
         scrollbar = Scrollbar(right)
         self.logtext['yscrollcommand'] = scrollbar.set
         scrollbar['command'] = self.logtext.yview
