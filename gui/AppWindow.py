@@ -87,7 +87,7 @@ class AppWindow(Frame):
         # Then call controllers new_project method
     def new_project(self):
         """
-        Event handler for opening new projects. It's handles the "New" menu item under then `File`
+        Event handler for opening new projects. It handles the "New" menu item under then `File`
         menu tab and the "New Project" button on the start screen on the Tk app. It opens a dialog
         that prompts the user to select a workspace/working directory. Once the user selects a
         valid directory, it calls the controller's `new_project` method in :ref:`main <main>`.
@@ -106,10 +106,14 @@ class AppWindow(Frame):
         # Then call controllers open_project method
     def open_project(self, projfile=None):
         """
-        description
+        Event handler for opening existing projects. It handles the "Open" menu item and the files
+        under the "Open Recent..." cascade in the `File` menu tab, and the "Open Project" button on
+        the start screen of the Tk app. If a project file directory is passed to the function or
+        the user selects a file directory using the dialog, then the function calls the 
+        controller's `open_project` method in :ref:`main <main>` with the project file directory.
 
         Args:
-            projfile (type?): what is it?
+            projfile (pathlib.Path): optional path to a .pkl file
         """
         if not projfile:
             projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
@@ -119,7 +123,8 @@ class AppWindow(Frame):
         
     def open_recent(self,index=1):
         """
-        description
+        Event handler for the menu items representing files in the recents dictionary under the 
+        "Open Recents..." cascade in the `File` menu tab in the menu bar.
 
         Args:
             index (int): index of recent file to open in the recents dictionary.

@@ -3,12 +3,15 @@ from tkinter import simpledialog
 
 # TODO: Header comments
 class BoundsDialog(simpledialog.Dialog):
+    """
+    What if I put the description here?
+    """
     def body(self, master):
         """
-        description
+        `BoundsDialog`
 
         Args:
-            master (type?): what is it?
+            master (:ref:`PipelineGUI <pipelineGUI>`\* instance): the current instance of `PipelineGUI` class.
         """
         self.title("Remove Points:")
         self.labels = ["min X:", "max X:", "min Y:", "max Y:", "min Z:", "max Z:"]
@@ -22,7 +25,8 @@ class BoundsDialog(simpledialog.Dialog):
 
     def apply(self):
         """
-        description
+        IDK what this does. Checks if all inputs were ints? If they aren't then print the
+        exception.
         """
         try:
             self.result = []

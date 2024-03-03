@@ -303,7 +303,8 @@ class main(Tk):
     #   Should set the map image acordingly as well as activate and deactivate buttons
     def update_state(self, state):
         """
-        description
+        description. The only place where the upper progress bar (that displays the total 
+        progress) is updated.
 
         Args:
             state (type?): what is it?

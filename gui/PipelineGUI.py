@@ -17,13 +17,13 @@ class PipelineGUI(AppWindow):
 
     def __init__(self, parent, controller, projdir, recents):
         """
-        description of the whole class
+        description of the whole class. `PipelineGUI`
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
             controller (:ref:`main <main>`\*): a reference to main.
             projdir (pathlib.Path): Project directory containing .pkl file
-            recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
+            recents (:ref:`recents <recentsmanager>` instance): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
         AppWindow.__init__(self, parent, controller, recents)
         self.setup_layout()
@@ -37,7 +37,10 @@ class PipelineGUI(AppWindow):
     # Setup method for GUI layout and elements
     def setup_layout(self):
         """
-        description, sets everything up. probs needs a lot of desc.
+        Method that sets up the layout of the GUI, making all elements and placing them. The GUI is
+        divided into left and right `tkinter.ttk.frame` objects, into which chart and pipeline 
+        elements are assigned respectively. The elements are packed (or put on a grid for buttons
+        aligned horizontally) to ensure order and allow for elegant resizing.
         """
         ### Frames:
         self.left = Frame(self)
@@ -174,12 +177,10 @@ class PipelineGUI(AppWindow):
     def bounds_handler(self):
         """
         Event handler for the "Trim Bounds" button, the optional step between the 
-        :ref:`Matcher.py <matcher>` and the :ref:`Mesher.py <mesher>`. It makes a
+        :ref:`Matcher <matcher>` and :ref:`Mesher <mesher>`. It makes a
         :ref:`BoundsDialog <boundsdialog>` object that prompts the user for inputs to set the
-        minimum and maximum bounds for both the x and y axes.
-
-        .. note::
-            edit to include z bounds when they are 
+        minimum and maximum bounds for the x, y, and z axes of the generated point cloud. The
+        inputted values are then passed to the `set_bounds` handler in :ref:`main <main>`.
         """
         dialog = BoundsDialog(self)
         if dialog.result: 
@@ -224,17 +225,20 @@ class PipelineGUI(AppWindow):
     def set_chart(self, chartdir):
         """
         description. 
+        Because of how different threads interact with the TK app, the chart
+        uses a `RefreshChart` event to actually change, which the handler generates.
 
         Args:
-            chartdir (type?): what is it?
+            chartdir (pathlib.Path): the path to the current chart to display.
         """
         self.currentchart = chartdir
         self.event_generate("<<RefreshChart>>")
 
     def change_chart_view(self):
         """
-        Event handler for the change view button, toggles between the heat map 
-        and elevation map views.
+        Event handler for the "Change" button under the chart, toggles between the heat map and
+        elevation map views. Because of how different threads interact with the TK app, the chart
+        uses a `RefreshChart` event to actually change, which the handler generates.
         """
         self.viewtype = ~self.viewtype # Toggle boolean
         # TODO: set current chart (self.currentchart) and then refresh chart event will handle the rest
@@ -243,10 +247,12 @@ class PipelineGUI(AppWindow):
     # Method to be called externally for setting example image
     def set_example_image(self, imagefile):
         """
-        description
+        Method called externally to set the example image on the top right of the app. It allows
+        the user to confirm that they've selected the right image directory before progressing
+        through the pipeline.
 
         Args:
-            imagefile (type?): what is it?
+            imagefile (pathlib.Path): the path to the example image to display.
         """
         img = Image.open(imagefile)
         img = img.resize((150, 100), Image.Resampling.LANCZOS)
@@ -259,7 +265,13 @@ class PipelineGUI(AppWindow):
     #   If chosen dir has a savefile this will load the existing project
     def change_projdir(self):
         """
-        description
+        Event handler for the "Change" button under the printed workspace path. It gives the user
+        an option to change the project directory (which was set when they first made the project).
+        It works like :ref:`AppWindow <appwindow>`'s `new_project` as it does nothing when the user
+        don't select a project directory or chooses one that contains a space. To change directory,
+        it makes a new project using the same name and image directory as the original in the new
+        project directory and removes the original project file from the dictionary of recent
+        projects.
         """
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
         if not projdir:
@@ -269,6 +281,7 @@ class PipelineGUI(AppWindow):
             mb.showerror("Paths cannot contain whitespace                           ")
             return
         self.controller.cancel_recon()   
+        # don't want it to be in recents if we're moving away from the old file path.
         for file in self.recents.recentdict:
             if str(self.controller.picklepath.as_posix()) in file[0]:
                 self.recents.remove_recent(file[0])
@@ -277,11 +290,17 @@ class PipelineGUI(AppWindow):
     # Event handler to be called whenever the window is resized
     #   Updates and scales the chart image with window
     def _resizer(self, e):
+    #    self.event_generate("<<RefreshChart>>")
         """
-        description
+        Event handler that's called whenever the window is resized to make sure the chart stays a
+        reasonable size within the Tk app. 
 
         Args:
-            e (event): an event?
+            e (event): a `Configure` event.
+
+        .. note::   
+            I think we don't need this function, it works fine by having this function be a single
+            line, "self.event_generate("<<RefreshChart>>")".
         """
         image = Image.open(self.currentchart)
         resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
@@ -305,10 +324,17 @@ class PipelineGUI(AppWindow):
     #    If app has been resized, resizes image to fit
     def _refresh_chart(self, e):
         """
-        description
+        Event handler called whenever a `RefreshChart` events occurs (in set_chart() and
+        change_chart_view()). It sets the image displayed on the `chart` canvas to the currentchart
+        set by `set_chart()`. If the Tk app has been resized, then the chart image is resized,
+        using `_scale_image()`, to fit in the left column.
 
         Args:
-            e (event): a RefreshChart event.
+            e (event): a `RefreshChart` event.
+
+        .. note::
+            May need to change the description for this function depending on if we change _resizer
+            or not.
         """
         if self.chart.winfo_width() > 1 and self.chart.winfo_height() > 1:
             image = Image.open(self.currentchart)
@@ -322,7 +348,9 @@ class PipelineGUI(AppWindow):
     #   Image scaled without distortion (preserves aspect ratio)
     def _scale_image(self, wwidth, wheight, iwidth, iheight, image):
         """
-        description
+        Helper method that scales an image to fit within a window defined by its width (wwidth)
+        and height (wheight). It scales images without distortion (preserving the aspect ratio)
+        by choosing the smaller scale calculated from the x and y axes.
 
         Args:
             wwidth (int): window width
@@ -336,4 +364,4 @@ class PipelineGUI(AppWindow):
         scale = min(width_scale, height_scale)
         new_width = int(iwidth * scale)
         new_height = int(iheight * scale)
-        return image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        return image.resize((new_width, new_height), Image.Resampling.LANCZOS)  
