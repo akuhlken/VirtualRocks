@@ -12,7 +12,7 @@ from scripts.ReconManger import ReconManager
 import pickle
 import ctypes
 import scripts.PointCloudManager as PointCloudManager
-from scripts.RecentsManager import RecentsManager
+import scripts.RecentsManager as RecentsManager
 
 # Compiler run: pyinstaller --onefile main.py -w -p "scripts" -p "gui" -c
 # After compiles move main.exe into the VirtualRocks directory
@@ -41,10 +41,6 @@ class main(Tk):
         self.state = STARTED
         self.fullscreen = False
 
-        # Create recents
-        self.recents = RecentsManager()
-        self.recents.get_recent()
-
         # Sets app icon and identifier
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
@@ -60,8 +56,6 @@ class main(Tk):
         self.iconphoto(True, icon)
 
         # Application styling
-        self.buttoncolor = "#ffffff"  # for the buttons on page 1
-        self.logbackground = "#ffffff"
         self.style = Style("darkly")
         self.styleflag = "dark"
         self.init_style()
@@ -73,7 +67,7 @@ class main(Tk):
         self.container.grid_columnconfigure(0, weight=1)
 
         # Load staring page and start application
-        self.page1 = StartGUI(parent=self.container, controller=self, recents=self.recents)
+        self.page1 = StartGUI(parent=self.container, controller=self)
         self.page1.grid(row=0, column=0, sticky="nsew")
         self.page1.tkraise()
 
@@ -86,13 +80,13 @@ class main(Tk):
         """
         description
         """
-        self.page2 = PipelineGUI(self.container, self, self.projdir, self.recents)
+        self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
         self.page2.menubar.entryconfig("Reconstruction", state="normal")
-        self.recents.update_recent(self.picklepath)
+        RecentsManager.add(self.picklepath)
 
     def init_style(self):
         """
@@ -277,7 +271,7 @@ class main(Tk):
     #   Starts a new thread for the ReconManager.auto() method
     def auto_recon(self):
         """
-        description
+        description. Called by menu button press in :ref:`AppWindow.py <appwindow>`.
         """
         if not self.imgdir:
             self.page2.log("No images loaded")
@@ -303,7 +297,8 @@ class main(Tk):
     #   Should set the map image acordingly as well as activate and deactivate buttons
     def update_state(self, state):
         """
-        description
+        description. The only place where the upper progress bar (that displays the total 
+        progress) is updated.
 
         Args:
             state (type?): what is it?
@@ -425,7 +420,6 @@ class main(Tk):
         except:
             print("no active processes")
         print("exiting app")
-        self.recents.save_recent() 
         self.destroy()
 
 if __name__ == "__main__":

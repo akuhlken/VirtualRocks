@@ -9,8 +9,8 @@ class Matcher:
     def __init__(self, projdir, imgdir, clean):
         """
         Matcher is a python class designed to be run as a subprocess. It uses :ref:`Colmap <colmap>` 
-        to create a dense point cloud and database of image data from the
-        images in the user-selected image directory.
+        to create a dense point cloud and database of image data from the images in the 
+        user-selected image directory.
 
         Args:
             projdir (pathlib.Path): Project directory containing .pkl file

@@ -1,3 +1,5 @@
+.. _pipelineGUI:
+
 PipelineGUI
 ==================
 

@@ -9,3 +9,4 @@ All of the classes that we have in **VirtualRocks**.
    PhotoManager
    PointCloudManager
    CloudPreviewer
+   RecentsManager
