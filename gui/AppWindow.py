@@ -73,7 +73,6 @@ class AppWindow(Frame):
         self.recent.delete(0, "end")
 
         recentstack = RecentsManager.get()
-        self.recent.add_command(label="print recents", command=lambda: print(recentstack))
         numrecents = len(RecentsManager.get())
         if numrecents == 0:
             self.recent.add_command(label="no recents found")

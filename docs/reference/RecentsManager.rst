@@ -1,7 +1,7 @@
 .. _recentsmanager:
 
-RecentsManager
-=====================
+RecentsManager module
+======================
 
 .. automodule:: RecentsManager
    :members:

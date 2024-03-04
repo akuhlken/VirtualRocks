@@ -12,6 +12,5 @@ All of the classes that we have in **VirtualRocks**.
    Matcher
    Mesher
    PipelineGUI
-   RecentsManager
    ReconManger
    StartGUI
