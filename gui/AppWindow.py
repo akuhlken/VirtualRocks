@@ -2,22 +2,21 @@ from ttkbootstrap import Style
 import webbrowser as wb
 from pathlib import Path
 from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
+import scripts.RecentsManager as RecentsManager
 
 # TODO: lots of header comments needed
 
 class AppWindow(Frame):
-    def __init__(self, parent, controller, recents):
+    def __init__(self, parent, controller):
         """
         `AppWindow` is the parent class.
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
             controller (:ref:`main <main>`\*): a reference to main.
-            recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
         Frame.__init__(self, parent)
         self.controller = controller
-        self.recents = recents
         self._create_menu()
 
     # Setup method for top menu bar
@@ -29,9 +28,9 @@ class AppWindow(Frame):
         self.menubar = Menu(self)
 
         # menus that make up the tabs of the menu bar, from left to right.
-        self.file = Menu(self.menubar, tearoff=0)  
+        self.file = Menu(self.menubar, tearoff=0)
         styles = Menu(self.file, tearoff=0)
-        self.recent = Menu(self.file, tearoff=0)
+        self.recent = Menu(self.file, tearoff=0, postcommand=RecentsManager.get())
         info = Menu(self.menubar, tearoff=0)
         recon = Menu(self.menubar, tearoff=0)
 
@@ -51,17 +50,21 @@ class AppWindow(Frame):
         #file.add_cascade(label="Open Recent...", menu=self.recent)
         # the number of recent files/menu items displayed depends on how many exist.
         #self._recent_menu()
-        self.file.add_cascade(label="Open Recent...", menu=self.recent)
 
-        self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
-        numrecents = len(self.recents.recentdict)
+        self.file.add_cascade(label="Open Recent...", menu=self.recent)
+        self.recent.add_command(label="print recents", command=lambda: print(RecentsManager.get()))
+        recentstack = RecentsManager.get()
+        numrecents = len(RecentsManager.get())
         if numrecents == 0:
             self.recent.add_command(label="no recents found")
-        for x in range(numrecents):
-            index = x + 1
-            print(str(index) + str(Path(self.recents.recentdict[-index][0]).stem))
-            recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-index][0]).stem)
-            self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-index))
+        if numrecents >= 1:
+            self.recent.add_command(label=str(Path(recentstack[-1]).stem), command=lambda: self.open_recent(Path(recentstack[-1])))
+        if numrecents >= 2:
+            self.recent.add_command(label="1 " + str(Path(recentstack[-2]).stem), command=lambda: self.open_recent(Path(recentstack[-2])))
+        if numrecents >= 3:
+            self.recent.add_command(label="2 " + str(Path(recentstack[-3]).stem), command=lambda: self.open_recent(Path(recentstack[-3])))
+        if numrecents >= 4:
+            self.recent.add_command(label="3 " + str(Path(recentstack[-4]).stem), command=lambda: self.open_recent(Path(recentstack[-4])))
 
         # Info menu, access to the docs.
         info.add_command(label="FAQ", command=lambda: self._open_helpmenu("FAQ.html")) 
@@ -99,6 +102,21 @@ class AppWindow(Frame):
     #         else:
     #             recentlabel = str(x) + " " + str(Path(self.recents.recentdict[x][0]).stem)
     #             self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(x))
+        
+
+        # self.file.add_cascade(label="Open Recent...", menu=self.recent)
+
+        # self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
+        # numrecents = len(self.recents.recentdict)
+        # if numrecents == 0:
+        #     self.recent.add_command(label="no recents found")
+        # for x in range(numrecents):
+        #     index = x + 1
+        #     print(str(index) + str(Path(self.recents.recentdict[-index][0]).stem))
+        #     recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-index][0]).stem)
+        #     self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-index))
+
+
 
     # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
@@ -139,20 +157,19 @@ class AppWindow(Frame):
                 return
         self.controller.open_project(Path(projfile))
         
-    def open_recent(self,index=-1):
+    def open_recent(self,recent):
         """
         Event handler for the menu items representing files in the recents dictionary under the 
         "Open Recents..." cascade in the `File` menu tab in the menu bar.
 
         Args:
-            index (int): index of recent file to open in the recents dictionary.
+            recent (pathlib.Path): a string of the path of the recent file to open
         """
         try:
-            projfile = self.recents.recentdict[index][0]
-            print("opening recent: " + str(projfile))
-            if not projfile:
+            print("opening recent: " + str(recent))
+            if not recent:
                 return
-            self.open_project(projfile)
+            self.open_project(recent)
         except Exception as e:
             print(e)
             print("Could not find project")

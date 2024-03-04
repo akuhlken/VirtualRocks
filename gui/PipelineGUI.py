@@ -7,6 +7,7 @@ from pathlib import Path
 from gui.AppWindow import AppWindow
 from gui.BoundsDialog import BoundsDialog
 from showinfm import show_in_file_manager
+import scripts.RecentsManager as RecentsManager
 
 # TODO: header comments
 class PipelineGUI(AppWindow):
@@ -15,23 +16,21 @@ class PipelineGUI(AppWindow):
     DEFAULT_CHART = Path(f"gui/placeholder/blankchart.jpg").resolve()
     DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
-    def __init__(self, parent, controller, projdir, recents):
+    def __init__(self, parent, controller, projdir):
         """
         description of the whole class. `PipelineGUI` is a subclass of :ref:`AppWindow <appwindow>`
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
             controller (:ref:`main <main>`\*): a reference to main.
-            projdir (pathlib.Path): Project directory containing .pkl file
-            recents (:ref:`recents <recentsmanager>` instance): a RecentsManager object that stores and maintains the dictionary of recent projects.
+            projdir (pathlib.Path): Project directory containing .pkl file.
         """
-        AppWindow.__init__(self, parent, controller, recents)
+        AppWindow.__init__(self, parent, controller)
         self.setup_layout()
         self.projdir = projdir
         self.controller = controller
         self.currentchart = self.DEFAULT_CHART
         self.viewtype = True
-        self.recents = recents
         self.bind("<<RefreshChart>>", self._refresh_chart)
 
     # Setup method for GUI layout and elements
@@ -282,9 +281,7 @@ class PipelineGUI(AppWindow):
             return
         self.controller.cancel_recon()   
         # don't want it to be in recents if we're moving away from the old file path.
-        for filetuple in self.recents.recentdict:
-            if str(self.controller.picklepath.as_posix()) in filetuple[0]:
-                self.recents.remove_recent(filetuple[0])
+        RecentsManager.remove(self.controller.picklepath)
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
     # Event handler to be called whenever the window is resized

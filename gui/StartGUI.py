@@ -5,7 +5,7 @@ from gui.AppWindow import AppWindow
 # TODO: Class description
 class StartGUI(AppWindow):
 
-    def __init__(self, parent, controller, recents):
+    def __init__(self, parent, controller):
         """
         `StartGUI` is a subclass of :ref:`AppWindow <appwindow>` and creates the front page of the
         Tk app. It has the menu bar from :ref:`AppWindow <appwindow>` and has button to allow the
@@ -14,9 +14,8 @@ class StartGUI(AppWindow):
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
             controller (:ref:`main <main>`\*): a reference to main.
-            recents (:ref:`recents <recentsmanager>` object): a RecentsManager object that stores and maintains the dictionary of recent projects.
         """
-        AppWindow.__init__(self, parent, controller, recents)
+        AppWindow.__init__(self, parent, controller)
 
         # making the elements of the start menu
         title = Label(self, text="Choose Project:", anchor="center", style="title.TLabel")
