@@ -33,11 +33,11 @@ def get():
         stack = pickle.load(file)
     return stack
 
+# make a pkl file if it doesn't already exist
 def init_pkl():
     if not os.path.isfile(APPDATA_PATH):
         with open(APPDATA_PATH, 'wb') as file:
             pickle.dump([], file)
-    # make a pkl file if it doesn't exist
 
 
 # from pathlib import Path
