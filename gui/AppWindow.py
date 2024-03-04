@@ -29,7 +29,7 @@ class AppWindow(Frame):
         self.menubar = Menu(self)
 
         # menus that make up the tabs of the menu bar, from left to right.
-        self.file = Menu(self.menubar, tearoff=0, postcommand=self.recents.update_recent())  
+        self.file = Menu(self.menubar, tearoff=0)  
         styles = Menu(self.file, tearoff=0)
         self.recent = Menu(self.file, tearoff=0)
         info = Menu(self.menubar, tearoff=0)
@@ -79,26 +79,26 @@ class AppWindow(Frame):
         self.menubar.entryconfig("Reconstruction", state="disabled")
 
 
-    def _recent_menu(self):
-        """
-        Helper method to display the correct number of recent files in the recent cascade menu.
-        There can be between 0 and 4 recent files at one time, so the number of menu items 
-        should match the number of existing recent files. If there aren't any, then there are no
-        clickable menu items displayed under the recent menu.
-        """
-        self.file.add_cascade(label="Open Recent...", menu=self.recent, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
+    # def _recent_menu(self):
+    #     """
+    #     Helper method to display the correct number of recent files in the recent cascade menu.
+    #     There can be between 0 and 4 recent files at one time, so the number of menu items 
+    #     should match the number of existing recent files. If there aren't any, then there are no
+    #     clickable menu items displayed under the recent menu.
+    #     """
+    #     self.file.add_cascade(label="Open Recent...", menu=self.recent, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
 
-        self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
-        numrecents = len(self.recents.recentdict)
-        if numrecents == 0:
-            self.recent.add_command(label="no recents found")
-        for x in range(numrecents):
-            if x == 0:
-                recentlabel = str(Path(self.recents.recentdict[0][0]).stem)
-                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(0))
-            else:
-                recentlabel = str(x) + " " + str(Path(self.recents.recentdict[x][0]).stem)
-                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(x))
+    #     self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
+    #     numrecents = len(self.recents.recentdict)
+    #     if numrecents == 0:
+    #         self.recent.add_command(label="no recents found")
+    #     for x in range(numrecents):
+    #         if x == 0:
+    #             recentlabel = str(Path(self.recents.recentdict[0][0]).stem)
+    #             self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(0))
+    #         else:
+    #             recentlabel = str(x) + " " + str(Path(self.recents.recentdict[x][0]).stem)
+    #             self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(x))
 
     # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
