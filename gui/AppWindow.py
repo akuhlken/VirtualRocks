@@ -29,28 +29,40 @@ class AppWindow(Frame):
         self.menubar = Menu(self)
 
         # menus that make up the tabs of the menu bar, from left to right.
-        file = Menu(self.menubar, tearoff=0)  
-        styles = Menu(file, tearoff=0)
-        self.recent = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
+        self.file = Menu(self.menubar, tearoff=0)  
+        styles = Menu(self.file, tearoff=0)
+        self.recent = Menu(self.file, tearoff=0)
         info = Menu(self.menubar, tearoff=0)
         recon = Menu(self.menubar, tearoff=0)
 
         ## File menu (first tab)
-        file.add_command(label="Back to Start", command=lambda: self.controller.back_to_start())
-        file.add_command(label="New", command=lambda: self.new_project())  
-        file.add_command(label="Open", command=lambda: self.open_project())
-        file.add_command(label="Save")  
-        file.add_command(label="Save as")    
-        file.add_separator()  
+        self.file.add_command(label="Back to Start", command=lambda: self.controller.back_to_start())
+        self.file.add_command(label="New", command=lambda: self.new_project())  
+        self.file.add_command(label="Open", command=lambda: self.open_project())
+        self.file.add_command(label="Save")  
+        self.file.add_command(label="Save as")    
+        self.file.add_separator()  
         # style is cascade, only appears on hover as an offshoot of "Set Style..."
-        file.add_cascade(label="Set Style...", menu=styles)
+        self.file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self._start_darkmode())
         styles.add_command(label="Light", command=lambda: self._start_lightmode()) 
-        file.add_separator()
+        self.file.add_separator()
         # recent is also cascade, only appears on hover as an offshoot of "Open Recent..."
-        file.add_cascade(label="Open Recent...", menu=self.recent)
+        #file.add_cascade(label="Open Recent...", menu=self.recent)
         # the number of recent files/menu items displayed depends on how many exist.
-        self._recent_menu()
+        #self._recent_menu()
+        self.file.add_cascade(label="Open Recent...", menu=self.recent, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
+
+        self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
+        numrecents = len(self.recents.recentdict)
+        if numrecents == 0:
+            self.recent.add_command(label="no recents found")
+        for x in range(numrecents):
+            if x == 0:
+                self.recent.add_command(label=str(Path(self.recents.recentdict[0][0]).stem), command=lambda: self.open_recent(0))
+            else:
+                recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-x][0]).stem)
+                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-x))
 
         # Info menu, access to the docs.
         info.add_command(label="FAQ", command=lambda: self._open_helpmenu("FAQ.html")) 
@@ -61,7 +73,7 @@ class AppWindow(Frame):
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon())
 
         # Add menues to the menu bar as cascades
-        self.menubar.add_cascade(label="File", menu=file)
+        self.menubar.add_cascade(label="File", menu=self.file)
         self.menubar.add_cascade(label="Info", menu=info) 
         self.menubar.add_cascade(label="Reconstruction", menu=recon) 
         self.controller.config(menu=self.menubar)
@@ -71,16 +83,23 @@ class AppWindow(Frame):
     def _recent_menu(self):
         """
         Helper method to display the correct number of recent files in the recent cascade menu.
-        Since the number of filepaths saved in the dictionary of recent values can be anywhere from
-        0 to 4, the number of menu items should match the number of existing recent files. If there
-        aren't any, then there are no clickable menu items displayed under the recent menu.
+        There can be between 0 and 4 recent files at one time, so the number of menu items 
+        should match the number of existing recent files. If there aren't any, then there are no
+        clickable menu items displayed under the recent menu.
         """
+        self.file.add_cascade(label="Open Recent...", menu=self.recent, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
+
+        self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
         numrecents = len(self.recents.recentdict)
         if numrecents == 0:
             self.recent.add_command(label="no recents found")
         for x in range(numrecents):
-            recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-x][0]).stem)
-            self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(x))
+            if x == 0:
+                recentlabel = str(Path(self.recents.recentdict[0][0]).stem)
+                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(0))
+            else:
+                recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-x][0]).stem)
+                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-x))
 
     # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
@@ -121,7 +140,7 @@ class AppWindow(Frame):
                 return
         self.controller.open_project(Path(projfile))
         
-    def open_recent(self,index=1):
+    def open_recent(self,index=-1):
         """
         Event handler for the menu items representing files in the recents dictionary under the 
         "Open Recents..." cascade in the `File` menu tab in the menu bar.
@@ -129,9 +148,9 @@ class AppWindow(Frame):
         Args:
             index (int): index of recent file to open in the recents dictionary.
         """
-        index = -index
         try:
             projfile = self.recents.recentdict[index][0]
+            print(self.recents.recentdict[index][0])
             if not projfile:
                 return
             self.open_project(projfile)

@@ -282,9 +282,9 @@ class PipelineGUI(AppWindow):
             return
         self.controller.cancel_recon()   
         # don't want it to be in recents if we're moving away from the old file path.
-        for file in self.recents.recentdict:
-            if str(self.controller.picklepath.as_posix()) in file[0]:
-                self.recents.remove_recent(file[0])
+        for filetuple in self.recents.recentdict:
+            if str(self.controller.picklepath.as_posix()) in filetuple[0]:
+                self.recents.remove_recent(filetuple[0])
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
 
     # Event handler to be called whenever the window is resized

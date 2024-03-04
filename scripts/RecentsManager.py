@@ -27,7 +27,7 @@ class RecentsManager():
         Args:
             pklpath (pathlib.Path): the path to the project file that's being updated.
         """     
-        while len(self.recentdict) >= 4:
+        while len(self.recentdict) > 4:
             del self.recentdict[0]
         self.remove_recent(pklpath)    # removes from self.recentdict if file there, else nothing
         if pklpath:
@@ -73,5 +73,6 @@ class RecentsManager():
             pklpath (pathlib.Path): the path to the project file that's being removed.
         """
         for recenttuple in self.recentdict:
-            if pklpath and str(Path(pklpath).as_posix()) == recenttuple[0]:
+            if pklpath and (str(Path(pklpath).as_posix()) == recenttuple[0]):
                 self.recentdict.remove(recenttuple)
+                return
