@@ -28,7 +28,7 @@ class AppWindow(Frame):
         self.menubar = Menu(self)
 
         # menus that make up the tabs of the menu bar, from left to right.
-        self.file = Menu(self.menubar, tearoff=0)
+        self.file = Menu(self.menubar, tearoff=0, postcommand=lambda: self._recent_menu())
         styles = Menu(self.file, tearoff=0)
         self.recent = Menu(self.file, tearoff=0)
         info = Menu(self.menubar, tearoff=0)
@@ -50,7 +50,7 @@ class AppWindow(Frame):
         #file.add_cascade(label="Open Recent...", menu=self.recent)
         # the number of recent files/menu items displayed depends on how many exist.
         #self._recent_menu()
-        self.file.add_cascade(label="Open Recent...", menu=self.recent, postcommand=self._recent_menu())
+        self.file.add_cascade(label="Open Recent...", menu=self.recent)
          
 
         # Info menu, access to the docs.
