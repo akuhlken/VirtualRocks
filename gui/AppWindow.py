@@ -29,7 +29,7 @@ class AppWindow(Frame):
         self.menubar = Menu(self)
 
         # menus that make up the tabs of the menu bar, from left to right.
-        self.file = Menu(self.menubar, tearoff=0)  
+        self.file = Menu(self.menubar, tearoff=0, postcommand=self.recents.update_recent())  
         styles = Menu(self.file, tearoff=0)
         self.recent = Menu(self.file, tearoff=0)
         info = Menu(self.menubar, tearoff=0)
@@ -51,18 +51,17 @@ class AppWindow(Frame):
         #file.add_cascade(label="Open Recent...", menu=self.recent)
         # the number of recent files/menu items displayed depends on how many exist.
         #self._recent_menu()
-        self.file.add_cascade(label="Open Recent...", menu=self.recent, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
+        self.file.add_cascade(label="Open Recent...", menu=self.recent)
 
         self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
         numrecents = len(self.recents.recentdict)
         if numrecents == 0:
             self.recent.add_command(label="no recents found")
         for x in range(numrecents):
-            if x == 0:
-                self.recent.add_command(label=str(Path(self.recents.recentdict[0][0]).stem), command=lambda: self.open_recent(0))
-            else:
-                recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-x][0]).stem)
-                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-x))
+            index = x + 1
+            print(str(index) + str(Path(self.recents.recentdict[-index][0]).stem))
+            recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-index][0]).stem)
+            self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-index))
 
         # Info menu, access to the docs.
         info.add_command(label="FAQ", command=lambda: self._open_helpmenu("FAQ.html")) 
@@ -98,8 +97,8 @@ class AppWindow(Frame):
                 recentlabel = str(Path(self.recents.recentdict[0][0]).stem)
                 self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(0))
             else:
-                recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-x][0]).stem)
-                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-x))
+                recentlabel = str(x) + " " + str(Path(self.recents.recentdict[x][0]).stem)
+                self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(x))
 
     # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
@@ -150,7 +149,7 @@ class AppWindow(Frame):
         """
         try:
             projfile = self.recents.recentdict[index][0]
-            print(self.recents.recentdict[index][0])
+            print("opening recent: " + str(projfile))
             if not projfile:
                 return
             self.open_project(projfile)
@@ -198,3 +197,4 @@ class AppWindow(Frame):
         except Exception as e:
             print(e)
         return
+    

@@ -16,7 +16,7 @@ class RecentsManager():
         """
         self.recentdict = self.get_recent() 
 
-    def update_recent(self, pklpath):    
+    def update_recent(self, pklpath=None):    
         """
         Updates the recent list maintained by the class. It stores the paths to up to 4 pickle 
         files (the current and the 3 that came before it) in a dictionary and deletes the oldest
@@ -27,11 +27,17 @@ class RecentsManager():
         Args:
             pklpath (pathlib.Path): the path to the project file that's being updated.
         """     
+        print("pkl path: " + str(pklpath))
         while len(self.recentdict) > 4:
             del self.recentdict[0]
-        self.remove_recent(pklpath)    # removes from self.recentdict if file there, else nothing
-        if pklpath:
+        for recenttuple in self.recentdict:
+            if pklpath and (str(Path(pklpath).as_posix()) == recenttuple[0]):
+                print("removing " + str(recenttuple))
+                self.recentdict.remove(recenttuple)
+        print("after removal: " + str(self.recentdict))
+        if pklpath is not None:
             self.recentdict.append((str(Path(pklpath).as_posix()), 1))  
+        print("after (re)adding: " + str(self.recentdict))
 
     def get_recent(self):
         """
@@ -74,5 +80,6 @@ class RecentsManager():
         """
         for recenttuple in self.recentdict:
             if pklpath and (str(Path(pklpath).as_posix()) == recenttuple[0]):
+                print("removing " + str(recenttuple))
                 self.recentdict.remove(recenttuple)
-                return
+        print("after removal: " + str(self.recentdict))
