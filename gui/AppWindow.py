@@ -28,9 +28,9 @@ class AppWindow(Frame):
         self.menubar = Menu(self)
 
         # menus that make up the tabs of the menu bar, from left to right.
-        self.file = Menu(self.menubar, tearoff=0, postcommand=lambda: self._recent_menu())
+        self.file = Menu(self.menubar, tearoff=0)
         styles = Menu(self.file, tearoff=0)
-        self.recent = Menu(self.file, tearoff=0)
+        self.recent = Menu(self.file, tearoff=0, postcommand=lambda: self._recent_menu())
         info = Menu(self.menubar, tearoff=0)
         recon = Menu(self.menubar, tearoff=0)
 
@@ -70,6 +70,8 @@ class AppWindow(Frame):
 
 
     def _recent_menu(self):
+        self.recent.delete(0, "end")
+
         recentstack = RecentsManager.get()
         self.recent.add_command(label="print recents", command=lambda: print(recentstack))
         numrecents = len(RecentsManager.get())
