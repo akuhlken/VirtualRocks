@@ -70,10 +70,19 @@ class AppWindow(Frame):
 
 
     def _recent_menu(self):
-        self.recent.delete(0, "end")
+        """
+        Helper method that creates the menu cascade under "Open Recents..." in the file menu.
+        It refreshes the menu elements that are displayed when the menu is opened, with the 
+        currently opened file at the top and the least recently opened item at the bottom. The
+        menu can display 0 to 4 recent projects.
 
+        As it can be called repeatedly, the method starts by removing all elements from the cascade
+        before adding new ones. It uses `get()` from :ref:`RecentsManager <recentsmanager>` to use
+        up-to-date recent values.
+        """
+        self.recent.delete(0, "end")
         recentstack = RecentsManager.get()
-        numrecents = len(RecentsManager.get())
+        numrecents = len(recentstack)
         if numrecents == 0:
             self.recent.add_command(label="no recents found")
         if numrecents >= 1:
@@ -84,20 +93,6 @@ class AppWindow(Frame):
             self.recent.add_command(label="2 " + str(Path(recentstack[-3]).stem), command=lambda: self.open_recent(Path(recentstack[-3])))
         if numrecents >= 4:
             self.recent.add_command(label="3 " + str(Path(recentstack[-4]).stem), command=lambda: self.open_recent(Path(recentstack[-4])))
-        
-
-        # self.file.add_cascade(label="Open Recent...", menu=self.recent)
-
-        # self.recent.add_command(label="print recents", command=lambda: print(self.recents.recentdict))
-        # numrecents = len(self.recents.recentdict)
-        # if numrecents == 0:
-        #     self.recent.add_command(label="no recents found")
-        # for x in range(numrecents):
-        #     index = x + 1
-        #     print(str(index) + str(Path(self.recents.recentdict[-index][0]).stem))
-        #     recentlabel = str(x) + " " + str(Path(self.recents.recentdict[-index][0]).stem)
-        #     self.recent.add_command(label=recentlabel, command=lambda: self.open_recent(-index))
-
 
 
     # Event handler for the "new project" menu item
