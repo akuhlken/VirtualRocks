@@ -481,29 +481,3 @@ if __name__ == "__main__":
     app = main()
     app.protocol("WM_DELETE_WINDOW", app._shutdown)
     app.mainloop()
-
-# TODO: Many things are labeled as handlers when really the handlers are in the 
-    # GUI and the mathods here are secondary calls
-
-# TODO: all non helper methods need docs formatted for the auto docs
-
-# TODO: Style guidelines:
-    # Method names use underscores: foo_bar()
-    # variables are all lowercase one word: varname
-    # Handlers are any method directly bound to a button or event
-    # Helper functions are any which are never called externally from the class and start with _foo_bar() also not event halders
-    # Classes are camel case: MethodName
-
-# TODO: Software Design
-    # GUI never interacts with file system, recon manager, or any other scripting classes directly
-    # All classes that can be static should be
-    # Methods should either return a value or update state/ perform an operation, never both
-    # Classes should have as few fields as possible
-
-# TODO: All python files should be in an scr folder
-    # Outside the src folder there should be a single executeable, license, and the README
-
-# TODO: Colmap should be in its own subfolder with its license info in a text file
-# TODO: darkmap.png should be renamed to something more logical like blankmap.png
-# TODO: following style the heat_map.png should be heatmap.png
-# TODO: placeholder photo should have a better name bc thats not all it is
