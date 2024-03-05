@@ -26,8 +26,8 @@ class AppWindow(Frame):
     def _create_menu(self):
         """
         Setup method for top menu bar. It's displayed consistently through the Tk app with `File`,
-        `Info`, and `Recon` menus that let the user navigate through projects, access the docs, and
-        run all pipeline steps automatically.
+        `Info`, and `Reconstruction` menus that let the user navigate through projects, access the
+        docs, and run all pipeline steps automatically.
         """
         # Main menu object (the bar)
         self.menubar = Menu(self)

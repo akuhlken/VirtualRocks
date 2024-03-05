@@ -127,7 +127,7 @@ class ReconManager():
         """
         Method runs a full reconstruction from images to tiled meshes automatically.
 
-        .. note::  
+        .. warning::  
             Using this method does not allow the user to trim point cloud. It's useful when running
             the app on a large dataset or overnight, but will likely result in a final mesh that 
             includes outlier points.

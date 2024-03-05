@@ -32,6 +32,9 @@ PYTHONPATH = os.environ['PROGRAMFILES'] + "/python311/python"
 class main(Tk):
 
     def __init__(self, *args, **kwargs):
+        """
+        general class desc, args.
+        """
         Tk.__init__(self, *args, **kwargs)
 
         # Controller Variables
@@ -91,8 +94,9 @@ class main(Tk):
     def init_style(self):
         """
         Handles assignment of style elements when app starts or when the style changes. This 
-        includes the button size, the title's font size, and progress bar appearance. The progress
-        on the current step, if one is running, is also reprinted to the bar.
+        includes the button size, the title font size on the start page, and progress bar
+        appearance. The progress on the current step, if one is running, is also reprinted to the
+        bar.
         """
         # setting initial style stuff
         self.style.configure("TButton", width=16)
@@ -115,12 +119,12 @@ class main(Tk):
     #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir, name=None, imgdir=None):
         """
-        description
+        Handler method for creating a new project.
 
         Args:
-            projdir (type?): what is it?
-            name (str): what is it?
-            imgdir (type?): what is it?
+            projdir (pathlib.Path): project directory to save .pkl file in.
+            name (str): optional, the name of the project.
+            imgdir (pathlib.Path): optional, image directory
         """
         print("creating new project")
         self.projdir = Path(projdir)
@@ -149,7 +153,7 @@ class main(Tk):
         description
 
         Args:
-            projfile (type?): what is it?
+            projdir (pathlib.Path): Project directory containing .pkl file.
         """
         print("opening project")
         self.picklepath = projfile
@@ -178,7 +182,10 @@ class main(Tk):
     #   since there's an option for it in the menu, it must be done.
     def back_to_start(self):
         """
-        description
+        Handler method for reopening the starting page when the "Back to Start" menu item in the
+        `File` menu tab in :ref:`AppWindow <appwindow>` is pressed. It reopens the Tk Frame made by
+        :ref:`StartGUI <startGUI>`, resets the app title, and disables the `Reconstruction` menu
+        tab.
         """
         self.page1.tkraise()
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
@@ -189,10 +196,15 @@ class main(Tk):
     #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imgdir):
         """
-        description
+        Method that sets the controller variable for image directory and sets the example image
+        from pictures in the selected image directory. Progress on this step is tracked using the
+        `_send_log()` helper function in :ref:`ReconManager <reconmanager>`.
+
+        The handler method `photos_handler()` in :ref:`PipelineGUI <pipelineGUI>` opens a dialog
+        that allows the user to select an image directory.
 
         Args:
-            imgdir (type?): what is it?
+            imgdir (pathlib.Path): path to the image directory
         """
         self.recon._send_log("$$")
         self.recon._send_log("$.Image Loading.0$")
@@ -211,7 +223,9 @@ class main(Tk):
         """
         Method communicates between the GUI and the PointCloudManager for trimming models by
         removing points from the dense point clouds.
-        The handler method `bounds_handler` in :ref:`PipelineGUI <pipelineGUI>` creates the dialog
+        This step automatically completes, and its progress is tracked using the `_send_log()`
+        helper function in :ref:`ReconManager <reconmanager>`.
+        The handler method `bounds_handler()` in :ref:`PipelineGUI <pipelineGUI>` creates the dialog
         (using the :ref:`BoundsDialog <boundsdialog>` class) and passes the bounds received from
         the user to this method.
 
@@ -236,9 +250,13 @@ class main(Tk):
     #   Serves to undo the set bounds
     def restore(self):
         """
-        description
+        Handler method for the "Reset" button on the setting bounds step in 
+        :ref:`PipelineGUI <pipelineGUI>`. It overwrites the current `fused.ply` file with the 
+        unedited `save.ply` copy. The method undoes any previous point cloud trims done when
+        setting bounds.
         """
         if self.state >= MATCHER:
+            self.page2.log("Point cloud restoration complete")
             dense = Path(self.projdir / "dense")
             savefile = Path(dense / "save.ply")
             shutil.copy(savefile, Path(dense / "fused.ply"))
@@ -251,7 +269,11 @@ class main(Tk):
     #   Starts a new thread for the ReconManager.matcher() method
     def start_matcher(self):
         """
-        description
+        Handler method for starting the mesher (:ref:`Colmap <colmap>`), called via "2: Matcher"
+        button press in :ref:`PipelineGUI <pipelineGUI>`.
+
+        It starts a new thread for the `matcher()` method in the :ref:`ReconManager <reconmanager>`
+        class.
         """
         self.recon.imgdir = self.imgdir
         self.thread1 = Thread(target = self.recon.matcher)
@@ -262,7 +284,11 @@ class main(Tk):
     #   Starts a new thread for the ReconManager.mesher() method
     def start_mesher(self):
         """
-        description
+        Handler method for starting the mesher (:ref:`pymeshlab <meshlab>`), called via "3: Mesher"
+        button push in :ref:`PipelineGUI <pipelineGUI>`.
+
+        It starts a new thread for the `mesher()` method in the :ref:`ReconManager <reconmanager>`
+        class.
         """
         self.recon.imgdir = self.imgdir
         self.thread1 = Thread(target = self.recon.mesher)
@@ -273,7 +299,16 @@ class main(Tk):
     #   Starts a new thread for the ReconManager.auto() method
     def auto_recon(self):
         """
-        description. Called by menu button press in :ref:`AppWindow.py <appwindow>`.
+        Handler method for the automatic reconstuction feature, called by a command in the 
+        `Reconstruction` file menu in :ref:`AppWindow <appwindow>`. 
+        
+        It starts a new thread for the `auto()` method in the :ref:`ReconManager <reconmanager>`
+        class.
+
+        .. warning::  
+            Using :ref:`ReconManager <reconmanager>`'s `auto()` method does not allow the user to
+            trim the point cloud. It's useful when running the app on a large dataset or overnight,
+            but will likely result in a final mesh that includes outlier points.
         """
         if not self.imgdir:
             self.page2.log("No images loaded")
@@ -287,23 +322,36 @@ class main(Tk):
     #   Should call the recon managers cancel() method
     def cancel_recon(self):
         """
-        description
+        Handler method for cancelling the reconstruction, no matter the step it's on. It's called
+        by the "Cancel" button :ref:`PipelineGUI <pipelineGUI>`, and when changing project 
+        directory with :ref:`PipelineGUI <pipelineGUI>`'s `change_projdir()`.
         """
         self.recon.cancel()
 
     def preview_cloud(self):
+        """
+        Handler method for the "Preview Point Cloud" button beneath the chart in
+        :ref:`PipelineGUI <pipelineGUI>`. It starts a subprocess to open an ``open3d`` viewer
+        window of the current project file, which will remain open even if the **VirtualRocks**
+        window is closed.
+        """
         path = Path(self.projdir / 'dense' / 'fused.ply')
         p = subprocess.Popen([PYTHONPATH, 'scripts/CloudPreviewer.py', str(path)])
 
     # Method for updating the state of the application
-    #   Should set the map image acordingly as well as activate and deactivate buttons
+    #   Should set the map image accordingly as well as activate and deactivate buttons
     def update_state(self, state):
         """
-        description. The only place where the upper progress bar (that displays the total 
-        progress) is updated.
+        Method for updating the state of the application, which controls which buttons are 
+        activated and the image the chart is set to. The method also controls the value of the
+        total progress bar. Called when opening projects and progressing through the pipeline to
+        gradually enable functionality when applicable.
 
         Args:
             state (type?): what is it?
+
+        .. warning::
+            what type is the state?
         """
         self.state = state
         self.page2.progresstotal.config(value=state)
@@ -361,6 +409,11 @@ class main(Tk):
 
         Args:
             e(event): what is it?
+
+        .. warning::
+            So like, what is an event? Is this going to be a specific event or is it just any... We
+            need to fix this in some other places too, so use the search bar to find all mentions
+            of 'event'.
         """
         if self.fullscreen:
             self.attributes('-fullscreen', False)
