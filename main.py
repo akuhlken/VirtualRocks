@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import sys
 from ttkbootstrap import Style
 from tkinter import simpledialog, PhotoImage, Frame, Tk
 from pathlib import Path
@@ -27,7 +28,7 @@ MATCHER = 70
 MESHER = 100
 
 # Path to specific python version installed by the installer
-PYTHONPATH = os.environ['PROGRAMFILES'] + "/python311/python"
+PYTHONPATH = os.getenv('LOCALAPPDATA') + "\\Programs\\Python\\Python311\\python.exe"
 
 class main(Tk):
 
@@ -47,7 +48,7 @@ class main(Tk):
         
         # Configuration variables
         self.projectname = "project"
-        self.picklepath = ""
+        self.picklepath = None
         self.minsize(500, 300)
         centerdim = self._open_middle(1000,700)
         self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
@@ -66,10 +67,14 @@ class main(Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        # Load staring page and start application
-        self.page1 = StartGUI(parent=self.container, controller=self)
-        self.page1.grid(row=0, column=0, sticky="nsew")
-        self.page1.tkraise()
+        if not args[0]:
+            # Load staring page and start application
+            self.page1 = StartGUI(parent=self.container, controller=self)
+            self.page1.grid(row=0, column=0, sticky="nsew")
+            self.page1.tkraise()
+        else:
+            # Open project directly
+            self.open_project(args[0])
 
         # Binding for fullscreen toggle
         self.bind("<F11>", self._toggle_fullscreen)
@@ -130,7 +135,7 @@ class main(Tk):
             self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
         else:
             self.projectname = name
-        self.picklepath = self.projdir / Path(self.projectname + '.pkl')
+        self.picklepath = self.projdir / Path(self.projectname + '.vrp')
         self._startup()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         self.title("VirtualRocks: " + self.projectname)
@@ -423,6 +428,12 @@ class main(Tk):
         self.destroy()
 
 if __name__ == "__main__":
-    app = main()
+    pklfile = None
+    try:
+        pklfile = sys.argv[1]
+        print(pklfile)
+    except:
+        pass
+    app = main(pklfile)
     app.protocol("WM_DELETE_WINDOW", app._shutdown)
     app.mainloop()
