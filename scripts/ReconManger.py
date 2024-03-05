@@ -24,7 +24,7 @@ class ReconManager():
 
         Args:
             controller (:ref:`Main <main>`): Reference to the main TK app
-            projdir (pathlib.Path): Project directory containing .pkl file
+            projdir (pathlib.Path): Project directory containing .vrp file
         """
         self.controller = controller
         self.imgdir = None
