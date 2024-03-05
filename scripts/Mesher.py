@@ -7,7 +7,7 @@ import sys
 OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 4096
 CELL_SIZE = 0.0001 # Clustering decimation cell size
-TILE_SIZE = 50000 # Will subdivide tiles until they are below this number of verts
+TILE_SIZE = 25000 # Will subdivide tiles until they are below this number of verts
 VERTEX_LIMIT = 2000000
 VERBOSE = False
 
@@ -161,7 +161,7 @@ class Mesher():
             self.ms.meshing_remove_selected_vertices()
 
             # Build texture
-            self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"tile_{self.tile}.jpg", usedistanceweight=False)
+            self.ms.compute_texcoord_parametrization_and_texture_from_registered_rasters(texturesize = TEXTURE_RES, texturename = f"tile_{self.tile}.jpg")
 
             # Export mesh
             self.ms.save_current_mesh(fr"{self.outdir}\tile_{self.tile}.obj")

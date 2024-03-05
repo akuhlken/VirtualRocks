@@ -80,7 +80,7 @@ class PipelineGUI(AppWindow):
         self.temp = ImageTk.PhotoImage(Image.open(self.DEFAULT_CHART))
         self.chart = Canvas(self.left)
         self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
-        self.chart.bind('<Configure>', self._resizer)
+        self.chart.bind('<Configure>', self._refresh_chart)
         self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud", command=lambda: self.controller.preview_cloud())  # TODO: need to add the handler/command to open the preview.
         self.chartview = Button(chartbuttonsframe, width=20, text="Change View", command=lambda: self.change_chart_view())  # TODO: need to add the handler/command to switch chart
 
@@ -283,26 +283,6 @@ class PipelineGUI(AppWindow):
         # don't want it to be in recents if we're moving away from the old file path.
         RecentsManager.remove(self.controller.picklepath)
         self.controller.new_project(projdir, self.controller.projectname, self.controller.imgdir)
-
-    # Event handler to be called whenever the window is resized
-    #   Updates and scales the chart image with window
-    def _resizer(self, e):
-    #    self.event_generate("<<RefreshChart>>")
-        """
-        Event handler that's called whenever the window is resized to make sure the chart stays a
-        reasonable size within the Tk app. 
-
-        Args:
-            e (event): a `Configure` event.
-
-        .. note::   
-            I think we don't need this function, it works fine by having this function be a single
-            line, "self.event_generate("<<RefreshChart>>")".
-        """
-        image = Image.open(self.currentchart)
-        resized_image = self._scale_image(e.width, e.height, image.width, image.height, image)
-        self.temp = ImageTk.PhotoImage(resized_image)
-        self.chart.itemconfigure(self.chart_image_id, image=self.temp)
     
     # Method writes strings to the log
     def log(self, msg):
@@ -327,7 +307,7 @@ class PipelineGUI(AppWindow):
         using `_scale_image()`, to fit in the left column.
 
         Args:
-            e (event): a `RefreshChart` event.
+            e (event): a `RefreshChart` or `Configure` event
 
         .. note::
             May need to change the description for this function depending on if we change _resizer
