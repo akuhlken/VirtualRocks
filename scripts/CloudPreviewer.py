@@ -3,7 +3,7 @@ import open3d
 
 def show(filename):
     """
-    Function to open an open3d viewer window of a .ply file
+    Function to open an open3d viewer window of a .ply file. Used by 
 
     Args:
         filename (string): Path to the .ply file the user wants to preview

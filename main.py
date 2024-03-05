@@ -90,11 +90,9 @@ class main(Tk):
 
     def init_style(self):
         """
-        On Tk app start and when switching between light and dark styles, certain elements of the
-        style need to be reassigned for consistency. This includes the button size, the font size
-        of the title on the start page, and the appearance of the progress bar. Since the user 
-        can switch style while a process is running, this function also reprints the current
-        progress to the restyled lower progress bar.
+        Handles assignment of style elements when app starts or when the style changes. This 
+        includes the button size, the title's font size, and progress bar appearance. The progress
+        on the current step, if one is running, is also reprinted to the bar.
         """
         # setting initial style stuff
         self.style.configure("TButton", width=16)
@@ -211,15 +209,19 @@ class main(Tk):
     #   Handler in PipelineGUI creates dialog and passes bounds here
     def set_bounds(self, minx, maxx, miny, maxy, minz, maxz):
         """
-        Method comunicates between the GUI and the PointCloudManager for trimming models
+        Method communicates between the GUI and the PointCloudManager for trimming models by
+        removing points from the dense point clouds.
+        The handler method `bounds_handler` in :ref:`PipelineGUI <pipelineGUI>` creates the dialog
+        (using the :ref:`BoundsDialog <boundsdialog>` class) and passes the bounds received from
+        the user to this method.
 
         Args:
-            minx (float):
-            maxx (float):
-            miny (float):
-            maxy (float):
-            minz (float):
-            maxz (float):
+            minx (float): minimum x axis bound
+            maxx (float): maximum x axis bound
+            miny (float): minimum y axis bound
+            maxy (float): maximum y axis bound
+            minz (float): minimum z axis bound
+            maxz (float): maximum z axis bound
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")

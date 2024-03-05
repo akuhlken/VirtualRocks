@@ -23,7 +23,7 @@ class Matcher:
 
     def image2dense(self, clean):
         """
-        Runs the colmap comands sequentially as subprocesses.
+        Method to run the colmap commands sequentially as subprocesses.
 
         Args:
             clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists). A command-line flag.
