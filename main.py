@@ -76,7 +76,7 @@ class main(Tk):
         # Binding for fullscreen toggle
         self.bind("<F11>", self._toggle_fullscreen)
         self.bind("<Escape>", self._end_fullscreen)
-
+        self.bind("<control-z>", self.restore)
     # Common startup tasks for both opening and creating projects
     def _startup(self):
         """
