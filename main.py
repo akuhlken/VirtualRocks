@@ -253,8 +253,14 @@ class main(Tk):
         dense = Path(self.projdir / "dense")
         PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy, minz, maxz)
         self.page2.log("Trimming complete")
-        PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
-        self.page2.set_chart(Path(dense/ "heat_map.png"))
+        try:
+            PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
+            PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
+            self.page2.set_chart(Path(dense/ "height_map.png"))
+        except Exception as e:
+            self.page2.log(str(e))
+            self.page2.log("No Points Found")
+            self.page2.set_chart(self.page2.DEFAULT_CHART)
 
     # Handler for the restore point cloud menu item
     #   Should overwrite the current fused.ply with the un-edited save.ply
@@ -272,7 +278,8 @@ class main(Tk):
             savefile = Path(dense / "save.ply")
             shutil.copy(savefile, Path(dense / "fused.ply"))
             PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
-            self.page2.set_chart(Path(dense/ "heat_map.png"))
+            PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
+            self.page2.set_chart(Path(dense/ "height_map.png"))
         else:
             self.page2.log("Nothing to restore, run matcher to create a point cloud")
 
@@ -386,7 +393,7 @@ class main(Tk):
             self.page2.matcher.config(state='active')
         if state == MATCHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_chart(Path(dense/ "heat_map.png"))
+            self.page2.set_chart(Path(dense/ "height_map.png"))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.previewcloud.config(state='active')
@@ -396,7 +403,7 @@ class main(Tk):
             self.page2.mesher.config(state='active')
         if state == MESHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_chart(Path(dense/ "heat_map.png"))
+            self.page2.set_chart(Path(dense/ "height_map.png"))
             self.page2.matcher.config(state='active')
             self.page2.chartview.config(state='active')
             self.page2.resetbounds.config(state='active')

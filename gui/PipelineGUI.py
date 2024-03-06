@@ -242,7 +242,10 @@ class PipelineGUI(AppWindow):
         chart uses a `RefreshChart` event to actually change, which the handler generates.
         """
         self.viewtype = ~self.viewtype # Toggle boolean
-        # TODO: set current chart (self.currentchart) and then refresh chart event will handle the rest
+        if self.viewtype == 1:
+            self.currentchart = Path(self.projdir) / "dense" / "height_map.png"
+        else:
+            self.currentchart = Path(self.projdir) / "dense" / "heat_map.png"
         self.event_generate("<<RefreshChart>>")
 
     # Method to be called externally for setting example image
