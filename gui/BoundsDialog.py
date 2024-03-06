@@ -29,7 +29,7 @@ class BoundsDialog(simpledialog.Dialog):
         Method to loop through the inputted values and make the values usable by the app. 
 
         For boxes that did not get values inputted, their values are set to defaults to avoid
-        undesired crops (min prompts = `-infinity`, max prompts = `+infinity`).
+        undesired crops (minimum prompts = `-infinity`, maximum prompts = `+infinity`).
         """
         try:
             self.result = []

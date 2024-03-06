@@ -36,8 +36,8 @@ def remove(path):
 
 def get():
     """
-    Method that gets the recents stack out of the pkl and returns it. Used by `add()` and
-    `remove()` to get the current value of the stack. 
+    Method that gets the recents stack out of the pkl and returns it. Used by `add` and
+    `remove` to get the current value of the stack. 
     
     Called in :ref:`AppWindow.py <appwindow>` to initialize the menu.
 
@@ -52,7 +52,7 @@ def get():
 def init_pkl():
     """
     Method to initialize the recents pkl file if it doesn't already exist in the user's AppData.
-    Called in `_load_pkl()` to make sure the pkl file exists before use.
+    Called in `_load_pkl` to make sure the pkl file exists before use.
     """
     if not os.path.isdir(os.path.join(os.getenv('LOCALAPPDATA'), "VirtualRocks")):
         os.mkdir(os.path.join(os.getenv('LOCALAPPDATA'), "VirtualRocks"))

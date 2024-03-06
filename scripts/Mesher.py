@@ -15,13 +15,13 @@ class Mesher():
 
     def __init__(self, projdir):
         """
-        Mesher is a python class designed to be run as a subprocess. It uses the 
+        `Mesher` is a python class designed to be run as a subprocess. It uses the 
         :ref:`pymeshlab <meshlab>` library to create the mesh, subdivide the mesh into tiles 
         until each tile has less than 50k verticies, generate textures, and create a low polygon
         mesh for the entire model.
 
         Args:
-            projdir (pathlib.Path): Project directory containing .vrp file
+            projdir (pathlib.Path): Project directory containing .vrp file.
         """
         self.projdir = projdir
         self.dense2mesh()
@@ -132,7 +132,7 @@ class Mesher():
         """
         Recursive helper method for subdividing mesh into tiles. Once a tile is below 50k verticies,
         it generates a texture and export. The passed values allow the method to recurse on smaller
-        portions of the mesh.
+        portions of the mesh. Bounds are inclusive.
 
         .. note::
             Exported tiles save to the out folder in the current project directory. Their names
@@ -140,10 +140,10 @@ class Mesher():
             from each other.
 
         Args:
-            minx (float): minimum x axis bound
-            maxx (float): maximum x axis bound
-            miny (float): minimum y axis bound
-            maxy (float): maximum y axis bound
+            minx (float): minimum x axis bound.
+            maxx (float): maximum x axis bound.
+            miny (float): minimum y axis bound.
+            maxy (float): maximum y axis bound.
         """
         # Select verts in bounds
         self.ms.set_current_mesh(self.fullmodel)

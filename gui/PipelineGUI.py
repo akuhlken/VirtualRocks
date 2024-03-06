@@ -294,7 +294,7 @@ class PipelineGUI(AppWindow):
         to show the bottom of the log.
 
         Args:
-            msg (string): what is it?
+            msg (string): string to be printed on the log.
         """
         self.logtext.insert(END, msg + "\n")
         self.logtext.see("end")
@@ -304,17 +304,13 @@ class PipelineGUI(AppWindow):
     #    If app has been resized, resizes image to fit
     def _refresh_chart(self, e):
         """
-        Event handler called whenever a `RefreshChart` events occurs (in set_chart() and
-        change_chart_view()). It sets the image displayed on the `chart` canvas to the currentchart
-        set by `set_chart()`. If the Tk app has been resized, then the chart image is resized,
-        using `_scale_image()`, to fit in the left column.
+        Event handler called whenever a `RefreshChart` events occurs (in `set_chart` and
+        `change_chart_view`). It sets the image displayed on the `chart` canvas to the currentchart
+        set by `set_chart`. If the Tk app has been resized, then the chart image is resized,
+        using `_scale_image`, to fit in the left column.
 
         Args:
             e (event): a `RefreshChart` or `Configure` event
-
-        .. note::
-            May need to change the description for this function depending on if we change _resizer
-            or not.
         """
         if self.chart.winfo_width() > 1 and self.chart.winfo_height() > 1:
             image = Image.open(self.currentchart)
@@ -333,11 +329,11 @@ class PipelineGUI(AppWindow):
         by choosing the smaller scale calculated from the x and y axes.
 
         Args:
-            wwidth (int): window width
-            wheight (int): window height
-            iwidth (int): image width
-            iheight (int): image height
-            image (image): the image `(chart)` to be scaled
+            wwidth (int): window width.
+            wheight (int): window height.
+            iwidth (int): image width.
+            iheight (int): image height.
+            image (image): the image/chart to be scaled.
         """
         width_scale = wwidth / iwidth
         height_scale = wheight / iheight

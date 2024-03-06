@@ -13,7 +13,7 @@ def get_coordinates(filename):
     Helper method which extract the x and y coordinates from the given `.ply` file.
 
     Args:
-        filename (pathlib.Path): Path to a .ply point cloud file
+        filename (pathlib.Path): Path to a .ply point cloud file.
     """
     plydata = PlyData.read(filename)
     vertex = plydata['vertex']
@@ -49,8 +49,8 @@ def create_height_map(filename, outdir):
     description
 
     Args:
-        filename (pathlib.Path): Path to a .ply point cloud file
-        outdir (pathlib.Path): path to the project's "out" directory
+        filename (pathlib.Path): Path to a .ply point cloud file.
+        outdir (pathlib.Path): path to the project's "out" directory.
     """
     x, y, z = get_coordinates(filename)
     min_val = min(np.min(x), np.min(y))
@@ -68,16 +68,16 @@ def create_height_map(filename, outdir):
 def remove_points(filename, minx, maxx, miny, maxy, minz, maxz):
     """
     Method removes points from .ply point cloud that lie outside the provided bounds and exports as
-    `fused.ply` into the dense directory.
+    `fused.ply` into the dense directory. Bounds are inclusive.
 
     Args:
-        filename (pathlib.Path): Path to a .ply point cloud file
-        minx (float): minimum x axis bound
-        maxx (float): maximum x axis bound
-        miny (float): minimum y axis bound
-        maxy (float): maximum y axis bound
-        minz (float): minimum z axis bound
-        maxz (float): maximum z axis bound
+        filename (pathlib.Path): Path to a .ply point cloud file.
+        minx (float): minimum x axis bound.
+        maxx (float): maximum x axis bound.
+        miny (float): minimum y axis bound.
+        maxy (float): maximum y axis bound.
+        minz (float): minimum z axis bound.
+        maxz (float): maximum z axis bound.
     """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):

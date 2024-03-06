@@ -17,6 +17,8 @@ About
 -----
 it an app. 
 
+must mention supported file types: jpg, png, and tiff. 
+
 Download
 --------
 go to github and download the zip.
@@ -37,10 +39,8 @@ Who/where we got the models from. maybe last years team as well.
 
    FAQ
    Installation
-   Tutorial
    Samples
-   colmap
-   meshlab
+   dependencies
    unity
    reference/references
    

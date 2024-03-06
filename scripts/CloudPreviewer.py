@@ -7,7 +7,7 @@ def show(filename):
     :ref:`main <main>`.
 
     Args:
-        filename (string): Path to the .ply file the user wants to preview
+        filename (string): Path to the .ply file the user wants to preview.
     """
     cloud = open3d.io.read_point_cloud(filename)
     open3d.visualization.draw_geometries([cloud])

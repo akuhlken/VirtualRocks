@@ -7,11 +7,11 @@ DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
 
 def get_num_img(imgdir):
     """
-    Method returns the number of valid images `(see note above for valid types)` in the image
+    Method returns the number of valid images `(see above for supported types)` in the image
     directory as an int. 
 
     Args:
-        imgdir (pathlib.Path): Path to image directory
+        imgdir (pathlib.Path): Path to image directory.
 
     Returns:
         int: the number of valid images in the directory
@@ -28,7 +28,7 @@ def get_example_img(imgdir):
     in the image directory, then the method returns the path to the default preview image.
 
     Args:
-        imgdir (pathlib.Path): Path to image directory
+        imgdir (pathlib.Path): Path to image directory.
         
     Returns:
         pathlib.Path: path to preview image of image directory
