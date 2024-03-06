@@ -12,7 +12,7 @@ MATCHER = 70
 MESHER = 100
 
 # Path to specific python version installed by the installer
-PYTHONPATH = os.environ['PROGRAMFILES'] + "/python311/python"
+PYTHONPATH = os.getenv('LOCALAPPDATA') + "\\Programs\\Python\\Python311\\python.exe"
 
 class ReconManager():
 
@@ -24,7 +24,7 @@ class ReconManager():
 
         Args:
             controller (:ref:`Main <main>`): Reference to the main TK app
-            projdir (pathlib.Path): Project directory containing .pkl file
+            projdir (pathlib.Path): Project directory containing .vrp file
         """
         self.controller = controller
         self.imgdir = None

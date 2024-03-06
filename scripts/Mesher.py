@@ -21,7 +21,7 @@ class Mesher():
         mesh for the entire model.
 
         Args:
-            projdir (pathlib.Path): Project directory containing .pkl file
+            projdir (pathlib.Path): Project directory containing .vrp file
         """
         self.projdir = projdir
         self.dense2mesh()

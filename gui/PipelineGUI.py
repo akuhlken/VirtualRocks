@@ -25,7 +25,7 @@ class PipelineGUI(AppWindow):
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
             controller (:ref:`main <main>`\*): a reference to main.
-            projdir (pathlib.Path): Project directory containing .pkl file.
+            projdir (pathlib.Path): Project directory containing .vrp file.
         """
         AppWindow.__init__(self, parent, controller)
         self.setup_layout()

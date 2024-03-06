@@ -13,7 +13,7 @@ class Matcher:
         user-selected image directory.
 
         Args:
-            projdir (pathlib.Path): Project directory containing .pkl file
+            projdir (pathlib.Path): Project directory containing .vrp file
             imgdir (pathlib.Path): Image directory
             clean (char): `'T'` to remove database, `'F'` to use existing database (if one exists). A command-line flag.
         """

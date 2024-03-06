@@ -125,10 +125,10 @@ class AppWindow(Frame):
         method in :ref:`main <main>` with the project file directory.
 
         Args:
-            projfile (pathlib.Path): optional path to a .pkl file
+            projfile (pathlib.Path): optional path to a .vrp file
         """
         if not projfile:
-            projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
+            projfile = fd.askopenfilename(filetypes=[('Choose a project (.vrp) file', '*.vrp')])
             if not projfile:
                 return
         self.controller.open_project(Path(projfile))
