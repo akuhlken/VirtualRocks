@@ -1,15 +1,14 @@
+FAQ
+----
 
-VirtualRocks FAQ
------------------
 
-
-A list of frequently asked questions (and their answers) regarding the 
+A list of frequently asked questions (and answers) regarding the 
 **VirtualRocks** application.
 
 Does the app currently work?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-no.
+yes.
 
 
 What operating system can I use?
@@ -17,6 +16,11 @@ What operating system can I use?
 
 **VirtualRocks** only works on Windows due to software dependencies in the 3D mesh generation pipeline. 
 If you're a try-hard, then it technically works on Linux too.
+
+
+What types of images can I use?
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Our app works for images of type jpg, png, and tiff. 
 
 
 "no attribute pure value" error?

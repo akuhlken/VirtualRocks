@@ -15,10 +15,13 @@ To learn more about Colmap, click on this link: `Colmap Documentation <https://c
 
 .. _meshlab:
 
-MeshLab Help
-============
+Pymeshlab
+=========
 
-**VirtualRocks** depends on **MeshLab** (technically just pymeshlab), open source software that does things.
+**VirtualRocks** depends on **pymeshlab** (a Python library that interfaces to MeshLab). 
+
+.. note::
+    Pymeshlab changes filter names. Here's a link to their list of filters (in case they change the names again):
 
 To learn more about pymeshlab, click on this link: `pymeshlab Documentation <https://pymeshlab.readthedocs.io/en/latest/>`_
 
