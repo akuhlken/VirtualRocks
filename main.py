@@ -33,11 +33,11 @@ class main(Tk):
     def __init__(self, *args, **kwargs):
         """
         Main tkinter application, started with mainloop(). Main is the controller 
-        for the VirtualRocks project and manages app state as well as communicates 
-        between the reconstruction and the GUI.
+        for the **VirtualRocks** project and manages app state as well as communicates 
+        between the reconstruction of the 3D point cloud/mesh and the GUI.
 
         Args:
-            arg[0] (str): Optional path to a .vrp file
+            arg[0] (str): Optional path to a .vrp file.
         """
         Tk.__init__(self, *args, **kwargs)
 
@@ -48,7 +48,7 @@ class main(Tk):
         self.state = STARTED
         self.fullscreen = False
 
-        # Sets app icon and identifier
+        # Sets app icon and identifier (needed for app icon)
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
         
@@ -90,7 +90,7 @@ class main(Tk):
     def _startup(self):
         """
         Helper function with common startup tasks for both opening and creating 
-        a new project. Will be called by new_project and open_project.
+        a new project. Will be called by `new_project` and `open_project`.
         """
         self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
@@ -201,9 +201,9 @@ class main(Tk):
         """
         Method that sets the controller variable for image directory and sets the example image
         from pictures in the selected image directory. Progress on this step is tracked using the
-        `_send_log()` helper function in :ref:`ReconManager <reconmanager>`.
+        `_send_log` helper function in :ref:`ReconManager <reconmanager>`.
 
-        The handler method `photos_handler()` in :ref:`PipelineGUI <pipelineGUI>` opens a dialog
+        The handler method `photos_handler` in :ref:`PipelineGUI <pipelineGUI>` opens a dialog
         that allows the user to select an image directory.
 
         Args:
@@ -224,11 +224,11 @@ class main(Tk):
         """
         Method communicates between the GUI and the PointCloudManager for trimming models by
         removing points from the dense point clouds.
-        This step automatically completes, and its progress is tracked using the `_send_log()`
+        This step automatically completes, and its progress is tracked using the `_send_log`
         helper function in :ref:`ReconManager <reconmanager>`.
-        The handler method `bounds_handler()` in :ref:`PipelineGUI <pipelineGUI>` creates the dialog
+        The handler method `bounds_handler` in :ref:`PipelineGUI <pipelineGUI>` creates the dialog
         (using the :ref:`BoundsDialog <boundsdialog>` class) and passes the bounds received from
-        the user to this method. Bounds are inclusvive.
+        the user to this method. Bounds are inclusive.
 
         Args:
             minx (float): minimum x axis bound 
@@ -268,7 +268,7 @@ class main(Tk):
         Handler method for starting the mesher (:ref:`Colmap <colmap>`), called via "2: Matcher"
         button press in :ref:`PipelineGUI <pipelineGUI>`.
 
-        It starts a new thread for the `matcher()` method in the :ref:`ReconManager <reconmanager>`
+        It starts a new thread for the `matcher` method in the :ref:`ReconManager <reconmanager>`
         class.
         """
         self.recon.imgdir = self.imgdir
@@ -281,7 +281,7 @@ class main(Tk):
         Handler method for starting the mesher (:ref:`pymeshlab <meshlab>`), called via "3: Mesher"
         button push in :ref:`PipelineGUI <pipelineGUI>`.
 
-        It starts a new thread for the `mesher()` method in the :ref:`ReconManager <reconmanager>`
+        It starts a new thread for the `mesher` method in the :ref:`ReconManager <reconmanager>`
         class.
         """
         self.recon.imgdir = self.imgdir
@@ -294,11 +294,11 @@ class main(Tk):
         Handler method for the automatic reconstuction feature, called by a command in the 
         `Reconstruction` file menu in :ref:`AppWindow <appwindow>`. 
         
-        It starts a new thread for the `auto()` method in the :ref:`ReconManager <reconmanager>`
+        It starts a new thread for the `auto` method in the :ref:`ReconManager <reconmanager>`
         class.
 
         .. warning::  
-            Using :ref:`ReconManager <reconmanager>`'s `auto()` method does not allow the user to
+            Using :ref:`ReconManager <reconmanager>`'s `auto` method does not allow the user to
             trim the point cloud. It's useful when running the app on a large dataset or overnight,
             but will likely result in a final mesh that includes outlier points.
         """
@@ -314,7 +314,7 @@ class main(Tk):
         """
         Handler method for cancelling the reconstruction, no matter the step it's on. It's called
         by the "Cancel" button :ref:`PipelineGUI <pipelineGUI>`, and when changing project 
-        directory with :ref:`PipelineGUI <pipelineGUI>`'s `change_projdir()`.
+        directory with :ref:`PipelineGUI <pipelineGUI>`'s `change_projdir`.
         """
         self.recon.cancel()
 
@@ -391,7 +391,7 @@ class main(Tk):
         Event handler bound to <F11> key.
 
         Args:
-            e(event): Not used
+            e(event): for tkinter event handlers.
         """
         if self.fullscreen:
             self.attributes('-fullscreen', False)
@@ -407,7 +407,7 @@ class main(Tk):
         Event handler bound to <Esc> key.
 
         Args:
-            e (event): Not used
+            e (event): for tkinter event handlers.
         """
         if self.fullscreen:
             self.attributes('-fullscreen',False)
@@ -418,8 +418,8 @@ class main(Tk):
         Helper function to set the size and position of the app window on open.
 
         Args:
-            windoww (int): width of the window
-            windowh (int): height of the window
+            windoww (int): width of the window.
+            windowh (int): height of the window.
         """
         sw = self.winfo_screenwidth()
         sh = self.winfo_screenheight()  
