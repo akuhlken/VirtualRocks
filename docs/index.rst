@@ -38,7 +38,6 @@ Who/where we got the models from. maybe last years team as well.
    FAQ
    Installation
    Tutorial
-   Reference
    Samples
    colmap
    meshlab

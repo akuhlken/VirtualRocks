@@ -1,3 +1,5 @@
+.. _reconmanager:
+
 ReconManger
 ==================
 

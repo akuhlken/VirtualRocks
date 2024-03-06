@@ -5,27 +5,28 @@ from gui.AppWindow import AppWindow
 # TODO: Class description
 class StartGUI(AppWindow):
 
-    def __init__(self, parent, controller, recents):
+    def __init__(self, parent, controller):
         """
-        description of the whole class
+        `StartGUI` is a class that inherits from :ref:`AppWindow <appwindow>` and creates the front
+        page of the Tk app. It has the menu bar from :ref:`AppWindow <appwindow>` and has buttons
+        that allow the user to make a new project or open an existing project.
 
         Args:
-            parent (type?): what is it?
-            controller (type?): what is it?
-            recents (type?): what is it?
+            parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
+            controller (:ref:`main <main>`\*): a reference to main.
         """
-        AppWindow.__init__(self, parent, controller, recents)
-        self.controller = controller
-        label = Label(self, text="Choose Project:", anchor="center", style="title.TLabel")
-        label.pack(side="top", fill="x", pady=10)
+        AppWindow.__init__(self, parent, controller)
 
+        # making the elements of the start menu
+        title = Label(self, text="Choose Project:", anchor="center", style="title.TLabel")
         middleframe = Frame(self)
-        middleframe.place(anchor="c", relx=.5, rely=.5)
-
-        newBtn = Button(middleframe, height=10, width=20, text="New", bg=controller.buttoncolor, relief="groove", command=lambda: self.new_project())
-        openBtn = Button(middleframe, height=10, width=20, text="Open", bg=controller.buttoncolor, relief="groove", command=lambda: self.open_project())
+        newBtn = Button(middleframe, height=10, width=20, text="New", relief="groove", command=lambda: self.new_project())
+        openBtn = Button(middleframe, height=10, width=20, text="Open", relief="groove", command=lambda: self.open_project())
         label = Label(self, text="*paths cannot contain white spaces")
 
+        # packing the menu elements in the right order
+        title.pack(side="top", fill="x", pady=10)
+        middleframe.place(anchor="c", relx=.5, rely=.5)
         newBtn.pack(padx=20, side='left')
         openBtn.pack(padx=20, side='right')
         label.pack(side='bottom')
