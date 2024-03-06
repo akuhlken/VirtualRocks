@@ -185,7 +185,7 @@ class ReconManager():
         will capture any messages sent through STDOUT by that process.
 
         Args:
-            msg (string): Optional string to send to log
+            msg (string): Optional string to run and send to log
         """
         if msg:
             self.controller.page2.log(msg)
