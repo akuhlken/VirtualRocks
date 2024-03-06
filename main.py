@@ -15,8 +15,6 @@ import ctypes
 import scripts.PointCloudManager as PointCloudManager
 import scripts.RecentsManager as RecentsManager
 
-# Compiler run: pyinstaller --onefile main.py -w -p "scripts" -p "gui" -c
-# After compiles move main.exe into the VirtualRocks directory
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False
@@ -34,7 +32,12 @@ class main(Tk):
 
     def __init__(self, *args, **kwargs):
         """
-        general class desc, args.
+        Main tkinter application, started with mainloop(). Main is the controller 
+        for the VirtualRocks project and manages app state as well as communicates 
+        between the reconstruction and the GUI.
+
+        Args:
+            arg[0] (str): Optional path to a .vrp file
         """
         Tk.__init__(self, *args, **kwargs)
 
@@ -83,10 +86,11 @@ class main(Tk):
         self.bind("<F11>", self._toggle_fullscreen)
         self.bind("<Escape>", self._end_fullscreen)
         self.bind("<Control-z>", self.restore)
-    # Common startup tasks for both opening and creating projects
+
     def _startup(self):
         """
-        description
+        Helper function with common startup tasks for both opening and creating 
+        a new project. Will be called by new_project and open_project.
         """
         self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
@@ -119,20 +123,16 @@ class main(Tk):
         if 0 < currentprogress < 100: 
             self.style.configure('prog.Horizontal.TProgressbar', text='{:g} %'.format(currentprogress))
 
-
-    # Handler for creating of a new project
-    #   Create a PipelineGUI object and load it onto the application
     def new_project(self, projdir, name=None, imgdir=None):
         """
-        Handler method for creating a new project.
+        Method for creating a new project. Will create a .vrp file after prompting 
+        the user for a project name and workspace directory. After creating a fresh 
+        project, app will launch into the main page of the app.
 
         Args:
             projdir (pathlib.Path): project directory to save .pkl file in.
             name (str): optional, the name of the project.
             imgdir (pathlib.Path): optional, image directory
-
-        .. warning::
-            this, and anything with blank desc, needs to be finished.
         """
         print("creating new project")
         self.projdir = Path(projdir)
@@ -154,11 +154,11 @@ class main(Tk):
         else:
             self.update_state(STARTED)
         
-    # Handler for loading an existing project
-    #   Method should read a project save file and create a PipelineGUI object
     def open_project(self, projfile):
         """
-        description
+        Method for opening an existing VirtualRocks project. Will load the correct 
+        application state and paths from the .vrp file and launch into the main page 
+        of the app.
 
         Args:
             projdir (pathlib.Path): Project directory containing .pkl file.
@@ -186,8 +186,6 @@ class main(Tk):
             self.page2.log("Could not find image directory")
             self.update_state(STARTED)
 
-    # Handler for reopening the starting page
-    #   since there's an option for it in the menu, it must be done.
     def back_to_start(self):
         """
         Handler method for reopening the starting page when the "Back to Start" menu item in the
@@ -199,9 +197,6 @@ class main(Tk):
         self.page2.menubar.entryconfig("Reconstruction", state="disabled")
         self.title("VirtualRocks")
 
-    # Handler for adding photos
-    #   Set the controller variable for image directory
-    #   This method should not open a dialogue, the is the role of the GUI classes
     def add_photos(self, imgdir):
         """
         Method that sets the controller variable for image directory and sets the example image
@@ -225,8 +220,6 @@ class main(Tk):
         if numimg > 0:
             self.update_state(PHOTOS)
 
-    # Removes points from dense point cloud as specified by bounds
-    #   Handler in PipelineGUI creates dialog and passes bounds here
     def set_bounds(self, minx, maxx, miny, maxy, minz, maxz):
         """
         Method communicates between the GUI and the PointCloudManager for trimming models by
@@ -235,18 +228,15 @@ class main(Tk):
         helper function in :ref:`ReconManager <reconmanager>`.
         The handler method `bounds_handler()` in :ref:`PipelineGUI <pipelineGUI>` creates the dialog
         (using the :ref:`BoundsDialog <boundsdialog>` class) and passes the bounds received from
-        the user to this method.
+        the user to this method. Bounds are inclusvive.
 
         Args:
-            minx (float): minimum x axis bound
+            minx (float): minimum x axis bound 
             maxx (float): maximum x axis bound
             miny (float): minimum y axis bound
             maxy (float): maximum y axis bound
             minz (float): minimum z axis bound
             maxz (float): maximum z axis bound
-
-        .. warning::    
-            are the bounds inclusive or exclusive? change in pointcloudmanager too.
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")
@@ -256,10 +246,7 @@ class main(Tk):
         PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
         self.page2.set_chart(Path(dense/ "heat_map.png"))
 
-    # Handler for the restore point cloud menu item
-    #   Should overwrite the current fused.ply with the un-edited save.ply
-    #   Serves to undo the set bounds
-    def restore(self, event = None):
+    def restore(self):
         """
         Handler method for the "Reset" button on the setting bounds step in 
         :ref:`PipelineGUI <pipelineGUI>`. It overwrites the current `fused.ply` file with the 
@@ -276,8 +263,6 @@ class main(Tk):
         else:
             self.page2.log("Nothing to restore, run matcher to create a point cloud")
 
-    # Handler for starting matcher
-    #   Starts a new thread for the ReconManager.matcher() method
     def start_matcher(self):
         """
         Handler method for starting the mesher (:ref:`Colmap <colmap>`), called via "2: Matcher"
@@ -291,8 +276,6 @@ class main(Tk):
         self.thread1.daemon = True
         self.thread1.start()
 
-    # Handler for starting mesher
-    #   Starts a new thread for the ReconManager.mesher() method
     def start_mesher(self):
         """
         Handler method for starting the mesher (:ref:`pymeshlab <meshlab>`), called via "3: Mesher"
@@ -306,8 +289,6 @@ class main(Tk):
         self.thread1.daemon = True
         self.thread1.start()
 
-    # Handler for the automatic reconstruction feature
-    #   Starts a new thread for the ReconManager.auto() method
     def auto_recon(self):
         """
         Handler method for the automatic reconstuction feature, called by a command in the 
@@ -329,8 +310,6 @@ class main(Tk):
         self.thread1.daemon = True
         self.thread1.start()
 
-    # Handler for canceling recon
-    #   Should call the recon managers cancel() method
     def cancel_recon(self):
         """
         Handler method for cancelling the reconstruction, no matter the step it's on. It's called
@@ -349,8 +328,6 @@ class main(Tk):
         path = Path(self.projdir / 'dense' / 'fused.ply')
         p = subprocess.Popen([PYTHONPATH, 'scripts/CloudPreviewer.py', str(path)])
 
-    # Method for updating the state of the application
-    #   Should set the map image accordingly as well as activate and deactivate buttons
     def update_state(self, state):
         """
         Method for updating the state of the application, which controls which buttons are 
@@ -359,10 +336,7 @@ class main(Tk):
         gradually enable functionality when applicable.
 
         Args:
-            state (type?): what is it?
-
-        .. warning::
-            what type is the state?
+            state (int): flag to track the state of the application.
         """
         self.state = state
         self.page2.progresstotal.config(value=state)
@@ -405,8 +379,6 @@ class main(Tk):
             self.page2.mesher.config(state='active')
             self.page2.show.config(state='active')
         
-        # TODO: Would there be any benefits to doing some progress bar management here with the progress text? CODEN
-        # save to pickle after chnaging state
         try:
             path = self.imgdir.relative_to(self.projdir)
         except:
@@ -416,15 +388,10 @@ class main(Tk):
     
     def _toggle_fullscreen(self, event=None):
         """
-        description
+        Event handler bound to <F11> key.
 
         Args:
-            e(event): what is it?
-
-        .. warning::
-            So like, what is an event? Is this going to be a specific event or is it just any... We
-            need to fix this in some other places too, so use the search bar to find all mentions
-            of 'event'.
+            e(event): Not used
         """
         if self.fullscreen:
             self.attributes('-fullscreen', False)
@@ -437,20 +404,18 @@ class main(Tk):
         
     def _end_fullscreen(self, event=None):
         """
-        description
+        Event handler bound to <Esc> key.
 
         Args:
-            e (event): what is it?
+            e (event): Not used
         """
-       
         if self.fullscreen:
             self.attributes('-fullscreen',False)
             self.fullscreen = False
     
-    # opens a new window at the middle of the screen.
     def _open_middle(self, windoww, windowh):
         """
-        description
+        Helper function to set the size and position of the app window on open.
 
         Args:
             windoww (int): width of the window
@@ -464,7 +429,8 @@ class main(Tk):
     
     def _get_progress(self):
         """
-        description
+        Helper function to get the progress of the current substep. Needed to 
+        preserve progress when switching styles.
 
         Returns:
             int: percentage of progress made on the current step.
@@ -474,12 +440,10 @@ class main(Tk):
         else:
             return -1
 
-    # Handler for app shutdown
-    #   Cancel any living subprocesses
-    #   Save recents and then kill tkinter
     def _shutdown(self):
         """
-        description
+        Handler for <WM_DELETE_WINDOW> event. Method will be called whenever the 
+        user closes the tkinter app. Cancels any existing reconstruction processes.
         """
         try:
             self.recon.cancel()
