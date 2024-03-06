@@ -40,7 +40,7 @@ def create_heat_map(filename, outdir):
 def remove_points(filename, minx, maxx, miny, maxy, minz, maxz):
     """
     Method removes points from .ply point cloud that lie outside the provided bounds and exports as
-    `fused.ply` into the dense directory.
+    `fused.ply` into the dense directory. Bounds are inclusvive.
 
     Args:
         filename (pathlib.Path): Path to a .ply point cloud file
