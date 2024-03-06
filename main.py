@@ -253,9 +253,17 @@ class main(Tk):
         dense = Path(self.projdir / "dense")
         PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy, minz, maxz)
         self.page2.log("Trimming complete")
-        PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
-        PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
-        self.page2.set_chart(Path(dense/ "height_map.png"))
+        try:
+            PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
+            PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
+            self.page2.set_chart(Path(dense/ "height_map.png"))
+        except Exception as e:
+            self.page2.log(str(e))
+            self.page2.log("No Points Found")
+            self.page2.set_chart(self.page2.DEFAULT_CHART)
+            self.update_state(STARTED)
+
+
 
     # Handler for the restore point cloud menu item
     #   Should overwrite the current fused.ply with the un-edited save.ply
