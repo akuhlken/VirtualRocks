@@ -4,8 +4,11 @@ Unity Help
 
 **VirtualRocks** makes tiled meshes that, when imported and compiled in **Unity**, can be viewed on a VR headset.
 
-Video 1: Getting the Unity project
+1: Getting the Unity project
 ***********************************
+
+VirtualRocks Unity: `https://github.com/kuhlkena/VirtualRocksUnity`_
+Unity Hub: `https://unity.com/download`_
 
 .. raw:: html
 
@@ -13,7 +16,7 @@ Video 1: Getting the Unity project
 
 ----
 
-Video 2: Add new scene
+2: Add new scene
 ***********************
 
 .. raw:: html
@@ -22,7 +25,7 @@ Video 2: Add new scene
 
 ----
 
-Video 3: Build to headset
+3: Build to headset
 *************************
 
 .. raw:: html
