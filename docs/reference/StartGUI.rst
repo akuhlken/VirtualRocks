@@ -1,4 +1,4 @@
-StartGUI module
+StartGUI
 ===============
 
 .. automodule:: StartGUI

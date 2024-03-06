@@ -8,14 +8,13 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-# Extract the x,y coordiantes from the .ply file at filename
 def get_coordinates(filename):
     """
-        description
+    Helper method which extract the x and y coordinates from the given `.ply` file.
 
-        Args:
-            filename (type?): what is it? (str or path?)
-        """
+    Args:
+        filename (pathlib.Path): Path to a .ply point cloud file
+    """
     plydata = PlyData.read(filename)
     vertex = plydata['vertex']
     x = vertex['x']
@@ -23,11 +22,10 @@ def get_coordinates(filename):
     z = vertex['z']
     return x, y, z
 
-# Create a heat map of the point cloud at filename
-#   Save as heat_map.png in the dense directory
 def create_heat_map(filename, outdir):
     """
-        description
+    Creates a heat map of the dense point cloud and exports it as `heat_map.png` in the dense
+    directory.
 
         Args:
             filename (type?): what is it?
@@ -48,8 +46,8 @@ def create_height_map(filename, outdir):
     description
 
     Args:
-        filename (type?): what is it?
-        outdir (type?): what is it?
+        filename (pathlib.Path): Path to a .ply point cloud file
+        outdir (pathlib.Path): Output directory
     """
     x, y, z = get_coordinates(filename)
     min_val = min(np.min(x), np.min(y))
@@ -66,19 +64,20 @@ def create_height_map(filename, outdir):
     plt.savefig(pl.Path(str(outdir)) / "height_map.png")
     plt.close('all')
 
-# Remove all points from point cloud at filename which are outside bounds
-#   Save as fused.ply in the dense dir
-def remove_points(filename, minx, maxx, miny, maxy):
+def remove_points(filename, minx, maxx, miny, maxy, minz, maxz):
     """
-        description
+    Method removes points from .ply point cloud that lie outside the provided bounds and exports as
+    ``fused.ply`` into the dense directory.
 
-        Args:
-            filename (type?): what is it?
-            maxx (int): what is it?
-            minx (int): what is it?
-            maxy (int): what is it?
-            miny (int): what is it?
-        """
+    Args:
+        filename (pathlib.Path): Path to a .ply point cloud file
+        minx (float):
+        maxx (float):
+        miny (float):
+        maxy (float):
+        minz (float):
+        maxz (float):
+    """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):
         os.remove(tempfile)
@@ -87,7 +86,8 @@ def remove_points(filename, minx, maxx, miny, maxy):
     vertex = plydata['vertex']
     x = vertex['x']
     y = vertex['y']
-    mask = (x >= minx) & (x <= maxx) & (y >= miny) & (y <= maxy)
+    z = vertex['z']
+    mask = (x >= minx) & (x <= maxx) & (y >= miny) & (y <= maxy) & (z >= minz) & (z <= maxz)
     vertex = vertex[mask]
     new_vertex = PlyElement.describe(vertex, 'vertex')
     new_plydata = PlyData([new_vertex], text=plydata.text)

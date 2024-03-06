@@ -1,18 +1,19 @@
 import os
 import shutil
 import subprocess
+import sys
 from ttkbootstrap import Style
 from tkinter import simpledialog, PhotoImage, Frame, Tk
 from pathlib import Path
 from threading import Thread
-import  scripts.PhotoManager as pm
+import scripts.PhotoManager as pm
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
 from scripts.ReconManger import ReconManager
 import pickle
 import ctypes
 import scripts.PointCloudManager as PointCloudManager
-from scripts.RecentsManager import RecentsManager
+import scripts.RecentsManager as RecentsManager
 
 # Compiler run: pyinstaller --onefile main.py -w -p "scripts" -p "gui" -c
 # After compiles move main.exe into the VirtualRocks directory
@@ -26,6 +27,9 @@ PHOTOS = 10
 MATCHER = 70
 MESHER = 100
 
+# Path to specific python version installed by the installer
+PYTHONPATH = os.getenv('LOCALAPPDATA') + "\\Programs\\Python\\Python311\\python.exe"
+
 class main(Tk):
 
     def __init__(self, *args, **kwargs):
@@ -38,17 +42,13 @@ class main(Tk):
         self.state = STARTED
         self.fullscreen = False
 
-        # Create recents
-        self.recents = RecentsManager()
-        self.recents.get_recent()
-
         # Sets app icon and identifier
         self.myappid = u'o7.VirtualRocks.PipelineApp.version-1.0' # arbitrary string
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(self.myappid)
         
         # Configuration variables
         self.projectname = "project"
-        self.picklepath = ""
+        self.picklepath = None
         self.minsize(500, 300)
         centerdim = self._open_middle(1000,700)
         self.geometry('%dx%d+%d+%d' % (1000, 700, centerdim[0], centerdim[1]))
@@ -57,8 +57,6 @@ class main(Tk):
         self.iconphoto(True, icon)
 
         # Application styling
-        self.buttoncolor = "#ffffff"  # for the buttons on page 1
-        self.logbackground = "#ffffff"
         self.style = Style("darkly")
         self.styleflag = "dark"
         self.init_style()
@@ -69,10 +67,14 @@ class main(Tk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        # Load staring page and start application
-        self.page1 = StartGUI(parent=self.container, controller=self, recents=self.recents)
-        self.page1.grid(row=0, column=0, sticky="nsew")
-        self.page1.tkraise()
+        if not args[0]:
+            # Load staring page and start application
+            self.page1 = StartGUI(parent=self.container, controller=self)
+            self.page1.grid(row=0, column=0, sticky="nsew")
+            self.page1.tkraise()
+        else:
+            # Open project directly
+            self.open_project(args[0])
 
         # Binding for fullscreen toggle
         self.bind("<F11>", self._toggle_fullscreen)
@@ -83,13 +85,13 @@ class main(Tk):
         """
         description
         """
-        self.page2 = PipelineGUI(self.container, self, self.projdir, self.recents)
+        self.page2 = PipelineGUI(self.container, self, self.projdir)
         self.page2.grid(row=0, column=0, sticky="nsew")
         self.page2.set_example_image(self.page2.DEFAULT_PREVIEW)
         self.page2.tkraise()
         self.recon = ReconManager(self, self.projdir)
         self.page2.menubar.entryconfig("Reconstruction", state="normal")
-        self.recents.update_recent(self.picklepath)
+        RecentsManager.add(self.picklepath)
 
     def init_style(self):
         """
@@ -133,7 +135,7 @@ class main(Tk):
             self.projectname = simpledialog.askstring(title="Name Project As...", prompt="Enter a name for this project:", parent=self.page1, initialvalue=self.projectname)
         else:
             self.projectname = name
-        self.picklepath = self.projdir / Path(self.projectname + '.pkl')
+        self.picklepath = self.projdir / Path(self.projectname + '.vrp')
         self._startup()
         self.page2.dirtext.config(text=f"Workspace: [ {self.projdir} ]")
         self.title("VirtualRocks: " + self.projectname)
@@ -212,20 +214,23 @@ class main(Tk):
 
     # Removes points from dense point cloud as specified by bounds
     #   Handler in PipelineGUI creates dialog and passes bounds here
-    def set_bounds(self, minx, maxx, miny, maxy):
+    def set_bounds(self, minx, maxx, miny, maxy, minz, maxz):
         """
-        description
+        Method comunicates between the GUI and the PointCloudManager for trimming models
 
         Args:
-            minx (int): what is it?
-            maxx (int): what is it?
-            miny (int): what is it?
-            maxy (int): what is it?
+            minx (float):
+            maxx (float):
+            miny (float):
+            maxy (float):
+            minz (float):
+            maxz (float):
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")
         dense = Path(self.projdir / "dense")
-        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy)
+        PointCloudManager.remove_points(Path(dense / "fused.ply"), minx, maxx, miny, maxy, minz, maxz)
+        self.page2.log("Trimming complete")
         PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
         PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
         self.page2.set_chart(Path(dense/ "height_map.png"))
@@ -273,7 +278,7 @@ class main(Tk):
     #   Starts a new thread for the ReconManager.auto() method
     def auto_recon(self):
         """
-        description
+        description. Called by menu button press in :ref:`AppWindow.py <appwindow>`.
         """
         if not self.imgdir:
             self.page2.log("No images loaded")
@@ -293,13 +298,14 @@ class main(Tk):
 
     def preview_cloud(self):
         path = Path(self.projdir / 'dense' / 'fused.ply')
-        p = subprocess.Popen(['python', 'scripts/CloudPreviewer.py', str(path)])
+        p = subprocess.Popen([PYTHONPATH, 'scripts/CloudPreviewer.py', str(path)])
 
     # Method for updating the state of the application
     #   Should set the map image acordingly as well as activate and deactivate buttons
     def update_state(self, state):
         """
-        description
+        description. The only place where the upper progress bar (that displays the total 
+        progress) is updated.
 
         Args:
             state (type?): what is it?
@@ -421,36 +427,15 @@ class main(Tk):
         except:
             print("no active processes")
         print("exiting app")
-        self.recents.save_recent() 
         self.destroy()
 
 if __name__ == "__main__":
-    app = main()
+    pklfile = None
+    try:
+        pklfile = sys.argv[1]
+        print(pklfile)
+    except:
+        pass
+    app = main(pklfile)
     app.protocol("WM_DELETE_WINDOW", app._shutdown)
     app.mainloop()
-
-# TODO: Many things are labeled as handlers when really the handlers are in the 
-    # GUI and the mathods here are secondary calls
-
-# TODO: all non helper methods need docs formatted for the auto docs
-
-# TODO: Style guidelines:
-    # Method names use underscores: foo_bar()
-    # variables are all lowercase one word: varname
-    # Handlers are any method directly bound to a button or event
-    # Helper functions are any which are never called externally from the class and start with _foo_bar() also not event halders
-    # Classes are camel case: MethodName
-
-# TODO: Software Design
-    # GUI never interacts with file system, recon manager, or any other scripting classes directly
-    # All classes that can be static should be
-    # Methods should either return a value or update state/ perform an operation, never both
-    # Classes should have as few fields as possible
-
-# TODO: All python files should be in an scr folder
-    # Outside the src folder there should be a single executeable, license, and the README
-
-# TODO: Colmap should be in its own subfolder with its license info in a text file
-# TODO: darkmap.png should be renamed to something more logical like blankmap.png
-# TODO: following style the heat_map.png should be heatmap.png
-# TODO: placeholder photo should have a better name bc thats not all it is

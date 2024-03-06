@@ -182,10 +182,10 @@
     <span class="k">def</span> <span class="nf">init_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        On Tk app start and when switching between light and dark styles, certain elements of the</span>
-<span class="sd">        style need to be reassigned for the look to stay consistent. This includes the standard </span>
-<span class="sd">        button size, the font size of the title on the start page, and the appearance of the </span>
-<span class="sd">        progress bar. Since the user can switch style while a process is running, this function</span>
-<span class="sd">        also reprints the current progress to the restyled lower progress bar.</span>
+<span class="sd">        style need to be reassigned for consistency. This includes the button size, the font size</span>
+<span class="sd">        of the title on the start page, and the appearance of the progress bar. Since the user </span>
+<span class="sd">        can switch style while a process is running, this function also reprints the current</span>
+<span class="sd">        progress to the restyled lower progress bar.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># setting initial style stuff</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s2">&quot;TButton&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>

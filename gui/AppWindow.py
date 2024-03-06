@@ -2,22 +2,21 @@ from ttkbootstrap import Style
 import webbrowser as wb
 from pathlib import Path
 from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
+import scripts.RecentsManager as RecentsManager
 
 # TODO: lots of header comments needed
 
 class AppWindow(Frame):
-    def __init__(self, parent, controller, recents):
+    def __init__(self, parent, controller):
         """
-        description of the class as a whole
+        `AppWindow` is the parent class.
 
         Args:
-            parent (type?): what is it?
-            controller (type?): what is it?
-            recents (type?): what is it?
+            parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
+            controller (:ref:`main <main>`\*): a reference to main.
         """
         Frame.__init__(self, parent)
         self.controller = controller
-        self.recents = recents
         self._create_menu()
 
     # Setup method for top menu bar
@@ -25,56 +24,86 @@ class AppWindow(Frame):
         """
         description
         """
+        # Main menu object (the bar)
         self.menubar = Menu(self)
-        file = Menu(self.menubar, tearoff=0)  
-        file.add_command(label="Back to Start", command=lambda: self.controller.back_to_start())
-        file.add_command(label="New", command=lambda: self.new_project())  
-        file.add_command(label="Open", command=lambda: self.open_project())
-        file.add_command(label="Save")  
-        file.add_command(label="Save as")    
-        file.add_separator()  
- 
-        styles = Menu(file, tearoff=0)
-        file.add_cascade(label="Set Style...", menu=styles)
+
+        # menus that make up the tabs of the menu bar, from left to right.
+        self.file = Menu(self.menubar, tearoff=0)
+        styles = Menu(self.file, tearoff=0)
+        self.recent = Menu(self.file, tearoff=0, postcommand=lambda: self._recent_menu())
+        info = Menu(self.menubar, tearoff=0)
+        recon = Menu(self.menubar, tearoff=0)
+
+        ## File menu (first tab)
+        self.file.add_command(label="Back to Start", command=lambda: self.controller.back_to_start())
+        self.file.add_command(label="New", command=lambda: self.new_project())  
+        self.file.add_command(label="Open", command=lambda: self.open_project())
+        self.file.add_command(label="Save")  
+        self.file.add_command(label="Save as")    
+        self.file.add_separator()  
+        # style is cascade, only appears on hover as an offshoot of "Set Style..."
+        self.file.add_cascade(label="Set Style...", menu=styles)
         styles.add_command(label="Dark", command=lambda: self._start_darkmode())
         styles.add_command(label="Light", command=lambda: self._start_lightmode()) 
-        file.add_separator()
+        self.file.add_separator()
+        # recent is also cascade, only appears on hover as an offshoot of "Open Recent..."
+        #file.add_cascade(label="Open Recent...", menu=self.recent)
+        # the number of recent files/menu items displayed depends on how many exist.
+        #self._recent_menu()
+        self.file.add_cascade(label="Open Recent...", menu=self.recent)
+         
 
-        recents = Menu(file, tearoff=0, postcommand=self.recents.update_recent(pklpath=self.controller.picklepath))
-        file.add_cascade(label="Open Recent...", menu=recents)
-        numrecents = len(self.recents.recentdict)
-        if numrecents == 0:
-            recents.add_command(label="no recents found")
-        if numrecents >= 1:
-            recents.add_command(label=str(Path(self.recents.recentdict[-1][0]).stem), command=lambda: self.open_recent())
-        if numrecents >= 2:
-            recents.add_command(label="1 " + str(Path(self.recents.recentdict[-2][0]).stem), command=lambda: self.open_recent(2))
-        if numrecents >= 3:
-            recents.add_command(label="2 " + str(Path(self.recents.recentdict[-3][0]).stem), command=lambda: self.open_recent(3))
-        if numrecents >= 4:
-            recents.add_command(label="3 " + str(Path(self.recents.recentdict[-4][0]).stem), command=lambda: self.open_recent(4))
+        # Info menu, access to the docs.
+        info.add_command(label="FAQ", command=lambda: self._open_helpmenu("FAQ.html")) 
+        info.add_command(label="Reference", command=lambda: self._open_helpmenu("reference/references.html"))
+        info.add_command(label="Unity", command=lambda: self._open_helpmenu("unity.html"))
 
-        info = Menu(self.menubar, tearoff=0)
-        info.add_command(label="Common Issues", command=lambda: self.open_helpmenu()) 
-        info.add_command(label="Colmap Info", command=lambda: self.open_helpmenu("colmap.html")) 
-        info.add_command(label="MeshLab Info", command=lambda: self.open_helpmenu("meshlab.html"))
-    
-        recon = Menu(self.menubar, tearoff=0)
+        # Recon menu
         recon.add_command(label="Auto Reconstruction", command=lambda: self.controller.auto_recon())
 
-        # Add menues as cascades
-        self.menubar.add_cascade(label="File", menu=file)
+        # Add menues to the menu bar as cascades
+        self.menubar.add_cascade(label="File", menu=self.file)
         self.menubar.add_cascade(label="Info", menu=info) 
         self.menubar.add_cascade(label="Reconstruction", menu=recon) 
         self.controller.config(menu=self.menubar)
         self.menubar.entryconfig("Reconstruction", state="disabled")
+
+
+    def _recent_menu(self):
+        """
+        Helper method that creates the menu cascade under "Open Recents..." in the file menu.
+        It refreshes the menu elements that are displayed when the menu is opened, with the 
+        currently opened file at the top and the least recently opened item at the bottom. The
+        menu can display 0 to 4 recent projects.
+
+        As it can be called repeatedly, the method starts by removing all elements from the cascade
+        before adding new ones. It uses `get()` from :ref:`RecentsManager <recentsmanager>` to use
+        up-to-date recent values.
+        """
+        self.recent.delete(0, "end")
+        recentstack = RecentsManager.get()
+        numrecents = len(recentstack)
+        if numrecents == 0:
+            self.recent.add_command(label="no recents found")
+        if numrecents >= 1:
+            self.recent.add_command(label=str(Path(recentstack[-1]).stem), command=lambda: self.open_recent(Path(recentstack[-1])))
+        if numrecents >= 2:
+            self.recent.add_command(label="1 " + str(Path(recentstack[-2]).stem), command=lambda: self.open_recent(Path(recentstack[-2])))
+        if numrecents >= 3:
+            self.recent.add_command(label="2 " + str(Path(recentstack[-3]).stem), command=lambda: self.open_recent(Path(recentstack[-3])))
+        if numrecents >= 4:
+            self.recent.add_command(label="3 " + str(Path(recentstack[-4]).stem), command=lambda: self.open_recent(Path(recentstack[-4])))
+
 
     # Event handler for the "new project" menu item
         # Should open a dialogue asking the user to selct a working directory
         # Then call controllers new_project method
     def new_project(self):
         """
-        description
+        Event handler for opening new projects. It handles the "New" menu item under then `File`
+        menu tab and the "New Project" button on the start screen on the Tk app. It opens a dialog
+        that prompts the user to select a workspace/working directory. Once the user selects a
+        valid directory, it calls the controller's `new_project` method in :ref:`main <main>`.
         """
         projdir = fd.askdirectory(title='Select Workspace', initialdir='/home/')
         if not projdir:
@@ -90,30 +119,34 @@ class AppWindow(Frame):
         # Then call controllers open_project method
     def open_project(self, projfile=None):
         """
-        description
+        Event handler for opening existing projects. It handles the "Open" menu item and the files
+        under the "Open Recent..." cascade in the `File` menu tab, and the "Open Project" button on
+        the start screen of the Tk app. If a project file directory is passed to the function or
+        the user selects a file directory using the dialog, then the function calls the 
+        controller's `open_project` method in :ref:`main <main>` with the project file directory.
 
         Args:
-            projfile (type?): what is it?
+            projfile (pathlib.Path): optional path to a .vrp file
         """
         if not projfile:
-            projfile = fd.askopenfilename(filetypes=[('Choose a project (.pkl) file', '*.pkl')])
+            projfile = fd.askopenfilename(filetypes=[('Choose a project (.vrp) file', '*.vrp')])
             if not projfile:
                 return
         self.controller.open_project(Path(projfile))
         
-    def open_recent(self,index=1):
+    def open_recent(self,recent):
         """
-        description
+        Event handler for the menu items representing files in the recents dictionary under the 
+        "Open Recents..." cascade in the `File` menu tab in the menu bar.
 
         Args:
-            index (int): index of recent file to open in the recents dictionary.
+            recent (pathlib.Path): a string of the path of the recent file to open
         """
-        index = -index
         try:
-            projfile = self.recents.recentdict[index][0]
-            if not projfile:
+            print("opening recent: " + str(recent))
+            if not recent:
                 return
-            self.open_project(projfile)
+            self.open_project(recent)
         except Exception as e:
             print(e)
             print("Could not find project")
@@ -123,7 +156,8 @@ class AppWindow(Frame):
     #   might be worth adding some flag so that we don't have to switch if we already have one style.
     def _start_darkmode(self):
         """
-        description. Uses Ttkbootstrap theme `"darkly"`.
+        description. Uses `ttkbootstrap <https://ttkbootstrap.readthedocs.io/en/latest/themes/>`_
+        theme `"darkly"`.
         """
         if (self.controller.styleflag == "dark"):
             return
@@ -133,7 +167,8 @@ class AppWindow(Frame):
 
     def _start_lightmode(self):
         """
-        description. Uses Ttkbootstrap theme `"darkly"`.
+        description. Uses `ttkbootstrap <https://ttkbootstrap.readthedocs.io/en/latest/themes/>`_
+        theme `"lumen"`.
         """
         if (self.controller.styleflag == "light"):
             return
@@ -143,12 +178,17 @@ class AppWindow(Frame):
 
     # Handler for opening the help menu/docs
     #   can take argument to specify which page to open if it isn't the main page.
-    def open_helpmenu(self, docpage = "index.html"):
+    def _open_helpmenu(self, docpage = "index.html"):
         """
-        description
+        Handler for all of the buttons under the info menu on the menu bar. Opens different pages
+        of **VirtualRocks** documentation depending on what value is passed as the `docpage`.
+
+        Args:
+            docpage (string): the name of the documentation page to open. Defaults to the main page, `index.html`.
         """
         try:
-            wb.open_new(('file:///' + str(Path(f"docs/_build/html").absolute()) + "/" + docpage).replace("\\","/"))
+            wb.open_new('file:///' + str(Path(f"docs/_build/html").absolute().as_posix()) + "/" + docpage)
         except Exception as e:
             print(e)
         return
+    

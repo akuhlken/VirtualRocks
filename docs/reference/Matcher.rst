@@ -1,4 +1,6 @@
-Matcher module
+.. _matcher:
+
+Matcher
 ==============
 
 .. automodule:: Matcher

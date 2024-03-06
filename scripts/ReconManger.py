@@ -11,16 +11,20 @@ PHOTOS = 10
 MATCHER = 70
 MESHER = 100
 
+# Path to specific python version installed by the installer
+PYTHONPATH = os.getenv('LOCALAPPDATA') + "\\Programs\\Python\\Python311\\python.exe"
+
 class ReconManager():
 
     def __init__(self, controller, projdir):
         """
-        `ReconManager` is a controller class that manages the subprocesses for the Matcher and
-        Mesher. It also manages the progress bar displayed with projects on the Tk app.
+        `ReconManager` is a controller class that manages the subprocesses for the 
+        :ref:`Matcher <matcher>` and :ref:`Mesher <mesher>`. It also manages the progress bar
+        displayed with projects on the Tk app.
 
         Args:
-            controller (Main): Reference to the main TK app
-            projdir (pathlib.Path): Project directory containing .pkl file
+            controller (:ref:`Main <main>`): Reference to the main TK app
+            projdir (pathlib.Path): Project directory containing .vrp file
         """
         self.controller = controller
         self.imgdir = None
@@ -30,9 +34,9 @@ class ReconManager():
 
     def matcher(self):
         """
-        Method for starting the subprocess for the matcher, runs ``Matcher.py`` and updates 
-        application state after running. Prompts the user on whether or not to overwrite database
-        if one exists.
+        Method for starting the subprocess for the matcher, runs :ref:`Matcher.py <matcher>` and
+        updates application state after running. Prompts the user on whether or not to overwrite
+        database if one exists.
         """
         clean = 'T'
         if (self.projdir / Path(r"database.db")).is_file():
@@ -53,7 +57,7 @@ class ReconManager():
         self._send_log("__________Starting Matcher__________")
         colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen(['python', 'Matcher.py', self.projdir, self.imgdir, clean], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen([PYTHONPATH, 'Matcher.py', self.projdir, self.imgdir, clean], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
@@ -73,8 +77,8 @@ class ReconManager():
 
     def mesher(self):
         """
-        Method for starting the subprocess for the mesher, runs ``Mesher.py`` and updates
-        application state after running.
+        Method for starting the subprocess for the mesher, runs :ref:`Mesher.py <mesher>` and
+        updates application state after running.
         """
         try:
             if self.p:
@@ -86,7 +90,7 @@ class ReconManager():
         self._send_log("__________Starting Mesher__________")
         colmap = Path("scripts/COLMAP.bat").resolve()
         workingdir = colmap.parent
-        self.p = subprocess.Popen(['python', 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
+        self.p = subprocess.Popen([PYTHONPATH, 'Mesher.py', self.projdir], cwd=str(workingdir), stdout=subprocess.PIPE, text=True)
         self._send_log()
         rcode = self.p.wait()
         if rcode == 0:
@@ -137,10 +141,13 @@ class ReconManager():
         """
         Helper method for updating the progress bar text and completion.
 
-        The message (msg) input should be in the format `"$text1.text2.50$"`. **text1** is the
-        current step being run, and **text2** is the current substep `(text2 can be left blank if
-        there is no substep)`. The text portions of the message will be displayed above the lower 
-        progress bar. The **number** is the percentage fill of the lower progress bar when the
+        The message (msg) input should be in the format `"$text1.text2.50$"`. 
+        
+        **text1** is the current step being run, and **text2** is the current substep `(text2 can
+        be left blank if there is no substep)`. The text portions of the message will be displayed
+        above the lower progress bar.
+        
+        The **number** is the percentage fill of the lower progress bar when the
         current step/substep combination begins. 
 
         Sending the message **"$$"** will reset the bar and text. 
@@ -170,8 +177,9 @@ class ReconManager():
         
     def _send_log(self, msg=None):
         """
-        Helper method to send a message to the PipelineGUI log. If message starts and ends with 
-        **$**, it will go to the log and also be used to update the progress bar.
+        Helper method to send a message to the :ref:`PipelineGUI <pipelineGUI>` log. If message
+        starts and ends with **$**, it will go to the log and also be used to update the progress
+        bar.
 
         If no message is provided, this method will wait for the current process to exit and
         will capture any messages sent through STDOUT by that process.

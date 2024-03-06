@@ -1,4 +1,6 @@
-AppWindow module
+.. _appwindow:
+
+AppWindow
 ================
 
 .. automodule:: AppWindow
