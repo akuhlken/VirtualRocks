@@ -130,6 +130,9 @@ class main(Tk):
             projdir (pathlib.Path): project directory to save .pkl file in.
             name (str): optional, the name of the project.
             imgdir (pathlib.Path): optional, image directory
+
+        .. warning::
+            this, and anything with blank desc, needs to be finished.
         """
         print("creating new project")
         self.projdir = Path(projdir)
@@ -241,6 +244,9 @@ class main(Tk):
             maxy (float): maximum y axis bound
             minz (float): minimum z axis bound
             maxz (float): maximum z axis bound
+
+        .. warning::    
+            are the bounds inclusive or exclusive? change in pointcloudmanager too.
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")
