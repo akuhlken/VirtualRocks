@@ -76,7 +76,7 @@ class main(Tk):
         # Binding for fullscreen toggle
         self.bind("<F11>", self._toggle_fullscreen)
         self.bind("<Escape>", self._end_fullscreen)
-        self.bind("<control-z>", self.restore)
+        self.bind("<Control-z>", self.restore)
     # Common startup tasks for both opening and creating projects
     def _startup(self):
         """
@@ -231,7 +231,7 @@ class main(Tk):
     # Handler for the restore point cloud menu item
     #   Should overwrite the current fused.ply with the un-edited save.ply
     #   Serves to undo the set bounds
-    def restore(self):
+    def restore(self, event = None):
         """
         description
         """
