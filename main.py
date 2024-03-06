@@ -231,12 +231,12 @@ class main(Tk):
         the user to this method. Bounds are inclusive.
 
         Args:
-            minx (float): minimum x axis bound 
-            maxx (float): maximum x axis bound
-            miny (float): minimum y axis bound
-            maxy (float): maximum y axis bound
-            minz (float): minimum z axis bound
-            maxz (float): maximum z axis bound
+            minx (float): minimum x axis bound. 
+            maxx (float): maximum x axis bound.
+            miny (float): minimum y axis bound.
+            maxy (float): maximum y axis bound.
+            minz (float): minimum z axis bound.
+            maxz (float): maximum z axis bound.
         """
         self.recon._send_log("$$")
         self.recon._send_log("$Trimming Bounds..100$")

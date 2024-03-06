@@ -40,8 +40,8 @@ Who/where we got the models from. maybe last years team as well.
    FAQ
    Installation
    Samples
-   dependencies
    unity
+   dependencies
    reference/references
    license
    
