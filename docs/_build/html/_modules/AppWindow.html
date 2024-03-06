@@ -45,13 +45,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -83,24 +81,26 @@
 <span class="kn">import</span> <span class="nn">webbrowser</span> <span class="k">as</span> <span class="nn">wb</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">filedialog</span> <span class="k">as</span> <span class="n">fd</span><span class="p">,</span> <span class="n">messagebox</span> <span class="k">as</span> <span class="n">mb</span>
+<span class="kn">import</span> <span class="nn">scripts.RecentsManager</span> <span class="k">as</span> <span class="nn">RecentsManager</span>
 
 <span class="c1"># TODO: lots of header comments needed</span>
 
 <div class="viewcode-block" id="AppWindow">
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow">[docs]</a>
 <span class="k">class</span> <span class="nc">AppWindow</span><span class="p">(</span><span class="n">Frame</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">recents</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description of the class as a whole</span>
+<span class="sd">        `AppWindow` is the class that inherits from `Tkinter.Frame`. It has subclasses </span>
+<span class="sd">        :ref:`PipelineGUI &lt;pipelineGUI&gt;` and :ref:`StartGUI &lt;startGUI&gt;`. It handles elements that</span>
+<span class="sd">        remain consistent throughout the GUI, including the menu bar, the light and dark styling,</span>
+<span class="sd">        and the functionality for opening new projects, existing projects, and recent projects.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            parent (type?): what is it?</span>
-<span class="sd">            controller (type?): what is it?</span>
-<span class="sd">            recents (type?): what is it?</span>
+<span class="sd">            parent (tkinter container): passed from :ref:`main &lt;main&gt;` to make the tkinter frame.</span>
+<span class="sd">            controller (:ref:`main &lt;main&gt;`\*): a reference to main.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">Frame</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span> <span class="o">=</span> <span class="n">recents</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_menu</span><span class="p">()</span>
 
     <span class="c1"># Setup method for top menu bar</span>
@@ -108,51 +108,77 @@
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._create_menu">[docs]</a>
     <span class="k">def</span> <span class="nf">_create_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Setup method for top menu bar. It&#39;s displayed consistently through the Tk app with &quot;File&quot;,</span>
+<span class="sd">        &quot;Info&quot;, and &quot;Reconstruction&quot; menus that let the user navigate through projects, access the</span>
+<span class="sd">        docs, and run all pipeline steps automatically.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Main menu object (the bar)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menubar</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">file</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  
-        <span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Back to Start&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">back_to_start</span><span class="p">())</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;New&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_project</span><span class="p">())</span>  
-        <span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Open&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_project</span><span class="p">())</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Save&quot;</span><span class="p">)</span>  
-        <span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Save as&quot;</span><span class="p">)</span>    
-        <span class="n">file</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>  
- 
-        <span class="n">styles</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Set Style...&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">styles</span><span class="p">)</span>
+
+        <span class="c1"># menus that make up the tabs of the menu bar, from left to right.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">styles</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recent</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">postcommand</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_recent_menu</span><span class="p">())</span> <span class="c1"># postcommand creates recents cascade.</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">recon</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1">## File menu (first tab)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Back to Start&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">back_to_start</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;New&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_project</span><span class="p">())</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Open&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_project</span><span class="p">())</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>  
+        <span class="c1"># style is cascade, only appears on hover as an offshoot of &quot;Set Style...&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Set Style...&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">styles</span><span class="p">)</span>
         <span class="n">styles</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Dark&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_darkmode</span><span class="p">())</span>
         <span class="n">styles</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Light&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_lightmode</span><span class="p">())</span> 
-        <span class="n">file</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_separator</span><span class="p">()</span>
+        <span class="c1"># recent is also cascade, only appears on hover as an offshoot of &quot;Open Recent...&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Open Recent...&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="p">)</span>
+         
 
-        <span class="n">recents</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">postcommand</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">update_recent</span><span class="p">(</span><span class="n">pklpath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">picklepath</span><span class="p">))</span>
-        <span class="n">file</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Open Recent...&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">recents</span><span class="p">)</span>
-        <span class="n">numrecents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">recents</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;no recents found&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">recents</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="n">recents</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;1 &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="n">recents</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;2 &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="n">recents</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;3 &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+        <span class="c1"># Info menu, access to the docs.</span>
+        <span class="n">info</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;FAQ&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_helpmenu</span><span class="p">(</span><span class="s2">&quot;FAQ.html&quot;</span><span class="p">))</span> 
+        <span class="n">info</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reference&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_helpmenu</span><span class="p">(</span><span class="s2">&quot;reference/references.html&quot;</span><span class="p">))</span>
+        <span class="n">info</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Unity&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_helpmenu</span><span class="p">(</span><span class="s2">&quot;unity.html&quot;</span><span class="p">))</span>
 
-        <span class="n">info</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">info</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Common Issues&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_helpmenu</span><span class="p">())</span> 
-        <span class="n">info</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Colmap Info&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_helpmenu</span><span class="p">(</span><span class="s2">&quot;colmap.html&quot;</span><span class="p">))</span> 
-        <span class="n">info</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;MeshLab Info&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_helpmenu</span><span class="p">(</span><span class="s2">&quot;meshlab.html&quot;</span><span class="p">))</span>
-    
-        <span class="n">recon</span> <span class="o">=</span> <span class="n">Menu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">,</span> <span class="n">tearoff</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># Recon menu</span>
         <span class="n">recon</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Auto Reconstruction&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">auto_recon</span><span class="p">())</span>
 
-        <span class="c1"># Add menues as cascades</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;File&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+        <span class="c1"># Add menues to the menu bar as cascades</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;File&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Info&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">info</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">add_cascade</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;Reconstruction&quot;</span><span class="p">,</span> <span class="n">menu</span><span class="o">=</span><span class="n">recon</span><span class="p">)</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">menu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">menubar</span><span class="o">.</span><span class="n">entryconfig</span><span class="p">(</span><span class="s2">&quot;Reconstruction&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;disabled&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="AppWindow._recent_menu">
+<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._recent_menu">[docs]</a>
+    <span class="k">def</span> <span class="nf">_recent_menu</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper method that creates the menu cascade under &quot;Open Recents...&quot; in the file menu.</span>
+<span class="sd">        It refreshes the menu elements displayed when the menu is opened, with open file at the top</span>
+<span class="sd">        and the least recently opened file at the bottom. The menu can display 0 to 4 projects.</span>
+
+<span class="sd">        As it can be called repeatedly, the method starts by removing all elements from the cascade</span>
+<span class="sd">        before adding new ones. It uses `get` from :ref:`RecentsManager &lt;recentsmanager&gt;` to use</span>
+<span class="sd">        up-to-date recent values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;end&quot;</span><span class="p">)</span>
+        <span class="n">recentstack</span> <span class="o">=</span> <span class="n">RecentsManager</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">numrecents</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">recentstack</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;no recents found&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;1 &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;2 &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">])))</span>
+        <span class="k">if</span> <span class="n">numrecents</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">recent</span><span class="o">.</span><span class="n">add_command</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">&quot;3 &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">open_recent</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">recentstack</span><span class="p">[</span><span class="o">-</span><span class="mi">4</span><span class="p">])))</span></div>
+
 
 
     <span class="c1"># Event handler for the &quot;new project&quot; menu item</span>
@@ -162,7 +188,10 @@
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow.new_project">[docs]</a>
     <span class="k">def</span> <span class="nf">new_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Event handler for opening new projects. It handles the &quot;New&quot; menu item under then &quot;File&quot;</span>
+<span class="sd">        menu tab and the &quot;New Project&quot; button on the start screen on the Tk app. It opens a dialog</span>
+<span class="sd">        that prompts the user to select a workspace/working directory. Once the user selects a</span>
+<span class="sd">        valid directory, it calls the controller&#39;s `new_project` method in :ref:`main &lt;main&gt;`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">projdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Select Workspace&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="s1">&#39;/home/&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">projdir</span><span class="p">:</span>
@@ -181,13 +210,17 @@
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow.open_project">[docs]</a>
     <span class="k">def</span> <span class="nf">open_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">projfile</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Event handler for opening existing projects. It handles the &quot;Open&quot; menu item and the items</span>
+<span class="sd">        under the &quot;Open Recent...&quot; cascade in the `File` menu tab, and the &quot;Open Project&quot; button on</span>
+<span class="sd">        the start screen of the Tk app. If a project file directory is passed or the user selects a</span>
+<span class="sd">        file directory using the dialog, then the function calls the controller&#39;s `open_project`</span>
+<span class="sd">        method in :ref:`main &lt;main&gt;` with the project file directory.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            projfile (type?): what is it?</span>
+<span class="sd">            projfile (pathlib.Path): optional path to a .vrp file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">projfile</span><span class="p">:</span>
-            <span class="n">projfile</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askopenfilename</span><span class="p">(</span><span class="n">filetypes</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Choose a project (.pkl) file&#39;</span><span class="p">,</span> <span class="s1">&#39;*.pkl&#39;</span><span class="p">)])</span>
+            <span class="n">projfile</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askopenfilename</span><span class="p">(</span><span class="n">filetypes</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;Choose a project (.vrp) file&#39;</span><span class="p">,</span> <span class="s1">&#39;*.vrp&#39;</span><span class="p">)])</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">projfile</span><span class="p">:</span>
                 <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">open_project</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">projfile</span><span class="p">))</span></div>
@@ -195,19 +228,20 @@
         
 <div class="viewcode-block" id="AppWindow.open_recent">
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow.open_recent">[docs]</a>
-    <span class="k">def</span> <span class="nf">open_recent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">open_recent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">recent</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Event handler for the menu items representing files in the recents dictionary under the </span>
+<span class="sd">        &quot;Open Recents...&quot; cascade in the &quot;File&quot; menu tab in the menu bar. If the project exists,</span>
+<span class="sd">        then it&#39;s passed to `open_project`.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            index (int): index of recent file to open in the recents dictionary.</span>
+<span class="sd">            recent (pathlib.Path): a string of the path of the recent file to open.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">index</span> <span class="o">=</span> <span class="o">-</span><span class="n">index</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">projfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">[</span><span class="n">index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">projfile</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;opening recent: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">recent</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">recent</span><span class="p">:</span>
                 <span class="k">return</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">open_project</span><span class="p">(</span><span class="n">projfile</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">open_project</span><span class="p">(</span><span class="n">recent</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not find project&quot;</span><span class="p">)</span></div>
@@ -220,7 +254,10 @@
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._start_darkmode">[docs]</a>
     <span class="k">def</span> <span class="nf">_start_darkmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description. Uses Ttkbootstrap theme `&quot;darkly&quot;`.</span>
+<span class="sd">        Handler for setting the app to dark mode.</span>
+<span class="sd">        Uses `ttkbootstrap &lt;https://ttkbootstrap.readthedocs.io/en/latest/themes/&gt;`_ theme </span>
+<span class="sd">        `&quot;darkly&quot;`. If the app isn&#39;t already in dark mode, it changes the style and sets</span>
+<span class="sd">        :ref:`main &lt;main&gt;`&#39;s `styleflag`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">==</span> <span class="s2">&quot;dark&quot;</span><span class="p">):</span>
             <span class="k">return</span>
@@ -233,7 +270,10 @@
 <a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._start_lightmode">[docs]</a>
     <span class="k">def</span> <span class="nf">_start_lightmode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description. Uses Ttkbootstrap theme `&quot;darkly&quot;`.</span>
+<span class="sd">        Handler for setting the app to light mode.</span>
+<span class="sd">        Uses `ttkbootstrap &lt;https://ttkbootstrap.readthedocs.io/en/latest/themes/&gt;`_ theme </span>
+<span class="sd">        `&quot;lumen&quot;`. If the app isn&#39;t already in light mode, it changes the style and sets</span>
+<span class="sd">        :ref:`main &lt;main&gt;`&#39;s `styleflag`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">styleflag</span> <span class="o">==</span> <span class="s2">&quot;light&quot;</span><span class="p">):</span>
             <span class="k">return</span>
@@ -244,19 +284,24 @@
 
     <span class="c1"># Handler for opening the help menu/docs</span>
     <span class="c1">#   can take argument to specify which page to open if it isn&#39;t the main page.</span>
-<div class="viewcode-block" id="AppWindow.open_helpmenu">
-<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow.open_helpmenu">[docs]</a>
-    <span class="k">def</span> <span class="nf">open_helpmenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpage</span> <span class="o">=</span> <span class="s2">&quot;index.html&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="AppWindow._open_helpmenu">
+<a class="viewcode-back" href="../reference/AppWindow.html#AppWindow.AppWindow._open_helpmenu">[docs]</a>
+    <span class="k">def</span> <span class="nf">_open_helpmenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">docpage</span> <span class="o">=</span> <span class="s2">&quot;index.html&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Handler for all of the menu elements under the info menu on the menu bar. Opens different</span>
+<span class="sd">        pages of the **VirtualRocks** documentation depending on what `docpage` is passed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            docpage (string): the name of the documentation page to open. Defaults to the main page, `index.html`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">wb</span><span class="o">.</span><span class="n">open_new</span><span class="p">((</span><span class="s1">&#39;file:///&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;docs/_build/html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">docpage</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
+            <span class="n">wb</span><span class="o">.</span><span class="n">open_new</span><span class="p">(</span><span class="s1">&#39;file:///&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;docs/_build/html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">docpage</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">return</span></div>
 </div>
 
+    
 </pre></div>
 
            </div>

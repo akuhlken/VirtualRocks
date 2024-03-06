@@ -45,13 +45,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -79,28 +77,32 @@
            <div itemprop="articleBody">
              
   <h1>Source code for BoundsDialog</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">tkinter</span> <span class="k">as</span> <span class="nn">tk</span>
-<span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">simpledialog</span>
+<span></span><span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">simpledialog</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Entry</span>
 
 <span class="c1"># TODO: Header comments</span>
 <div class="viewcode-block" id="BoundsDialog">
 <a class="viewcode-back" href="../reference/BoundsDialog.html#BoundsDialog.BoundsDialog">[docs]</a>
 <span class="k">class</span> <span class="nc">BoundsDialog</span><span class="p">(</span><span class="n">simpledialog</span><span class="o">.</span><span class="n">Dialog</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `BoundsDialog` initializes a dialog that prompts the user to input bounds for the current</span>
+<span class="sd">    point cloud. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="BoundsDialog.body">
 <a class="viewcode-back" href="../reference/BoundsDialog.html#BoundsDialog.BoundsDialog.body">[docs]</a>
     <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">master</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Method that creates the physical dialog box, allowing users to enter the bounds for the x,</span>
+<span class="sd">        y, and z axes. The dialog box is made with tkinters element.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            master (type?): what is it?</span>
+<span class="sd">            master (:ref:`PipelineGUI &lt;pipelineGUI&gt;`\*): the current instance of `PipelineGUI` class.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Remove Points:&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;min X:&quot;</span><span class="p">,</span> <span class="s2">&quot;max X:&quot;</span><span class="p">,</span> <span class="s2">&quot;min Y:&quot;</span><span class="p">,</span> <span class="s2">&quot;max Y:&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;min X:&quot;</span><span class="p">,</span> <span class="s2">&quot;max X:&quot;</span><span class="p">,</span> <span class="s2">&quot;min Y:&quot;</span><span class="p">,</span> <span class="s2">&quot;max Y:&quot;</span><span class="p">,</span> <span class="s2">&quot;min Z:&quot;</span><span class="p">,</span> <span class="s2">&quot;max Z:&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-            <span class="n">tk</span><span class="o">.</span><span class="n">Label</span><span class="p">(</span><span class="n">master</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">entry</span> <span class="o">=</span> <span class="n">tk</span><span class="o">.</span><span class="n">Entry</span><span class="p">(</span><span class="n">master</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+            <span class="n">Label</span><span class="p">(</span><span class="n">master</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">entry</span> <span class="o">=</span> <span class="n">Entry</span><span class="p">(</span><span class="n">master</span><span class="p">)</span>
             <span class="n">entry</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># initial focus</span></div>
@@ -110,12 +112,21 @@
 <a class="viewcode-back" href="../reference/BoundsDialog.html#BoundsDialog.BoundsDialog.apply">[docs]</a>
     <span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Method to loop through the inputted values and make the values usable by the app. </span>
+
+<span class="sd">        For boxes that did not get values inputted, their values are set to defaults to avoid</span>
+<span class="sd">        undesired crops (minimum prompts = `-infinity`, maximum prompts = `+infinity`).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">entry</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">entries</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">get</span><span class="p">()))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 </div>

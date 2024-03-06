@@ -45,13 +45,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -81,7 +79,8 @@
   <h1>Source code for PointCloudManager</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">plyfile</span> <span class="kn">import</span> <span class="n">PlyData</span><span class="p">,</span> <span class="n">PlyElement</span>
 <span class="kn">import</span> <span class="nn">pathlib</span> <span class="k">as</span> <span class="nn">pl</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -95,13 +94,14 @@
 <span class="sd">    Helper method which extract the x and y coordinates from the given `.ply` file.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file</span>
+<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plydata</span> <span class="o">=</span> <span class="n">PlyData</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">vertex</span> <span class="o">=</span> <span class="n">plydata</span><span class="p">[</span><span class="s1">&#39;vertex&#39;</span><span class="p">]</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span></div>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span></div>
 
 
 <div class="viewcode-block" id="create_heat_map">
@@ -111,32 +111,63 @@
 <span class="sd">    Creates a heat map of the dense point cloud and exports it as `heat_map.png` in the dense</span>
 <span class="sd">    directory.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            filename (type?): what is it?</span>
+<span class="sd">            outdir (type?): what is it?</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">get_coordinates</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">min_val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hexbin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">gridsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">,</span> <span class="n">mincnt</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Point Density&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Dense Point Cloud&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span> <span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_height_map">
+<a class="viewcode-back" href="../reference/PointCloudManager.html#PointCloudManager.create_height_map">[docs]</a>
+<span class="k">def</span> <span class="nf">create_height_map</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outdir</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    description</span>
+
 <span class="sd">    Args:</span>
-<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file</span>
-<span class="sd">        outdir (pathlib.Path): Output directory</span>
+<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file.</span>
+<span class="sd">        outdir (pathlib.Path): path to the project&#39;s &quot;out&quot; directory.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">get_coordinates</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="n">pyplot</span><span class="o">.</span><span class="n">hexbin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">gridsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Blues&#39;</span><span class="p">,</span> <span class="n">mincnt</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">pyplot</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
-    <span class="n">pyplot</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
-    <span class="n">pyplot</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Dense Point Cloud&#39;</span><span class="p">)</span>
-    <span class="n">pyplot</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span> <span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span><span class="p">)</span>
-    <span class="n">pyplot</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span></div>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">get_coordinates</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">min_val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hexbin</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">gridsize</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">mincnt</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Height&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Dense Point Cloud&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">pl</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">outdir</span><span class="p">))</span> <span class="o">/</span> <span class="s2">&quot;height_map.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s1">&#39;all&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="remove_points">
 <a class="viewcode-back" href="../reference/PointCloudManager.html#PointCloudManager.remove_points">[docs]</a>
-<span class="k">def</span> <span class="nf">remove_points</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">remove_points</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">,</span> <span class="n">minz</span><span class="p">,</span> <span class="n">maxz</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method removes points from .ply point cloud that lie outside the provided </span>
-<span class="sd">    bounds and exports as ``fused.ply`` into the dense directory.</span>
+<span class="sd">    Method removes points from .ply point cloud that lie outside the provided bounds and exports as</span>
+<span class="sd">    `fused.ply` into the dense directory. Bounds are inclusive.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file</span>
-<span class="sd">        minx (int): min x value</span>
-<span class="sd">        maxx (int): max x value</span>
-<span class="sd">        miny (int): min y value</span>
-<span class="sd">        maxy (int): max y value</span>
+<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file.</span>
+<span class="sd">        minx (float): minimum x axis bound.</span>
+<span class="sd">        maxx (float): maximum x axis bound.</span>
+<span class="sd">        miny (float): minimum y axis bound.</span>
+<span class="sd">        maxy (float): maximum y axis bound.</span>
+<span class="sd">        minz (float): minimum z axis bound.</span>
+<span class="sd">        maxz (float): maximum z axis bound.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tempfile</span> <span class="o">=</span> <span class="n">pl</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;temp.ply&quot;</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">tempfile</span><span class="p">):</span>
@@ -146,7 +177,8 @@
     <span class="n">vertex</span> <span class="o">=</span> <span class="n">plydata</span><span class="p">[</span><span class="s1">&#39;vertex&#39;</span><span class="p">]</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">minx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">maxx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">miny</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="n">maxy</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">minx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">maxx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">miny</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">y</span> <span class="o">&lt;=</span> <span class="n">maxy</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">z</span> <span class="o">&gt;=</span> <span class="n">minz</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">z</span> <span class="o">&lt;=</span> <span class="n">maxz</span><span class="p">)</span>
     <span class="n">vertex</span> <span class="o">=</span> <span class="n">vertex</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
     <span class="n">new_vertex</span> <span class="o">=</span> <span class="n">PlyElement</span><span class="o">.</span><span class="n">describe</span><span class="p">(</span><span class="n">vertex</span><span class="p">,</span> <span class="s1">&#39;vertex&#39;</span><span class="p">)</span>
     <span class="n">new_plydata</span> <span class="o">=</span> <span class="n">PlyData</span><span class="p">([</span><span class="n">new_vertex</span><span class="p">],</span> <span class="n">text</span><span class="o">=</span><span class="n">plydata</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>

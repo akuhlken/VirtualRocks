@@ -45,13 +45,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -90,11 +88,11 @@
 <a class="viewcode-back" href="../reference/PhotoManager.html#PhotoManager.get_num_img">[docs]</a>
 <span class="k">def</span> <span class="nf">get_num_img</span><span class="p">(</span><span class="n">imgdir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Method returns the number of valid images `(see note above for valid types)` in the image</span>
+<span class="sd">    Method returns the number of valid images `(see above for supported types)` in the image</span>
 <span class="sd">    directory as an int. </span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        imgdir (pathlib.Path): Path to image directory</span>
+<span class="sd">        imgdir (pathlib.Path): Path to image directory.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        int: the number of valid images in the directory</span>
@@ -114,7 +112,7 @@
 <span class="sd">    in the image directory, then the method returns the path to the default preview image.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        imgdir (pathlib.Path): Path to image directory</span>
+<span class="sd">        imgdir (pathlib.Path): Path to image directory.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        pathlib.Path: path to preview image of image directory</span>

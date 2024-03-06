@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overview: module code &mdash; VirtualRocks 1.0 documentation</title>
+  <title>CloudPreviewer &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -66,7 +66,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Overview: module code</li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">CloudPreviewer</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,20 +76,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="AppWindow.html">AppWindow</a></li>
-<li><a href="BoundsDialog.html">BoundsDialog</a></li>
-<li><a href="CloudPreviewer.html">CloudPreviewer</a></li>
-<li><a href="Matcher.html">Matcher</a></li>
-<li><a href="Mesher.html">Mesher</a></li>
-<li><a href="PhotoManager.html">PhotoManager</a></li>
-<li><a href="PipelineGUI.html">PipelineGUI</a></li>
-<li><a href="PointCloudManager.html">PointCloudManager</a></li>
-<li><a href="RecentsManager.html">RecentsManager</a></li>
-<li><a href="ReconManger.html">ReconManger</a></li>
-<li><a href="StartGUI.html">StartGUI</a></li>
-<li><a href="main.html">main</a></li>
-</ul>
+  <h1>Source code for CloudPreviewer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">open3d</span>
+
+<div class="viewcode-block" id="show">
+<a class="viewcode-back" href="../reference/CloudPreviewer.html#CloudPreviewer.show">[docs]</a>
+<span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to open an open3d viewer window of a .ply file. Called as a subprocess in </span>
+<span class="sd">    :ref:`main &lt;main&gt;`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename (string): Path to the .ply file the user wants to preview.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cloud</span> <span class="o">=</span> <span class="n">open3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_point_cloud</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="n">open3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">([</span><span class="n">cloud</span><span class="p">])</span></div>
+
+
+<span class="c1"># Get args from caller (Main) and start open3d preview</span>
+<span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">show</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
 
            </div>
           </div>

@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RecentsManager module" href="RecentsManager.html" />
-    <link rel="prev" title="PipelineGUI module" href="PipelineGUI.html" /> 
+    <link rel="next" title="CloudPreviewer module" href="CloudPreviewer.html" />
+    <link rel="prev" title="PhotoManager module" href="PhotoManager.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,31 +48,27 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">References</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="AppWindow.html">AppWindow module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BoundsDialog.html">BoundsDialog module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Matcher.html">Matcher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Mesher.html">Mesher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PhotoManager.html">PhotoManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PipelineGUI.html">PipelineGUI module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">PointCloudManager module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#PointCloudManager.create_heat_map"><code class="docutils literal notranslate"><span class="pre">create_heat_map()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#PointCloudManager.get_coordinates"><code class="docutils literal notranslate"><span class="pre">get_coordinates()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#PointCloudManager.remove_points"><code class="docutils literal notranslate"><span class="pre">remove_points()</span></code></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="references.html">References</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="classes.html">Classes</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="modules.html">Modules</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PhotoManager.html">PhotoManager module</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">PointCloudManager module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#PointCloudManager.create_heat_map"><code class="docutils literal notranslate"><span class="pre">create_heat_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PointCloudManager.create_height_map"><code class="docutils literal notranslate"><span class="pre">create_height_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PointCloudManager.get_coordinates"><code class="docutils literal notranslate"><span class="pre">get_coordinates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PointCloudManager.remove_points"><code class="docutils literal notranslate"><span class="pre">remove_points()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="RecentsManager.html">RecentsManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ReconManger.html">ReconManger module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="StartGUI.html">StartGUI module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="CloudPreviewer.html">CloudPreviewer module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="RecentsManager.html">RecentsManager module</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -89,7 +85,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">References</a></li>
+          <li class="breadcrumb-item"><a href="references.html">References</a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Modules</a></li>
       <li class="breadcrumb-item active">PointCloudManager module</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/PointCloudManager.rst.txt" rel="nofollow"> View page source</a>
@@ -107,11 +104,24 @@
 <span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">create_heat_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#create_heat_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.create_heat_map" title="Link to this definition"></a></dt>
 <dd><p>Creates a heat map of the dense point cloud and exports it as <cite>heat_map.png</cite> in the dense
 directory.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Args:</dt><dd><p>filename (type?): what is it?
+outdir (type?): what is it?</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PointCloudManager.create_height_map">
+<span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">create_height_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#create_height_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.create_height_map" title="Link to this definition"></a></dt>
+<dd><p>description</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file</p></li>
-<li><p><strong>outdir</strong> (<em>pathlib.Path</em>) – Output directory</p></li>
+<li><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file.</p></li>
+<li><p><strong>outdir</strong> (<em>pathlib.Path</em>) – path to the project’s “out” directory.</p></li>
 </ul>
 </dd>
 </dl>
@@ -123,24 +133,26 @@ directory.</p>
 <dd><p>Helper method which extract the x and y coordinates from the given <cite>.ply</cite> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file</p>
+<dd class="field-odd"><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="PointCloudManager.remove_points">
-<span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">remove_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#remove_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.remove_points" title="Link to this definition"></a></dt>
-<dd><p>Method removes points from .ply point cloud that lie outside the provided
-bounds and exports as <code class="docutils literal notranslate"><span class="pre">fused.ply</span></code> into the dense directory.</p>
+<span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">remove_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#remove_points"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.remove_points" title="Link to this definition"></a></dt>
+<dd><p>Method removes points from .ply point cloud that lie outside the provided bounds and exports as
+<cite>fused.ply</cite> into the dense directory. Bounds are inclusive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file</p></li>
-<li><p><strong>minx</strong> (<em>int</em>) – min x value</p></li>
-<li><p><strong>maxx</strong> (<em>int</em>) – max x value</p></li>
-<li><p><strong>miny</strong> (<em>int</em>) – min y value</p></li>
-<li><p><strong>maxy</strong> (<em>int</em>) – max y value</p></li>
+<li><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file.</p></li>
+<li><p><strong>minx</strong> (<em>float</em>) – minimum x axis bound.</p></li>
+<li><p><strong>maxx</strong> (<em>float</em>) – maximum x axis bound.</p></li>
+<li><p><strong>miny</strong> (<em>float</em>) – minimum y axis bound.</p></li>
+<li><p><strong>maxy</strong> (<em>float</em>) – maximum y axis bound.</p></li>
+<li><p><strong>minz</strong> (<em>float</em>) – minimum z axis bound.</p></li>
+<li><p><strong>maxz</strong> (<em>float</em>) – maximum z axis bound.</p></li>
 </ul>
 </dd>
 </dl>
@@ -152,8 +164,8 @@ bounds and exports as <code class="docutils literal notranslate"><span class="pr
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="PipelineGUI.html" class="btn btn-neutral float-left" title="PipelineGUI module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="RecentsManager.html" class="btn btn-neutral float-right" title="RecentsManager module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PhotoManager.html" class="btn btn-neutral float-left" title="PhotoManager module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="CloudPreviewer.html" class="btn btn-neutral float-right" title="CloudPreviewer module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -45,13 +45,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -79,7 +77,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PipelineGUI</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">Canvas</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">END</span><span class="p">,</span> <span class="n">Button</span> <span class="k">as</span> <span class="n">tkButton</span>
+<span></span><span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">Canvas</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">END</span>
 <span class="kn">from</span> <span class="nn">tkinter.ttk</span> <span class="kn">import</span> <span class="n">Frame</span><span class="p">,</span> <span class="n">Label</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Scrollbar</span><span class="p">,</span> <span class="n">Progressbar</span>
 <span class="kn">from</span> <span class="nn">ttkbootstrap</span> <span class="kn">import</span> <span class="n">Separator</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">filedialog</span> <span class="k">as</span> <span class="n">fd</span><span class="p">,</span> <span class="n">messagebox</span> <span class="k">as</span> <span class="n">mb</span>
@@ -88,6 +86,7 @@
 <span class="kn">from</span> <span class="nn">gui.AppWindow</span> <span class="kn">import</span> <span class="n">AppWindow</span>
 <span class="kn">from</span> <span class="nn">gui.BoundsDialog</span> <span class="kn">import</span> <span class="n">BoundsDialog</span>
 <span class="kn">from</span> <span class="nn">showinfm</span> <span class="kn">import</span> <span class="n">show_in_file_manager</span>
+<span class="kn">import</span> <span class="nn">scripts.RecentsManager</span> <span class="k">as</span> <span class="nn">RecentsManager</span>
 
 <span class="c1"># TODO: header comments</span>
 <div class="viewcode-block" id="PipelineGUI">
@@ -98,23 +97,23 @@
     <span class="n">DEFAULT_CHART</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gui/placeholder/blankchart.jpg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
     <span class="n">DEFAULT_PREVIEW</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;gui/placeholder/drone.jpg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">projdir</span><span class="p">,</span> <span class="n">recents</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">projdir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description of the whole class</span>
+<span class="sd">        `PipelineGUI` is a class that inherits from :ref:`AppWindow &lt;appwindow&gt;`. It creates and</span>
+<span class="sd">        manages the internal pages of the app that appear when a project is running. The class</span>
+<span class="sd">        handles the layout of the GUI and has event handlers for all buttons on the display.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            parent (type?): what is it?</span>
-<span class="sd">            controller (type?): what is it?</span>
-<span class="sd">            projdir (type?): what is it?</span>
-<span class="sd">            recents (type?): what is it?</span>
+<span class="sd">            parent (tkinter container): passed from :ref:`main &lt;main&gt;` to make the tkinter frame.</span>
+<span class="sd">            controller (:ref:`main &lt;main&gt;`\*): a reference to main.</span>
+<span class="sd">            projdir (pathlib.Path): Project directory containing .vrp file.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">AppWindow</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">recents</span><span class="p">)</span>
+        <span class="n">AppWindow</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_layout</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">=</span> <span class="n">projdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_CHART</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recents</span> <span class="o">=</span> <span class="n">recents</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_chart</span><span class="p">)</span>
 
     <span class="c1"># Setup method for GUI layout and elements</span>
@@ -122,7 +121,10 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.setup_layout">[docs]</a>
     <span class="k">def</span> <span class="nf">setup_layout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description, sets everything up. probs needs a lot of desc.</span>
+<span class="sd">        Method that sets up the layout of the GUI, making all elements and placing them. The GUI is</span>
+<span class="sd">        divided into left and right `tkinter.ttk.Frame` objects, into which chart and pipeline </span>
+<span class="sd">        elements are assigned respectively. The elements are packed to ensure order and allow for</span>
+<span class="sd">        resizing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">### Frames:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">Frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -152,7 +154,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">show</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">showframe</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;4: Show Files&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_files</span><span class="p">())</span>
 
         <span class="c1"># the log, scrollbar, and cancel button for recon.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">background</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">logbackground</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span> <span class="o">=</span> <span class="n">Text</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
         <span class="n">scrollbar</span> <span class="o">=</span> <span class="n">Scrollbar</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="p">[</span><span class="s1">&#39;yscrollcommand&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scrollbar</span><span class="o">.</span><span class="n">set</span>
         <span class="n">scrollbar</span><span class="p">[</span><span class="s1">&#39;command&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">yview</span>
@@ -163,7 +165,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DEFAULT_CHART</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chart</span> <span class="o">=</span> <span class="n">Canvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chart_image_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">create_image</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">,</span> <span class="n">anchor</span><span class="o">=</span><span class="s1">&#39;nw&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Configure&gt;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_resizer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;&lt;Configure&gt;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_refresh_chart</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">previewcloud</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Preview Point Cloud&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">preview_cloud</span><span class="p">())</span>  <span class="c1"># TODO: need to add the handler/command to open the preview.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chartview</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">chartbuttonsframe</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s2">&quot;Change View&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_chart_view</span><span class="p">())</span>  <span class="c1"># TODO: need to add the handler/command to switch chart</span>
 
@@ -225,27 +227,6 @@
         <span class="n">chartbuttonspacer</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chartview</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">row</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span></div>
 
-        
-
-    <span class="c1"># Event handler for &quot;New&quot; in the dropdown menu</span>
-        <span class="c1"># Method should first check to make sure nothing is running.</span>
-        <span class="c1"># Then it should do basically the same thing as the new_project method</span>
-        <span class="c1"># in StartGUI.</span>
-<div class="viewcode-block" id="PipelineGUI.new_proj_handler">
-<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.new_proj_handler">[docs]</a>
-    <span class="k">def</span> <span class="nf">new_proj_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">projdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;select workspace&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="s1">&#39;/home/&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">projdir</span><span class="p">:</span>
-            <span class="k">return</span>
-        <span class="k">if</span> <span class="s1">&#39; &#39;</span> <span class="ow">in</span> <span class="n">projdir</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Path must not contain white spaces&quot;</span><span class="p">)</span>
-            <span class="n">mb</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Paths cannot contain whitespace                           &quot;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">projdir</span><span class="p">)</span></div>
-
 
     <span class="c1"># Event handler for &quot;Add Photos&quot; button</span>
         <span class="c1"># Method should open a dialogue prompting the user to select img dir</span>
@@ -254,7 +235,15 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.photos_handler">[docs]</a>
     <span class="k">def</span> <span class="nf">photos_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Event handler for the &quot;Add Photos&quot; button, the first step in the pipeline. It opens a</span>
+<span class="sd">        dialog box propting the user to select the directory where their images are saved, which </span>
+<span class="sd">        gets passed to the `add_photos()` handler in :ref:`main &lt;main&gt;`.</span>
+<span class="sd">        It updates the bar internally since it&#39;s a nearly instantaneous step.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            Because of how :ref:`Colmap &lt;colmap&gt;` uses file paths, paths (and therefor folders and</span>
+<span class="sd">            files) cannot contain spaces. This method displays an error message when the user tries</span>
+<span class="sd">            to use an image directory path that has a space in it.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">imgdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;select folder of images&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">imgdir</span><span class="p">:</span>
@@ -266,7 +255,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">add_photos</span><span class="p">(</span><span class="n">imgdir</span><span class="p">)</span>
         <span class="c1"># updating progress bar</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">progress</span><span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">])</span>
-        <span class="c1">#self.progresstotal.step(10)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="s1">&#39;prog.Horizontal.TProgressbar&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">&#39;100%&#39;</span><span class="p">)</span></div>
 
 
@@ -277,7 +265,11 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.bounds_handler">[docs]</a>
     <span class="k">def</span> <span class="nf">bounds_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Description.</span>
+<span class="sd">        Event handler for the &quot;Trim Bounds&quot; button, the optional step between the </span>
+<span class="sd">        :ref:`Matcher &lt;matcher&gt;` and :ref:`Mesher &lt;mesher&gt;`. It makes a</span>
+<span class="sd">        :ref:`BoundsDialog &lt;boundsdialog&gt;` object to prompt the user to set the minimum and maximum</span>
+<span class="sd">        bounds for the x, y, and z axes of the generated point cloud. The inputted values are then</span>
+<span class="sd">        passed to the `set_bounds` handler in :ref:`main &lt;main&gt;`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dialog</span> <span class="o">=</span> <span class="n">BoundsDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">:</span> 
@@ -286,10 +278,25 @@
                 <span class="n">maxx</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
                 <span class="n">miny</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
                 <span class="n">maxy</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">)</span>
+                <span class="n">minz</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+                <span class="n">maxz</span><span class="o">=</span> <span class="n">dialog</span><span class="o">.</span><span class="n">result</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">set_bounds</span><span class="p">(</span><span class="n">minx</span><span class="p">,</span> <span class="n">maxx</span><span class="p">,</span> <span class="n">miny</span><span class="p">,</span> <span class="n">maxy</span><span class="p">,</span> <span class="n">minz</span><span class="p">,</span> <span class="n">maxz</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;All fields must contain numbers&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># Event handler for the show files button</span>
+    <span class="c1">#   Should open the out dir in file explorer</span>
+<div class="viewcode-block" id="PipelineGUI.show_files">
+<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.show_files">[docs]</a>
+    <span class="k">def</span> <span class="nf">show_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Event handler for the &quot;Show Files&quot; button, the last step in the pipeline that opens a</span>
+<span class="sd">        file explorer window to show the user the contents of the `&quot;out&quot;` folder in the current</span>
+<span class="sd">        project directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">show_in_file_manager</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/out&quot;</span><span class="p">)</span></div>
 
 
     <span class="c1"># Method to be called externally for updating text related to user input</span>
@@ -297,10 +304,12 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.update_text">[docs]</a>
     <span class="k">def</span> <span class="nf">update_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numimg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Method used to update the text displaying the number of images in the current image</span>
+<span class="sd">        directory on the right button bar. Used by :ref:`main &lt;main&gt;` when making a new project,</span>
+<span class="sd">        opening an existing project, and when adding images/selecting an image directory. </span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            numimg (type?): what is it?</span>
+<span class="sd">            numimg (int): the number of images in the current image directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">numimages</span><span class="o">.</span><span class="n">config</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Num images: </span><span class="si">{</span><span class="n">numimg</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -313,10 +322,13 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.set_chart">[docs]</a>
     <span class="k">def</span> <span class="nf">set_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chartdir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Method to be called externally to set the chart image in the GUI. It&#39;s called in </span>
+<span class="sd">        :ref:`main &lt;main&gt;` when the state is updated or bounds are set.</span>
+<span class="sd">        Because of how different threads interact with the TK app, the chart</span>
+<span class="sd">        uses a `RefreshChart` event to actually change, which the handler requests.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            chartdir (type?): what is it?</span>
+<span class="sd">            chartdir (pathlib.Path): the path to the current chart to display.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">chartdir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">)</span></div>
@@ -326,11 +338,15 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.change_chart_view">[docs]</a>
     <span class="k">def</span> <span class="nf">change_chart_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Event handler for the change view button, toggles between the heat map </span>
-<span class="sd">        and elevation map views.</span>
+<span class="sd">        Event handler for the &quot;Change View&quot; button under the chart, toggles between the heat map </span>
+<span class="sd">        and elevation map views. Because of how different threads interact with the TK app, the </span>
+<span class="sd">        chart uses a `RefreshChart` event to actually change, which the handler generates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="c1"># Toggle boolean</span>
-        <span class="c1"># TODO: set current chart (self.currentchart) and then refresh chart event will handle the rest</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span> <span class="o">/</span> <span class="s2">&quot;height_map.png&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span> <span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_generate</span><span class="p">(</span><span class="s2">&quot;&lt;&lt;RefreshChart&gt;&gt;&quot;</span><span class="p">)</span></div>
 
 
@@ -339,10 +355,12 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.set_example_image">[docs]</a>
     <span class="k">def</span> <span class="nf">set_example_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">imagefile</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Method called externally to set the example image on the top right of the app. It allows</span>
+<span class="sd">        the user to confirm that they&#39;ve selected the right image directory before progressing</span>
+<span class="sd">        through the pipeline.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            imagefile (type?): what is it?</span>
+<span class="sd">            imagefile (pathlib.Path): the path to the example image to display.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">img</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">imagefile</span><span class="p">)</span>
         <span class="n">img</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="mi">150</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span>
@@ -358,7 +376,11 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.change_projdir">[docs]</a>
     <span class="k">def</span> <span class="nf">change_projdir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Event handler for the &quot;Change&quot; button under the printed workspace path, which gives the </span>
+<span class="sd">        user an option to change the project directory. It makes a new project with the same name</span>
+<span class="sd">        and image directory and removed the original from recents projects.</span>
+<span class="sd">        If the user doesn&#39;t select a new project directory (or if the path has a</span>
+<span class="sd">        space), then the project directory doesn&#39;t change.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">projdir</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">askdirectory</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;select workspace&#39;</span><span class="p">,</span> <span class="n">initialdir</span><span class="o">=</span><span class="s1">&#39;/home/&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">projdir</span><span class="p">:</span>
@@ -368,38 +390,9 @@
             <span class="n">mb</span><span class="o">.</span><span class="n">showerror</span><span class="p">(</span><span class="s2">&quot;Paths cannot contain whitespace                           &quot;</span><span class="p">)</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">cancel_recon</span><span class="p">()</span>   
-        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">recentdict</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">picklepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span> <span class="ow">in</span> <span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">recents</span><span class="o">.</span><span class="n">remove_recent</span><span class="p">(</span><span class="n">file</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="c1"># don&#39;t want it to be in recents if we&#39;re moving away from the old file path.</span>
+        <span class="n">RecentsManager</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">picklepath</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">new_project</span><span class="p">(</span><span class="n">projdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">projectname</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">imgdir</span><span class="p">)</span></div>
-
-
-    <span class="c1"># Event handler for the show files button</span>
-    <span class="c1">#   Should openthe out dir in file explorer</span>
-<div class="viewcode-block" id="PipelineGUI.show_files">
-<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.show_files">[docs]</a>
-    <span class="k">def</span> <span class="nf">show_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">show_in_file_manager</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/out&quot;</span><span class="p">)</span></div>
-
-
-    <span class="c1"># Event handler to be called whenever the window is resized</span>
-    <span class="c1">#   Updates and scales the chart image with window</span>
-<div class="viewcode-block" id="PipelineGUI._resizer">
-<a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI._resizer">[docs]</a>
-    <span class="k">def</span> <span class="nf">_resizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            e (event): an event?</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span><span class="p">)</span>
-        <span class="n">resized_image</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scale_image</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">temp</span> <span class="o">=</span> <span class="n">ImageTk</span><span class="o">.</span><span class="n">PhotoImage</span><span class="p">(</span><span class="n">resized_image</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">itemconfigure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chart_image_id</span><span class="p">,</span> <span class="n">image</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">temp</span><span class="p">)</span></div>
 
     
     <span class="c1"># Method writes strings to the log</span>
@@ -407,10 +400,11 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI.log">[docs]</a>
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Method that writes strings to the log for display in the log textbox. Sets the log display</span>
+<span class="sd">        to show the bottom of the log.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            msg (type?): what is it?</span>
+<span class="sd">            msg (string): string to be printed on the log.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">END</span><span class="p">,</span> <span class="n">msg</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logtext</span><span class="o">.</span><span class="n">see</span><span class="p">(</span><span class="s2">&quot;end&quot;</span><span class="p">)</span></div>
@@ -423,10 +417,13 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI._refresh_chart">[docs]</a>
     <span class="k">def</span> <span class="nf">_refresh_chart</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Event handler called whenever a `RefreshChart` events occurs (in `set_chart` and</span>
+<span class="sd">        `change_chart_view`). It sets the image displayed on the `chart` canvas to the currentchart</span>
+<span class="sd">        set by `set_chart`. If the Tk app has been resized, then the chart image is resized,</span>
+<span class="sd">        using `_scale_image`, to fit in the left column.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            e (event): do we need event? doesn&#39;t seem to be used?</span>
+<span class="sd">            e (event): a `RefreshChart` or `Configure` event</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">winfo_width</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">chart</span><span class="o">.</span><span class="n">winfo_height</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span><span class="p">)</span>
@@ -443,21 +440,23 @@
 <a class="viewcode-back" href="../reference/PipelineGUI.html#PipelineGUI.PipelineGUI._scale_image">[docs]</a>
     <span class="k">def</span> <span class="nf">_scale_image</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wwidth</span><span class="p">,</span> <span class="n">wheight</span><span class="p">,</span> <span class="n">iwidth</span><span class="p">,</span> <span class="n">iheight</span><span class="p">,</span> <span class="n">image</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        description</span>
+<span class="sd">        Helper method that scales an image to fit within a window defined by its width (wwidth)</span>
+<span class="sd">        and height (wheight). It scales images without distortion (preserving the aspect ratio)</span>
+<span class="sd">        by choosing the smaller scale calculated from the x and y axes.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            wwidth (int): window width</span>
-<span class="sd">            wheight (int): window height</span>
-<span class="sd">            iwidth (int): ?????</span>
-<span class="sd">            iheight (int): ?????</span>
-<span class="sd">            image (image): ?????</span>
+<span class="sd">            wwidth (int): window width.</span>
+<span class="sd">            wheight (int): window height.</span>
+<span class="sd">            iwidth (int): image width.</span>
+<span class="sd">            iheight (int): image height.</span>
+<span class="sd">            image (image): the image/chart to be scaled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">width_scale</span> <span class="o">=</span> <span class="n">wwidth</span> <span class="o">/</span> <span class="n">iwidth</span>
         <span class="n">height_scale</span> <span class="o">=</span> <span class="n">wheight</span> <span class="o">/</span> <span class="n">iheight</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">width_scale</span><span class="p">,</span> <span class="n">height_scale</span><span class="p">)</span>
         <span class="n">new_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iwidth</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
         <span class="n">new_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">iheight</span> <span class="o">*</span> <span class="n">scale</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">new_width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">image</span><span class="o">.</span><span class="n">resize</span><span class="p">((</span><span class="n">new_width</span><span class="p">,</span> <span class="n">new_height</span><span class="p">),</span> <span class="n">Image</span><span class="o">.</span><span class="n">Resampling</span><span class="o">.</span><span class="n">LANCZOS</span><span class="p">)</span>  </div>
 </div>
 
 </pre></div>
