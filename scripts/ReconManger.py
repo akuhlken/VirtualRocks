@@ -64,6 +64,7 @@ class ReconManager():
             if Path(self.projdir / "dense" / "fused.ply").is_file(): # If reconstruction exited normally
                 dense = Path(self.projdir / "dense")
                 pcm.create_heat_map(Path(dense / "fused.ply"), dense)
+                pcm.create_height_map(Path(dense / "fused.ply"), dense)
                 savefile = Path(dense / "save.ply")
                 if os.path.isfile(savefile):
                     os.remove(savefile)
