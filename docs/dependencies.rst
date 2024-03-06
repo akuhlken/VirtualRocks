@@ -1,16 +1,16 @@
 Dependencies
 -------------
 
-**VirtualRocks** has a lot of dependencies in order to run. Here's some info about them.
+**VirtualRocks** has a lot of dependencies (libraries + subprocesses) in order to run properly.
 
 .. _colmap:
 
 Colmap
 ===========
 
-**VirtualRocks** depends on **Colmap**, open source software that does things.
+**VirtualRocks** depends on **Colmap**, open source software that does things. It's a subprocess.
 
-To learn more about Colmap, click on this link: `Colmap Documentation <https://colmap.github.io/>`_
+To learn more about Colmap, check out their documentation: `Colmap Documentation <https://colmap.github.io/>`_
 
 
 .. _meshlab:
@@ -23,9 +23,9 @@ Pymeshlab
 .. note::
     Pymeshlab changes filter names. Here's a link to their list of filters (in case they change the names again):
 
-To learn more about pymeshlab, click on this link: `pymeshlab Documentation <https://pymeshlab.readthedocs.io/en/latest/>`_
+To learn more about pymeshlab, check out their documentation: `pymeshlab Documentation <https://pymeshlab.readthedocs.io/en/latest/>`_
 
-To learn more about MeshLab, click on this link: `MeshLab Website <https://www.meshlab.net>`_
+To learn more about MeshLab, check out their documentation: `MeshLab Website <https://www.meshlab.net>`_
 
 
 Python libraries
