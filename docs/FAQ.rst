@@ -15,7 +15,10 @@ What operating system can I use?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 **VirtualRocks** only works on Windows due to software dependencies in the 3D mesh generation pipeline. 
-If you're a try-hard, then it technically works on Linux too.
+It may also work on Linux, but it hasn't been tested and installing dependencies is more difficult.
+
+.. warning::
+    This app requires an NVIDA graphics card with `CUDA <https://developer.nvidia.com/cuda-zone>`_ installed.
 
 
 What types of images can I use?

@@ -4,8 +4,8 @@ Installation
 
 will eventually become the instructions for how to install **VirtualRocks**.
 
-.. warning::
-    This app requires a computer with an NVIDA graphics card with `CUDA <https://developer.nvidia.com/cuda-zone>`_ installed.
+.. note::
+    Check out the :ref:`required and suggested computer specs <specreqs>` before installing!
 
 what things to install.
 ^^^^^^^^^^^^^^^^^^^^^^^
