@@ -261,9 +261,6 @@ class main(Tk):
             self.page2.log(str(e))
             self.page2.log("No Points Found")
             self.page2.set_chart(self.page2.DEFAULT_CHART)
-            self.update_state(STARTED)
-
-
 
     # Handler for the restore point cloud menu item
     #   Should overwrite the current fused.ply with the un-edited save.ply
