@@ -54,6 +54,8 @@ def init_pkl():
     Method to initialize the recents pkl file if it doesn't already exist in the user's AppData.
     Called in `_load_pkl()` to make sure the pkl file exists before use.
     """
+    if not os.path.isdir(os.path.join(os.getenv('LOCALAPPDATA'), "VirtualRocks")):
+        os.mkdir(os.path.join(os.getenv('LOCALAPPDATA'), "VirtualRocks"))
     if not os.path.isfile(APPDATA_PATH):
         with open(APPDATA_PATH, 'wb') as file:
             pickle.dump([], file)
