@@ -256,11 +256,17 @@ class main(Tk):
         try:
             PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
             PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
-            self.page2.set_chart(Path(dense/ "height_map.png"))
         except Exception as e:
             self.page2.log(str(e))
             self.page2.log("No Points Found")
-            self.page2.set_chart(self.page2.DEFAULT_CHART)
+            shutil.copy(self.page2.DEFAULT_CHART, Path(self.projdir) / dense / "height_map.png")
+            shutil.copy(self.page2.DEFAULT_CHART, Path(self.projdir) / dense / "heat_map.png")
+        if self.page2.viewtype:
+            self.page2.set_chart(Path(dense/ "height_map.png"))
+        else:
+            self.page2.set_chart(Path(dense/ "heat_map.png"))
+
+
 
     # Handler for the restore point cloud menu item
     #   Should overwrite the current fused.ply with the un-edited save.ply
@@ -279,7 +285,10 @@ class main(Tk):
             shutil.copy(savefile, Path(dense / "fused.ply"))
             PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
             PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
-            self.page2.set_chart(Path(dense/ "height_map.png"))
+            if self.page2.viewtype:
+                self.page2.set_chart(Path(dense/ "height_map.png"))
+            else:
+                self.page2.set_chart(Path(dense/ "heat_map.png"))
         else:
             self.page2.log("Nothing to restore, run matcher to create a point cloud")
 

@@ -241,8 +241,8 @@ class PipelineGUI(AppWindow):
         and elevation map views. Because of how different threads interact with the TK app, the 
         chart uses a `RefreshChart` event to actually change, which the handler generates.
         """
-        self.viewtype = ~self.viewtype # Toggle boolean
-        if self.viewtype == 1:
+        self.viewtype = not self.viewtype # Toggle boolean
+        if self.viewtype:
             self.currentchart = Path(self.projdir) / "dense" / "height_map.png"
         else:
             self.currentchart = Path(self.projdir) / "dense" / "heat_map.png"
