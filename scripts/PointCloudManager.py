@@ -47,7 +47,7 @@ def create_height_map(filename, outdir):
 
     Args:
         filename (pathlib.Path): Path to a .ply point cloud file
-        outdir (pathlib.Path): Output directory
+        outdir (pathlib.Path): path to the project's "out" directory
     """
     x, y, z = get_coordinates(filename)
     min_val = min(np.min(x), np.min(y))
@@ -65,16 +65,16 @@ def create_height_map(filename, outdir):
 def remove_points(filename, minx, maxx, miny, maxy, minz, maxz):
     """
     Method removes points from .ply point cloud that lie outside the provided bounds and exports as
-    ``fused.ply`` into the dense directory.
+    `fused.ply` into the dense directory.
 
     Args:
         filename (pathlib.Path): Path to a .ply point cloud file
-        minx (float):
-        maxx (float):
-        miny (float):
-        maxy (float):
-        minz (float):
-        maxz (float):
+        minx (float): minimum x axis bound
+        maxx (float): maximum x axis bound
+        miny (float): minimum y axis bound
+        maxy (float): maximum y axis bound
+        minz (float): minimum z axis bound
+        maxz (float): maximum z axis bound
     """
     tempfile = pl.Path(filename).parent / "temp.ply"
     if os.path.isfile(tempfile):

@@ -128,7 +128,7 @@ class ReconManager():
         """
         Method runs a full reconstruction from images to tiled meshes automatically.
 
-        .. note::  
+        .. warning::  
             Using this method does not allow the user to trim point cloud. It's useful when running
             the app on a large dataset or overnight, but will likely result in a final mesh that 
             includes outlier points.
@@ -143,7 +143,7 @@ class ReconManager():
 
         The message (msg) input should be in the format `"$text1.text2.50$"`. 
         
-        **text1** is the current step being run, and **text2** is the current substep `(text2 can
+        **text1** is the current step, and **text2** is the current substep being run `(text2 can
         be left blank if there is no substep)`. The text portions of the message will be displayed
         above the lower progress bar.
         

@@ -18,7 +18,9 @@ class PipelineGUI(AppWindow):
 
     def __init__(self, parent, controller, projdir):
         """
-        description of the whole class. `PipelineGUI` is a subclass of :ref:`AppWindow <appwindow>`
+        `PipelineGUI` is a class that inherits from :ref:`AppWindow <appwindow>`. It creates and
+        manages the internal pages of the app that appear when a project is running. The class
+        handles the layout of the GUI and has event handlers for all buttons on the display.
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
@@ -37,9 +39,9 @@ class PipelineGUI(AppWindow):
     def setup_layout(self):
         """
         Method that sets up the layout of the GUI, making all elements and placing them. The GUI is
-        divided into left and right `tkinter.ttk.frame` objects, into which chart and pipeline 
-        elements are assigned respectively. The elements are packed (or put on a grid for buttons
-        aligned horizontally) to ensure order and allow for elegant resizing.
+        divided into left and right `tkinter.ttk.Frame` objects, into which chart and pipeline 
+        elements are assigned respectively. The elements are packed to ensure order and allow for
+        resizing.
         """
         ### Frames:
         self.left = Frame(self)
@@ -148,10 +150,9 @@ class PipelineGUI(AppWindow):
     def photos_handler(self):
         """
         Event handler for the "Add Photos" button, the first step in the pipeline. It opens a
-        dialog box propting the user to select the directory where their images are saved. Once the
-        image directory has been selected, it's passed to the `add_photos()` handler in
-        :ref:`main <main>`. Since it's a quick step with no subprocesses, the handler also deals
-        with updating the progress bar.
+        dialog box propting the user to select the directory where their images are saved, which 
+        gets passed to the `add_photos()` handler in :ref:`main <main>`.
+        It updates the bar internally since it's a nearly instantaneous step.
 
         .. note::
             Because of how :ref:`Colmap <colmap>` uses file paths, paths (and therefor folders and
@@ -196,7 +197,7 @@ class PipelineGUI(AppWindow):
                 self.log("All fields must contain numbers")
 
     # Event handler for the show files button
-    #   Should openthe out dir in file explorer
+    #   Should open the out dir in file explorer
     def show_files(self):
         """
         Event handler for the "Show Files" button, the last step in the pipeline that opens a
@@ -223,9 +224,10 @@ class PipelineGUI(AppWindow):
     #   Requests a Refreshchart event
     def set_chart(self, chartdir):
         """
-        description. 
+        Method to be called externally to set the chart image in the GUI. It's called in 
+        :ref:`main <main>` when the state is updated or bounds are set.
         Because of how different threads interact with the TK app, the chart
-        uses a `RefreshChart` event to actually change, which the handler generates.
+        uses a `RefreshChart` event to actually change, which the handler requests.
 
         Args:
             chartdir (pathlib.Path): the path to the current chart to display.
@@ -235,9 +237,9 @@ class PipelineGUI(AppWindow):
 
     def change_chart_view(self):
         """
-        Event handler for the "Change" button under the chart, toggles between the heat map and
-        elevation map views. Because of how different threads interact with the TK app, the chart
-        uses a `RefreshChart` event to actually change, which the handler generates.
+        Event handler for the "Change View" button under the chart, toggles between the heat map 
+        and elevation map views. Because of how different threads interact with the TK app, the 
+        chart uses a `RefreshChart` event to actually change, which the handler generates.
         """
         self.viewtype = ~self.viewtype # Toggle boolean
         if self.viewtype == 1:
@@ -267,13 +269,11 @@ class PipelineGUI(AppWindow):
     #   If chosen dir has a savefile this will load the existing project
     def change_projdir(self):
         """
-        Event handler for the "Change" button under the printed workspace path. It gives the user
-        an option to change the project directory (which was set when they first made the project).
-        It works like :ref:`AppWindow <appwindow>`'s `new_project` as it does nothing when the user
-        don't select a project directory or chooses one that contains a space. To change directory,
-        it makes a new project using the same name and image directory as the original in the new
-        project directory and removes the original project file from the dictionary of recent
-        projects.
+        Event handler for the "Change" button under the printed workspace path, which gives the 
+        user an option to change the project directory. It makes a new project with the same name
+        and image directory and removed the original from recents projects.
+        If the user doesn't select a new project directory (or if the path has a
+        space), then the project directory doesn't change.
         """
         projdir = fd.askdirectory(title='select workspace', initialdir='/home/')
         if not projdir:
@@ -291,7 +291,7 @@ class PipelineGUI(AppWindow):
     def log(self, msg):
         """
         Method that writes strings to the log for display in the log textbox. Sets the log display
-        to show the bottom/most recent items of the log.
+        to show the bottom of the log.
 
         Args:
             msg (string): what is it?

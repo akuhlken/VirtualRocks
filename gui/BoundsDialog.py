@@ -9,10 +9,10 @@ class BoundsDialog(simpledialog.Dialog):
     def body(self, master):
         """
         Method that creates the physical dialog box, allowing users to enter the bounds for the x,
-        y, and z axes.
+        y, and z axes. The dialog box is made with tkinters element.
 
         Args:
-            master (:ref:`PipelineGUI <pipelineGUI>`\* instance): the current instance of `PipelineGUI` class.
+            master (:ref:`PipelineGUI <pipelineGUI>`\*): the current instance of `PipelineGUI` class.
         """
         self.title("Remove Points:")
         self.labels = ["min X:", "max X:", "min Y:", "max Y:", "min Z:", "max Z:"]
@@ -29,7 +29,7 @@ class BoundsDialog(simpledialog.Dialog):
         Method to loop through the inputted values and make the values usable by the app. 
 
         For boxes that did not get values inputted, their values are set to defaults to avoid
-        undesired crops (min prompts = negative infinity, max prompts = positive infinity).
+        undesired crops (min prompts = `-infinity`, max prompts = `+infinity`).
         """
         try:
             self.result = []
