@@ -7,9 +7,9 @@ class StartGUI(AppWindow):
 
     def __init__(self, parent, controller):
         """
-        `StartGUI` is a subclass of :ref:`AppWindow <appwindow>` and creates the front page of the
-        Tk app. It has the menu bar from :ref:`AppWindow <appwindow>` and has button to allow the
-        user to make a new project or open an existing project.
+        `StartGUI` is a class that inherits from :ref:`AppWindow <appwindow>` and creates the front
+        page of the Tk app. It has the menu bar from :ref:`AppWindow <appwindow>` and has buttons
+        that allow the user to make a new project or open an existing project.
 
         Args:
             parent (tkinter container): passed from :ref:`main <main>` to make the tkinter frame.
