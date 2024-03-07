@@ -43,15 +43,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../reference/modules.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">VirtualRocks Unity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -92,18 +90,22 @@
 <span class="n">MATCHER</span> <span class="o">=</span> <span class="mi">70</span>
 <span class="n">MESHER</span> <span class="o">=</span> <span class="mi">100</span>
 
+<span class="c1"># Path to specific python version installed by the installer</span>
+<span class="n">PYTHONPATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;LOCALAPPDATA&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">Programs</span><span class="se">\\</span><span class="s2">Python</span><span class="se">\\</span><span class="s2">Python311</span><span class="se">\\</span><span class="s2">python.exe&quot;</span>
+
 <div class="viewcode-block" id="ReconManager">
 <a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager">[docs]</a>
 <span class="k">class</span> <span class="nc">ReconManager</span><span class="p">():</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">projdir</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        `ReconManager` is a controller class that manages the subprocesses for the Matcher and</span>
-<span class="sd">        Mesher. It also manages the progress bar displayed with projects on the Tk app.</span>
+<span class="sd">        `ReconManager` is a controller class that manages the subprocesses for the </span>
+<span class="sd">        :ref:`Matcher &lt;matcher&gt;` and :ref:`Mesher &lt;mesher&gt;`. It also manages the progress bar</span>
+<span class="sd">        displayed with projects on the Tk app.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            controller (Main): Reference to the main TK app</span>
-<span class="sd">            projdir (pathlib.Path): Project directory containing .pkl file</span>
+<span class="sd">            controller (:ref:`Main &lt;main&gt;`): Reference to the main TK app</span>
+<span class="sd">            projdir (pathlib.Path): Project directory containing .vrp file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">controller</span> <span class="o">=</span> <span class="n">controller</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span> <span class="o">=</span> <span class="kc">None</span>
@@ -115,9 +117,9 @@
 <a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.matcher">[docs]</a>
     <span class="k">def</span> <span class="nf">matcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method for starting the subprocess for the matcher, runs ``Matcher.py`` and updates </span>
-<span class="sd">        application state after running. Prompts the user on whether or not to overwrite database</span>
-<span class="sd">        if one exists.</span>
+<span class="sd">        Method for starting the subprocess for the matcher, runs :ref:`Matcher.py &lt;matcher&gt;` and</span>
+<span class="sd">        updates application state after running. Prompts the user on whether or not to overwrite</span>
+<span class="sd">        database if one exists.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">clean</span> <span class="o">=</span> <span class="s1">&#39;T&#39;</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="n">Path</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;database.db&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
@@ -138,13 +140,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;__________Starting Matcher__________&quot;</span><span class="p">)</span>
         <span class="n">colmap</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;scripts/COLMAP.bat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="n">workingdir</span> <span class="o">=</span> <span class="n">colmap</span><span class="o">.</span><span class="n">parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;Matcher.py&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">,</span> <span class="n">clean</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">workingdir</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">PYTHONPATH</span><span class="p">,</span> <span class="s1">&#39;Matcher.py&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">imgdir</span><span class="p">,</span> <span class="n">clean</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">workingdir</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">()</span>
         <span class="n">rcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span> <span class="c1"># If reconstruction exited normally</span>
                 <span class="n">dense</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span><span class="p">)</span>
                 <span class="n">pcm</span><span class="o">.</span><span class="n">create_heat_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
+                <span class="n">pcm</span><span class="o">.</span><span class="n">create_height_map</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;fused.ply&quot;</span><span class="p">),</span> <span class="n">dense</span><span class="p">)</span>
                 <span class="n">savefile</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dense</span> <span class="o">/</span> <span class="s2">&quot;save.ply&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">savefile</span><span class="p">):</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">savefile</span><span class="p">)</span>
@@ -160,8 +163,8 @@
 <a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.mesher">[docs]</a>
     <span class="k">def</span> <span class="nf">mesher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method for starting the subprocess for the mesher, runs ``Mesher.py`` and updates</span>
-<span class="sd">        application state after running.</span>
+<span class="sd">        Method for starting the subprocess for the mesher, runs :ref:`Mesher.py &lt;mesher&gt;` and</span>
+<span class="sd">        updates application state after running.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">:</span>
@@ -173,7 +176,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">(</span><span class="s2">&quot;__________Starting Mesher__________&quot;</span><span class="p">)</span>
         <span class="n">colmap</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;scripts/COLMAP.bat&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
         <span class="n">workingdir</span> <span class="o">=</span> <span class="n">colmap</span><span class="o">.</span><span class="n">parent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;python&#39;</span><span class="p">,</span> <span class="s1">&#39;Mesher.py&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">workingdir</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">PYTHONPATH</span><span class="p">,</span> <span class="s1">&#39;Mesher.py&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">workingdir</span><span class="p">),</span> <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_send_log</span><span class="p">()</span>
         <span class="n">rcode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">rcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -217,7 +220,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method runs a full reconstruction from images to tiled meshes automatically.</span>
 
-<span class="sd">        .. note::  </span>
+<span class="sd">        .. warning::  </span>
 <span class="sd">            Using this method does not allow the user to trim point cloud. It&#39;s useful when running</span>
 <span class="sd">            the app on a large dataset or overnight, but will likely result in a final mesh that </span>
 <span class="sd">            includes outlier points.</span>
@@ -233,10 +236,13 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for updating the progress bar text and completion.</span>
 
-<span class="sd">        The message (msg) input should be in the format `&quot;$text1.text2.50$&quot;`. **text1** is the</span>
-<span class="sd">        current step being run, and **text2** is the current substep `(text2 can be left blank if</span>
-<span class="sd">        there is no substep)`. The text portions of the message will be displayed above the lower </span>
-<span class="sd">        progress bar. The **number** is the percentage fill of the lower progress bar when the</span>
+<span class="sd">        The message (msg) input should be in the format `&quot;$text1.text2.50$&quot;`. </span>
+<span class="sd">        </span>
+<span class="sd">        **text1** is the current step, and **text2** is the current substep being run `(text2 can</span>
+<span class="sd">        be left blank if there is no substep)`. The text portions of the message will be displayed</span>
+<span class="sd">        above the lower progress bar.</span>
+<span class="sd">        </span>
+<span class="sd">        The **number** is the percentage fill of the lower progress bar when the</span>
 <span class="sd">        current step/substep combination begins. </span>
 
 <span class="sd">        Sending the message **&quot;$$&quot;** will reset the bar and text. </span>
@@ -269,14 +275,15 @@
 <a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager._send_log">[docs]</a>
     <span class="k">def</span> <span class="nf">_send_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Helper method to send a message to the PipelineGUI log. If message starts and ends with </span>
-<span class="sd">        **$**, it will go to the log and also be used to update the progress bar.</span>
+<span class="sd">        Helper method to send a message to the :ref:`PipelineGUI &lt;pipelineGUI&gt;` log. If message</span>
+<span class="sd">        starts and ends with **$**, it will go to the log and also be used to update the progress</span>
+<span class="sd">        bar.</span>
 
 <span class="sd">        If no message is provided, this method will wait for the current process to exit and</span>
 <span class="sd">        will capture any messages sent through STDOUT by that process.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            msg (string): Optional string to send to log</span>
+<span class="sd">            msg (string): Optional string to run and send to log</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">msg</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">page2</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>

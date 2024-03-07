@@ -246,11 +246,17 @@ class main(Tk):
         try:
             PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
             PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
-            self.page2.set_chart(Path(dense/ "height_map.png"))
         except Exception as e:
             self.page2.log(str(e))
             self.page2.log("No Points Found")
-            self.page2.set_chart(self.page2.DEFAULT_CHART)
+            shutil.copy(self.page2.DEFAULT_CHART, Path(self.projdir) / dense / "height_map.png")
+            shutil.copy(self.page2.DEFAULT_CHART, Path(self.projdir) / dense / "heat_map.png")
+        if self.page2.viewtype:
+            self.page2.set_chart(Path(dense/ "height_map.png"))
+        else:
+            self.page2.set_chart(Path(dense/ "heat_map.png"))
+
+
 
     def restore(self):
         """
@@ -266,7 +272,10 @@ class main(Tk):
             shutil.copy(savefile, Path(dense / "fused.ply"))
             PointCloudManager.create_heat_map(Path(dense / "fused.ply"), dense)
             PointCloudManager.create_height_map(Path(dense / "fused.ply"), dense)
-            self.page2.set_chart(Path(dense/ "height_map.png"))
+            if self.page2.viewtype:
+                self.page2.set_chart(Path(dense/ "height_map.png"))
+            else:
+                self.page2.set_chart(Path(dense/ "heat_map.png"))
         else:
             self.page2.log("Nothing to restore, run matcher to create a point cloud")
 
@@ -347,6 +356,12 @@ class main(Tk):
         """
         self.state = state
         self.page2.progresstotal.config(value=state)
+        # Get correct chart
+        if self.page2.viewtype:
+            chart = "height_map.png"
+        else:
+            chart = "heat_map.png"
+
         if state == STARTED:
             self.page2.set_chart(self.page2.DEFAULT_CHART)
             self.page2.matcher.config(state='disabled')
@@ -367,7 +382,7 @@ class main(Tk):
             self.page2.matcher.config(state='active')
         if state == MATCHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_chart(Path(dense/ "height_map.png"))
+            self.page2.set_chart(Path(dense/ chart))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.previewcloud.config(state='active')
@@ -377,7 +392,7 @@ class main(Tk):
             self.page2.mesher.config(state='active')
         if state == MESHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_chart(Path(dense/ "height_map.png"))
+            self.page2.set_chart(Path(dense/ chart))
             self.page2.matcher.config(state='active')
             self.page2.chartview.config(state='active')
             self.page2.resetbounds.config(state='active')

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mesher module &mdash; VirtualRocks 1.0 documentation</title>
+  <title>Mesher &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PhotoManager module" href="PhotoManager.html" />
-    <link rel="prev" title="Matcher module" href="Matcher.html" /> 
+    <link rel="next" title="PipelineGUI" href="PipelineGUI.html" />
+    <link rel="prev" title="Matcher" href="Matcher.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,36 +46,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">References</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="AppWindow.html">AppWindow module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BoundsDialog.html">BoundsDialog module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Matcher.html">Matcher module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Mesher module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Mesher.Mesher"><code class="docutils literal notranslate"><span class="pre">Mesher</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#Mesher.Mesher._crop"><code class="docutils literal notranslate"><span class="pre">Mesher._crop()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Mesher.Mesher._quad_slice"><code class="docutils literal notranslate"><span class="pre">Mesher._quad_slice()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#Mesher.Mesher.dense2mesh"><code class="docutils literal notranslate"><span class="pre">Mesher.dense2mesh()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">VirtualRocks Unity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="references.html">References</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="AppWindow.html">AppWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="BoundsDialog.html">BoundsDialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="main.html">main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Matcher.html">Matcher</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Mesher</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#Mesher.Mesher"><code class="docutils literal notranslate"><span class="pre">Mesher</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="PipelineGUI.html">PipelineGUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ReconManger.html">ReconManger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="StartGUI.html">StartGUI</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="PhotoManager.html">PhotoManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PipelineGUI.html">PipelineGUI module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PointCloudManager.html">PointCloudManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RecentsManager.html">RecentsManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ReconManger.html">ReconManger module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="StartGUI.html">StartGUI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">Modules</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -92,8 +86,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">References</a></li>
-      <li class="breadcrumb-item active">Mesher module</li>
+          <li class="breadcrumb-item"><a href="references.html">References</a></li>
+          <li class="breadcrumb-item"><a href="classes.html">Classes</a></li>
+      <li class="breadcrumb-item active">Mesher</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/Mesher.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,19 +98,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-Mesher">
-<span id="mesher-module"></span><h1>Mesher module<a class="headerlink" href="#module-Mesher" title="Link to this heading"></a></h1>
-<dl class="py class">
+  <section id="mesher">
+<span id="id1"></span><h1>Mesher<a class="headerlink" href="#mesher" title="Link to this heading"></a></h1>
+<dl class="py class" id="module-Mesher">
 <dt class="sig sig-object py" id="Mesher.Mesher">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Mesher.</span></span><span class="sig-name descname"><span class="pre">Mesher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">projdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Mesher.html#Mesher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Mesher.Mesher" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mesher is a python class designed to be run as a subprocess. It uses the
-<a class="reference internal" href="../meshlab.html#meshlab"><span class="std std-ref">pymeshlab</span></a> library to create the mesh, subdivide the mesh into tiles
+<p><cite>Mesher</cite> is a python class designed to be run as a subprocess. It uses the
+<a class="reference internal" href="../dependencies.html#meshlab"><span class="std std-ref">pymeshlab</span></a> library to create the mesh, subdivide the mesh into tiles
 until each tile has less than 50k verticies, generate textures, and create a low polygon
 mesh for the entire model.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>projdir</strong> (<em>pathlib.Path</em>) – Project directory containing .pkl file</p>
+<dd class="field-odd"><p><strong>projdir</strong> (<em>pathlib.Path</em>) – Project directory containing .vrp file.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -130,7 +125,7 @@ bounds of the original point cloud.</p>
 <span class="sig-name descname"><span class="pre">_quad_slice</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">miny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Mesher.html#Mesher._quad_slice"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Mesher.Mesher._quad_slice" title="Link to this definition"></a></dt>
 <dd><p>Recursive helper method for subdividing mesh into tiles. Once a tile is below 50k verticies,
 it generates a texture and export. The passed values allow the method to recurse on smaller
-portions of the mesh.</p>
+portions of the mesh. Bounds are inclusive.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Exported tiles save to the out folder in the current project directory. Their names
@@ -140,10 +135,10 @@ from each other.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>minx</strong> (<em>int</em>) – min x value</p></li>
-<li><p><strong>maxx</strong> (<em>int</em>) – max x value</p></li>
-<li><p><strong>miny</strong> (<em>int</em>) – min y value</p></li>
-<li><p><strong>maxy</strong> (<em>int</em>) – max y value</p></li>
+<li><p><strong>minx</strong> (<em>float</em>) – minimum x axis bound.</p></li>
+<li><p><strong>maxx</strong> (<em>float</em>) – maximum x axis bound.</p></li>
+<li><p><strong>miny</strong> (<em>float</em>) – minimum y axis bound.</p></li>
+<li><p><strong>maxy</strong> (<em>float</em>) – maximum y axis bound.</p></li>
 </ul>
 </dd>
 </dl>
@@ -153,7 +148,7 @@ from each other.</p>
 <dt class="sig sig-object py" id="Mesher.Mesher.dense2mesh">
 <span class="sig-name descname"><span class="pre">dense2mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/Mesher.html#Mesher.dense2mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#Mesher.Mesher.dense2mesh" title="Link to this definition"></a></dt>
 <dd><p>Function to generate tiles with textures as well as a low poly mesh. After being started in
-main, it runs different <a class="reference internal" href="../meshlab.html#meshlab"><span class="std std-ref">pymeshlab</span></a> functions while updating the progress
+main, it runs different <a class="reference internal" href="../dependencies.html#meshlab"><span class="std std-ref">pymeshlab</span></a> functions while updating the progress
 bar for each one.</p>
 </dd></dl>
 
@@ -165,8 +160,8 @@ bar for each one.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="Matcher.html" class="btn btn-neutral float-left" title="Matcher module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="PhotoManager.html" class="btn btn-neutral float-right" title="PhotoManager module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Matcher.html" class="btn btn-neutral float-left" title="Matcher" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PipelineGUI.html" class="btn btn-neutral float-right" title="PipelineGUI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

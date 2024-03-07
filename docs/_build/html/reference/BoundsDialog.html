@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BoundsDialog module &mdash; VirtualRocks 1.0 documentation</title>
+  <title>BoundsDialog &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="main module" href="main.html" />
-    <link rel="prev" title="AppWindow module" href="AppWindow.html" /> 
+    <link rel="next" title="main" href="main.html" />
+    <link rel="prev" title="AppWindow" href="AppWindow.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,35 +46,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">References</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="AppWindow.html">AppWindow module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">BoundsDialog module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#BoundsDialog.BoundsDialog"><code class="docutils literal notranslate"><span class="pre">BoundsDialog</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#BoundsDialog.BoundsDialog.apply"><code class="docutils literal notranslate"><span class="pre">BoundsDialog.apply()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#BoundsDialog.BoundsDialog.body"><code class="docutils literal notranslate"><span class="pre">BoundsDialog.body()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">VirtualRocks Unity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="references.html">References</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="AppWindow.html">AppWindow</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">BoundsDialog</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#BoundsDialog.BoundsDialog"><code class="docutils literal notranslate"><span class="pre">BoundsDialog</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="main.html">main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Matcher.html">Matcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Mesher.html">Mesher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PipelineGUI.html">PipelineGUI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ReconManger.html">ReconManger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="StartGUI.html">StartGUI</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Matcher.html">Matcher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Mesher.html">Mesher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PhotoManager.html">PhotoManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PipelineGUI.html">PipelineGUI module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PointCloudManager.html">PointCloudManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RecentsManager.html">RecentsManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ReconManger.html">ReconManger module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="StartGUI.html">StartGUI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">Modules</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -91,8 +86,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">References</a></li>
-      <li class="breadcrumb-item active">BoundsDialog module</li>
+          <li class="breadcrumb-item"><a href="references.html">References</a></li>
+          <li class="breadcrumb-item"><a href="classes.html">Classes</a></li>
+      <li class="breadcrumb-item active">BoundsDialog</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/BoundsDialog.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -102,12 +98,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-BoundsDialog">
-<span id="boundsdialog-module"></span><h1>BoundsDialog module<a class="headerlink" href="#module-BoundsDialog" title="Link to this heading"></a></h1>
-<dl class="py class">
+  <section id="boundsdialog">
+<span id="id1"></span><h1>BoundsDialog<a class="headerlink" href="#boundsdialog" title="Link to this heading"></a></h1>
+<dl class="py class" id="module-BoundsDialog">
 <dt class="sig sig-object py" id="BoundsDialog.BoundsDialog">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">BoundsDialog.</span></span><span class="sig-name descname"><span class="pre">BoundsDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BoundsDialog.html#BoundsDialog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BoundsDialog.BoundsDialog" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dialog</span></code></p>
+<p><cite>BoundsDialog</cite> initializes a dialog that prompts the user to input bounds for the current
+point cloud.</p>
 <p>Initialize a dialog.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -120,16 +118,19 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="BoundsDialog.BoundsDialog.apply">
 <span class="sig-name descname"><span class="pre">apply</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BoundsDialog.html#BoundsDialog.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BoundsDialog.BoundsDialog.apply" title="Link to this definition"></a></dt>
-<dd><p>description</p>
+<dd><p>Method to loop through the inputted values and make the values usable by the app.</p>
+<p>For boxes that did not get values inputted, their values are set to defaults to avoid
+undesired crops (minimum prompts = <cite>-infinity</cite>, maximum prompts = <cite>+infinity</cite>).</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="BoundsDialog.BoundsDialog.body">
 <span class="sig-name descname"><span class="pre">body</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">master</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/BoundsDialog.html#BoundsDialog.body"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#BoundsDialog.BoundsDialog.body" title="Link to this definition"></a></dt>
-<dd><p>description</p>
+<dd><p>Method that creates the physical dialog box, allowing users to enter the bounds for the x,
+y, and z axes. The dialog box is made with tkinters element.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>master</strong> (<em>type?</em>) – what is it?</p>
+<dd class="field-odd"><p><strong>master</strong> (<a class="reference internal" href="PipelineGUI.html#pipelinegui"><span class="std std-ref">PipelineGUI</span></a>*) – the current instance of <cite>PipelineGUI</cite> class.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -142,8 +143,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="AppWindow.html" class="btn btn-neutral float-left" title="AppWindow module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="main.html" class="btn btn-neutral float-right" title="main module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="AppWindow.html" class="btn btn-neutral float-left" title="AppWindow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-right" title="main" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

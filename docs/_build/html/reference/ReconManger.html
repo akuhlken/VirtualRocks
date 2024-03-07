@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ReconManger module &mdash; VirtualRocks 1.0 documentation</title>
+  <title>ReconManger &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="StartGUI module" href="StartGUI.html" />
-    <link rel="prev" title="RecentsManager module" href="RecentsManager.html" /> 
+    <link rel="next" title="StartGUI" href="StartGUI.html" />
+    <link rel="prev" title="PipelineGUI" href="PipelineGUI.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,39 +46,30 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Reference.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../colmap.html">Colmap Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../meshlab.html">MeshLab Help</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">References</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="AppWindow.html">AppWindow module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="BoundsDialog.html">BoundsDialog module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Matcher.html">Matcher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Mesher.html">Mesher module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PhotoManager.html">PhotoManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PipelineGUI.html">PipelineGUI module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PointCloudManager.html">PointCloudManager module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="RecentsManager.html">RecentsManager module</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">ReconManger module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#ReconManger.ReconManager"><code class="docutils literal notranslate"><span class="pre">ReconManager</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager._send_log"><code class="docutils literal notranslate"><span class="pre">ReconManager._send_log()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager._update_progress"><code class="docutils literal notranslate"><span class="pre">ReconManager._update_progress()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager.auto"><code class="docutils literal notranslate"><span class="pre">ReconManager.auto()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager.cancel"><code class="docutils literal notranslate"><span class="pre">ReconManager.cancel()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager.matcher"><code class="docutils literal notranslate"><span class="pre">ReconManager.matcher()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager.mesher"><code class="docutils literal notranslate"><span class="pre">ReconManager.mesher()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">VirtualRocks Unity</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="references.html">References</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="classes.html">Classes</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="AppWindow.html">AppWindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="BoundsDialog.html">BoundsDialog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="main.html">main</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Matcher.html">Matcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Mesher.html">Mesher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PipelineGUI.html">PipelineGUI</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ReconManger</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#ReconManger.ReconManager"><code class="docutils literal notranslate"><span class="pre">ReconManager</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="StartGUI.html">StartGUI</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="StartGUI.html">StartGUI module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules.html">Modules</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
 </ul>
 
         </div>
@@ -95,8 +86,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">References</a></li>
-      <li class="breadcrumb-item active">ReconManger module</li>
+          <li class="breadcrumb-item"><a href="references.html">References</a></li>
+          <li class="breadcrumb-item"><a href="classes.html">Classes</a></li>
+      <li class="breadcrumb-item active">ReconManger</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/reference/ReconManger.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -107,31 +99,33 @@
            <div itemprop="articleBody">
              
   <section id="module-ReconManger">
-<span id="reconmanger-module"></span><h1>ReconManger module<a class="headerlink" href="#module-ReconManger" title="Link to this heading"></a></h1>
+<span id="reconmanger"></span><span id="reconmanager"></span><h1>ReconManger<a class="headerlink" href="#module-ReconManger" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="ReconManger.ReconManager">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ReconManger.</span></span><span class="sig-name descname"><span class="pre">ReconManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ReconManger.html#ReconManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ReconManger.ReconManager" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p><cite>ReconManager</cite> is a controller class that manages the subprocesses for the Matcher and
-Mesher. It also manages the progress bar displayed with projects on the Tk app.</p>
+<p><cite>ReconManager</cite> is a controller class that manages the subprocesses for the
+<a class="reference internal" href="Matcher.html#matcher"><span class="std std-ref">Matcher</span></a> and <a class="reference internal" href="Mesher.html#mesher"><span class="std std-ref">Mesher</span></a>. It also manages the progress bar
+displayed with projects on the Tk app.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>controller</strong> (<em>Main</em>) – Reference to the main TK app</p></li>
-<li><p><strong>projdir</strong> (<em>pathlib.Path</em>) – Project directory containing .pkl file</p></li>
+<li><p><strong>controller</strong> (<a class="reference internal" href="main.html#main"><span class="std std-ref">Main</span></a>) – Reference to the main TK app</p></li>
+<li><p><strong>projdir</strong> (<em>pathlib.Path</em>) – Project directory containing .vrp file</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="ReconManger.ReconManager._send_log">
 <span class="sig-name descname"><span class="pre">_send_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ReconManger.html#ReconManager._send_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ReconManger.ReconManager._send_log" title="Link to this definition"></a></dt>
-<dd><p>Helper method to send a message to the PipelineGUI log. If message starts and ends with
-<strong>$</strong>, it will go to the log and also be used to update the progress bar.</p>
+<dd><p>Helper method to send a message to the <a class="reference internal" href="PipelineGUI.html#pipelinegui"><span class="std std-ref">PipelineGUI</span></a> log. If message
+starts and ends with <strong>$</strong>, it will go to the log and also be used to update the progress
+bar.</p>
 <p>If no message is provided, this method will wait for the current process to exit and
 will capture any messages sent through STDOUT by that process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>msg</strong> (<em>string</em>) – Optional string to send to log</p>
+<dd class="field-odd"><p><strong>msg</strong> (<em>string</em>) – Optional string to run and send to log</p>
 </dd>
 </dl>
 </dd></dl>
@@ -140,10 +134,11 @@ will capture any messages sent through STDOUT by that process.</p>
 <dt class="sig sig-object py" id="ReconManger.ReconManager._update_progress">
 <span class="sig-name descname"><span class="pre">_update_progress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ReconManger.html#ReconManager._update_progress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ReconManger.ReconManager._update_progress" title="Link to this definition"></a></dt>
 <dd><p>Helper method for updating the progress bar text and completion.</p>
-<p>The message (msg) input should be in the format <cite>“$text1.text2.50$”</cite>. <strong>text1</strong> is the
-current step being run, and <strong>text2</strong> is the current substep <cite>(text2 can be left blank if
-there is no substep)</cite>. The text portions of the message will be displayed above the lower
-progress bar. The <strong>number</strong> is the percentage fill of the lower progress bar when the
+<p>The message (msg) input should be in the format <cite>“$text1.text2.50$”</cite>.</p>
+<p><strong>text1</strong> is the current step, and <strong>text2</strong> is the current substep being run <cite>(text2 can
+be left blank if there is no substep)</cite>. The text portions of the message will be displayed
+above the lower progress bar.</p>
+<p>The <strong>number</strong> is the percentage fill of the lower progress bar when the
 current step/substep combination begins.</p>
 <p>Sending the message <strong>“$$”</strong> will reset the bar and text.</p>
 <dl class="field-list simple">
@@ -157,8 +152,8 @@ current step/substep combination begins.</p>
 <dt class="sig sig-object py" id="ReconManger.ReconManager.auto">
 <span class="sig-name descname"><span class="pre">auto</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ReconManger.html#ReconManager.auto"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ReconManger.ReconManager.auto" title="Link to this definition"></a></dt>
 <dd><p>Method runs a full reconstruction from images to tiled meshes automatically.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>Using this method does not allow the user to trim point cloud. It’s useful when running
 the app on a large dataset or overnight, but will likely result in a final mesh that
 includes outlier points.</p>
@@ -183,16 +178,16 @@ task and manually end/kill it.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ReconManger.ReconManager.matcher">
 <span class="sig-name descname"><span class="pre">matcher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ReconManger.html#ReconManager.matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ReconManger.ReconManager.matcher" title="Link to this definition"></a></dt>
-<dd><p>Method for starting the subprocess for the matcher, runs <code class="docutils literal notranslate"><span class="pre">Matcher.py</span></code> and updates
-application state after running. Prompts the user on whether or not to overwrite database
-if one exists.</p>
+<dd><p>Method for starting the subprocess for the matcher, runs <a class="reference internal" href="Matcher.html#matcher"><span class="std std-ref">Matcher.py</span></a> and
+updates application state after running. Prompts the user on whether or not to overwrite
+database if one exists.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ReconManger.ReconManager.mesher">
 <span class="sig-name descname"><span class="pre">mesher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ReconManger.html#ReconManager.mesher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ReconManger.ReconManager.mesher" title="Link to this definition"></a></dt>
-<dd><p>Method for starting the subprocess for the mesher, runs <code class="docutils literal notranslate"><span class="pre">Mesher.py</span></code> and updates
-application state after running.</p>
+<dd><p>Method for starting the subprocess for the mesher, runs <a class="reference internal" href="Mesher.html#mesher"><span class="std std-ref">Mesher.py</span></a> and
+updates application state after running.</p>
 </dd></dl>
 
 </dd></dl>
@@ -203,8 +198,8 @@ application state after running.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="RecentsManager.html" class="btn btn-neutral float-left" title="RecentsManager module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="StartGUI.html" class="btn btn-neutral float-right" title="StartGUI module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PipelineGUI.html" class="btn btn-neutral float-left" title="PipelineGUI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="StartGUI.html" class="btn btn-neutral float-right" title="StartGUI" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
