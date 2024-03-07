@@ -50,7 +50,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#what-operating-system-can-i-use">What operating system can I use?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-types-of-images-can-i-use">What types of images can I use?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#no-attribute-error-in-pymeshlab">“no attribute” error in pymeshlab?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#using-sphinx-for-documentation">using Sphinx for documentation.</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filenotfounderror-when-starting-the-app">FileNotFoundError when starting the app?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-sphinx-for-documentation">Using Sphinx for documentation.</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
@@ -100,17 +101,31 @@ It may also work on Linux, but it hasn’t been tested and installing dependenci
 </section>
 <section id="what-types-of-images-can-i-use">
 <h2>What types of images can I use?<a class="headerlink" href="#what-types-of-images-can-i-use" title="Link to this heading"></a></h2>
-<p>Our app works for images of type jpg, png, and tiff.</p>
+<p>Our app works for images of type jpg, png, and tiff.
+For colmap it is recomended that images include GPS information in their metadata.</p>
 </section>
 <section id="no-attribute-error-in-pymeshlab">
 <h2>“no attribute” error in pymeshlab?<a class="headerlink" href="#no-attribute-error-in-pymeshlab" title="Link to this heading"></a></h2>
-<p>Try running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pymeshlab</span> <span class="pre">-U</span></code> to update the package. If this fails go to <a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/">pymeshlab</a>
-and attempt to find the updated method or variable names. (pymeshlab frequently changes their documentation)
-You can also try creating a python script and run:
-<code class="docutils literal notranslate"><span class="pre">pymeshlab.replace_pymeshlab_filter_names('/path/to/my/script.py')</span></code></p>
+<p>Try running <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">pymeshlab</span> <span class="pre">-U</span></code> to update the package. If this fails go to the <a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/">pymeshlab</a>
+doc and attempt to find the updated method or variable names. (pymeshlab frequently changes their documentation)
+You can also try creating a python script which runs: <code class="docutils literal notranslate"><span class="pre">pymeshlab.replace_pymeshlab_filter_names('/path/to/my/script.py')</span></code></p>
+</section>
+<section id="filenotfounderror-when-starting-the-app">
+<h2>FileNotFoundError when starting the app?<a class="headerlink" href="#filenotfounderror-when-starting-the-app" title="Link to this heading"></a></h2>
+<p>This is most likely caused when starting the app if python could not be found at the location
+specified by the <strong>PYTHONPATH</strong> constant in main.py and in ReconManager.py. The app expects python to be located in:
+AppData\Local\Programs\Python\Python311. There are two solutions to this:
+* Uninstall python and then re-run the binary installer (recomended)
+* Run <code class="docutils literal notranslate"><span class="pre">where</span> <span class="pre">python</span></code> in combination with <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">--version</span></code> and then modify the <strong>PYTHONPATH</strong> constant in main.py and ReconManager.py to the location
+returned by the where command.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <code class="docutils literal notranslate"><span class="pre">where</span></code> command cannot find python or <code class="docutils literal notranslate"><span class="pre">--version</span></code> does not return 3.11.5, you either need to install it or if you already have it installed,
+add it to the system PATH. Both of which will be done automatically by running the VirtualRocks binary installer</p>
+</div>
 </section>
 <section id="using-sphinx-for-documentation">
-<h2>using Sphinx for documentation.<a class="headerlink" href="#using-sphinx-for-documentation" title="Link to this heading"></a></h2>
+<h2>Using Sphinx for documentation.<a class="headerlink" href="#using-sphinx-for-documentation" title="Link to this heading"></a></h2>
 <p>Go into the docs directory and type <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">clean</span> <span class="pre">html</span></code> to clear the _build directory. After it’s done,
 run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">html</span></code>. If any errors pop up,,, they shouldn’t be there.</p>
 </section>

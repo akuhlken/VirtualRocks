@@ -15,7 +15,7 @@ Downloading from source
 ^^^^^^^^^^^^^^^^^^^^^^^
 Download and extract the source code from the `GitHub <https://github.com/kuhlkena/VirtualRocks>`_
 Install Python 3.11.5 and ensure that it is installed under AppData\\Local\\Programs\\Python\\Python311 or modify the constant 
-"PYTHONPATH" in main.py and ReconManager.py
+**PYTHONPATH** in main.py and ReconManager.py
 
 .. note::
     Know issue with python downloaded from the Microsoft store and pymeshlab `pymeshlab issue <https://github.com/cnr-isti-vclab/PyMeshLab/issues/47>`_
@@ -38,7 +38,7 @@ Installing on Linux
 The source code for the Windows version of Colmap has been enclosed within 
 the project under /scripts, to run on Linux this must be replaced with the 
 linux version of `Colmap <https://colmap.github.io/>`_ and all calls to 
-"COLMAP.bat" must be repaced in ReconManager.py and Matcher.py
+**COLMAP.bat** must be repaced in ReconManager.py and Matcher.py
 
 .. note::
     This has not beet tested but should be possible.
