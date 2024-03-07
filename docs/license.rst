@@ -17,4 +17,4 @@ pymeshlab also includes this:
 | }
 
 
-Seems like we have to use GNU v. 3.0 while including the things that Colmap wants up to include for its licensing.
+Seems like we have to use GNU GPL v. 3.0 while including the things that Colmap wants up to include for its licensing.

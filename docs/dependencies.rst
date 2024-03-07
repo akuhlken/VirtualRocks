@@ -10,7 +10,21 @@ Dependencies
 Colmap
 ===========
 
-**VirtualRocks** depends on **Colmap**, open source software that does things. It's a subprocess.
+**VirtualRocks** depends on **Colmap**, an open source general-purpose Structure-from-Motion (SfM) and Multi-View Stereo (MVS) pipeline software. 
+By running commands in Colmap's `command-line interface <https://colmap.github.io/cli.html>`_ as subprocess, VirtualRocks turns the imported 
+images into a point cloud and texture with the touch of a button.
+
+The commands used in :ref:`Matcher.py <matcher>`'s `image2dense` function include:
+
+* `feature_extractor`: extracts different features from the images.
+* `exhaustive_matcher`: Perform feature matching after performing feature extraction.
+* `mapper`: Sparse 3D reconstruction / mapping of the dataset using SfM after performing feature extraction and matching.
+* `image_undistorter`: Undistort images and/or export them for Multi-View Stereo or to external dense reconstruction software, such as CMVS/PMVS.
+* `patch_match_stereo`: the longest step, Dense 3D reconstruction / mapping using MVS after running the `image_undistorter` to initialize the workspace.
+* `stereo_fusion`: Fusion of patch_match_stereo results into to a colored point cloud.
+* `model_converter`: Convert the COLMAP export format into PLY.
+
+`Descriptions for each command taken from Colmap's documentation.`
 
 To learn more about Colmap, check out their documentation: `Colmap Documentation <https://colmap.github.io/>`_
 
@@ -29,7 +43,7 @@ image data.
     Pymeshlab often changes filter names when updated. Their current list of filters (including functionality and name) can be 
     found `here <https://pymeshlab.readthedocs.io/en/latest/filter_list.html>`_.
 
-As of 3/7/2024, the some of the critical filters in :ref:`Mesher.py <mesher>`'s `dense2mesh` function include...
+As of initial release, the some of the critical filters in :ref:`Mesher.py <mesher>`'s `dense2mesh` function include...
 
 * `meshing_decimation_clustering <https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_clustering>`_ (for point cloud simplification)
 * `generate_surface_reconstruction_screened_poisson <https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_clustering>`_ (poisson mesher)
@@ -66,7 +80,7 @@ Additional libraries
 `Ttkbootstrap <https://ttkbootstrap.readthedocs.io/en/latest/>`_,
 `plyfile <https://python-plyfile.readthedocs.io/en/latest/>`_,
 `show_in_file_manager <https://pypi.org/project/show-in-file-manager/>`_,
-and `matplotlib <https://matplotlib.org/stable/>`_. They're used to make the app look good and run smoothly, but are less critical
-to functionality.
+and `matplotlib <https://matplotlib.org/stable/>`_. While less critical to the core functionality of the app, each of these
+libraries help to create the app style and allows the app to run smoothly. 
 
 
