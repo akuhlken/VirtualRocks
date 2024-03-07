@@ -3,33 +3,51 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-VirtualRocks's documentation!
+VirtualRocks
 ========================================
+
+.. figure:: media/header.png
+   :alt: mojave model
+   :height: 150 px
+   :width: 1000 px
+   :scale: 100 %
+   :align: left
+
+
 **VirtualRocks** is a CS senior capstone project made over the course of the 2023/24
-school year. It serves as a pipeline to turn a set of images into a 3D mesh with a 
-high quality texture, and turns that 3D mesh into a VR headset-ready experience.
+school year. It serves as a pipeline to turn a set of images into a set of tiled 3D meshes with 
+high quality textures. 
 
-.. note::
-
-   This project is under active development.
-
-About
------
-it an app. 
-
-must mention supported file types: jpg, png, and tiff. 
-
-Download
---------
-go to github and download the zip.
+**VirtualRocks Unity** is a partner virtual reality application created in Unity designed to view and 
+navivate the very large models created by the VirtualRocks app using distance culling and shaders.
 
 Getting Started
 ---------------
-do the download stuff. might change if andrew gets the installer working.
+* Install the VirtualRocks application :ref:`here <Installation>`
+* Create a new project inside a directory that will be used as the project workspace.
+* Add your images, images should have a high degree of overlap with minimal background (we recomend between 100-500 images)
+* Run matcher and mesher
+* To veiw your models in VR visit :ref:`Unity installation <unity>`
+
+.. figure:: media/start.png
+   :alt: mojave model
+   :height: 350 px
+   :width: 500 px
+   :scale: 100 %
+   :align: left
+
+.. figure:: media/main.png
+   :alt: mojave model
+   :height: 350 px
+   :width: 500 px
+   :scale: 100 %
+   :align: left
 
 Acknowledgments
 ---------------
-Who/where we got the models from. maybe last years team as well.
+* Twin Sisters and Mojave models created by Lyman Persico
+* Weston Elgin Hw models created by Coden Stark
+* Mt Carmel Junction model created by Morgan Sharp
 
 
 .. toctree::
@@ -45,6 +63,7 @@ Who/where we got the models from. maybe last years team as well.
    reference/references
    license
    
+----
 
 Indices and tables
 ==================
