@@ -9,7 +9,7 @@ from threading import Thread
 import scripts.PhotoManager as pm
 from gui.PipelineGUI import PipelineGUI
 from gui.StartGUI import StartGUI
-from scripts.ReconManger import ReconManager
+from scripts.ReconManager import ReconManager
 import pickle
 import ctypes
 import scripts.PointCloudManager as PointCloudManager
