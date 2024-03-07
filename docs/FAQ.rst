@@ -17,13 +17,13 @@ It may also work on Linux, but it hasn't been tested and installing dependencies
 
 
 What types of images can I use?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Our app works for images of type jpg, png, and tiff.
 For colmap it is recomended that images include GPS information in their metadata.
 
 
 "no attribute" error in pymeshlab?
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Try running ``pip install pymeshlab -U`` to update the package. If this fails go to the `pymeshlab <https://pymeshlab.readthedocs.io/en/latest/>`_
 doc and attempt to find the updated method or variable names. (pymeshlab frequently changes their documentation)
 You can also try creating a python script which runs: ``pymeshlab.replace_pymeshlab_filter_names('/path/to/my/script.py')``

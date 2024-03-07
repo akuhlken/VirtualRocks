@@ -46,7 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../unity.html">Unity Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../unity.html">VirtualRocks Unity</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../reference/references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">Licensing</a></li>
@@ -342,8 +342,8 @@
 <span class="sd">        and elevation map views. Because of how different threads interact with the TK app, the </span>
 <span class="sd">        chart uses a `RefreshChart` event to actually change, which the handler generates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">=</span> <span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="c1"># Toggle boolean</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span> <span class="c1"># Toggle boolean</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">viewtype</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span> <span class="o">/</span> <span class="s2">&quot;height_map.png&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">currentchart</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">projdir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;dense&quot;</span> <span class="o">/</span> <span class="s2">&quot;heat_map.png&quot;</span>
