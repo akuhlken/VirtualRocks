@@ -1,5 +1,5 @@
 # VirtualRocks
-3D landscapes from drone photogrammetry
+Making 3D meshes of landscapes from drone photogrammetry
 
 Docs: https://kuhlkena.github.io/VirtualRocks/_build/html/index.html
 
@@ -11,5 +11,5 @@ Using:
 
 System Requirements:
 - Windows OS
-- NVIDIA gpu with Cuda
+- NVIDIA GPA with CUDA
 - 16gb RAM
