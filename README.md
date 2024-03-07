@@ -11,5 +11,5 @@ Using:
 
 System Requirements:
 - Windows OS
-- NVIDIA GPA with CUDA
+- NVIDIA GPU with CUDA
 - 16gb RAM
