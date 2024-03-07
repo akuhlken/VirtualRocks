@@ -13,3 +13,6 @@ System Requirements:
 - Windows OS
 - NVIDIA GPU with CUDA
 - 16gb RAM
+
+# License
+VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
