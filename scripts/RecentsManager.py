@@ -2,6 +2,8 @@ import pickle
 from pathlib import Path
 import os
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 APPDATA_PATH = Path(os.getenv('LOCALAPPDATA') + '/VirtualRocks/recents.pkl').as_posix()
 
 def add(path):

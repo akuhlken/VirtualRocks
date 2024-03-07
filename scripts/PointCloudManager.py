@@ -6,6 +6,8 @@ from plyfile import PlyData, PlyElement
 import pathlib as pl
 import warnings
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 warnings.filterwarnings("ignore")
 
 def get_coordinates(filename):

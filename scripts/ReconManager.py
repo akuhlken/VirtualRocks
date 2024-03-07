@@ -5,6 +5,8 @@ from pathlib import Path
 from tkinter import messagebox as mb
 import scripts.PointCloudManager as pcm
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 # Progress Constants
 STARTED = 0
 PHOTOS = 10

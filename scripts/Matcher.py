@@ -4,6 +4,8 @@ import shutil
 import subprocess
 import sys
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 class Matcher:
     
     def __init__(self, projdir, imgdir, clean):

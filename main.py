@@ -15,6 +15,7 @@ import ctypes
 import scripts.PointCloudManager as PointCloudManager
 import scripts.RecentsManager as RecentsManager
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
 
 # DEBUG = True will cause the application to skip over recon scripts for testing
 DEBUG = False

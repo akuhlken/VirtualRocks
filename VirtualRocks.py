@@ -2,6 +2,8 @@ import os
 import subprocess
 import sys
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 # This file is only for the compiler and installer 
 # Run: pyinstaller --onefile VirtualRocks.py
 

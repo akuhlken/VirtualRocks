@@ -1,6 +1,7 @@
 from tkinter import simpledialog, Label, Entry
 
-# TODO: Header comments
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 class BoundsDialog(simpledialog.Dialog):
     """
     `BoundsDialog` initializes a dialog that prompts the user to input bounds for the current

@@ -2,7 +2,8 @@ from tkinter import Button
 from tkinter.ttk import Label, Frame
 from gui.AppWindow import AppWindow
 
-# TODO: Class description
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 class StartGUI(AppWindow):
 
     def __init__(self, parent, controller):

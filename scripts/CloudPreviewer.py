@@ -1,6 +1,8 @@
 import sys
 import open3d
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 def show(filename):
     """
     Function to open an open3d viewer window of a .ply file. Called as a subprocess in 

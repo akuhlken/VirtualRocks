@@ -4,7 +4,7 @@ from pathlib import Path
 from tkinter import Frame, Menu, filedialog as fd, messagebox as mb
 import scripts.RecentsManager as RecentsManager
 
-# TODO: lots of header comments needed
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
 
 class AppWindow(Frame):
     def __init__(self, parent, controller):

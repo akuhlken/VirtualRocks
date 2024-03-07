@@ -9,7 +9,8 @@ from gui.BoundsDialog import BoundsDialog
 from showinfm import show_in_file_manager
 import scripts.RecentsManager as RecentsManager
 
-# TODO: header comments
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 class PipelineGUI(AppWindow):
     
     # GUI constants
@@ -83,8 +84,8 @@ class PipelineGUI(AppWindow):
         self.chart = Canvas(self.left)
         self.chart_image_id = self.chart.create_image(0, 0, image=self.temp, anchor='nw')
         self.chart.bind('<Configure>', self._refresh_chart)
-        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud", command=lambda: self.controller.preview_cloud())  # TODO: need to add the handler/command to open the preview.
-        self.chartview = Button(chartbuttonsframe, width=20, text="Change View", command=lambda: self.change_chart_view())  # TODO: need to add the handler/command to switch chart
+        self.previewcloud = Button(chartbuttonsframe, width=20, text="Preview Point Cloud", command=lambda: self.controller.preview_cloud())
+        self.chartview = Button(chartbuttonsframe, width=20, text="Change View", command=lambda: self.change_chart_view())  
 
         # progress bar frame elements
         self.dirtext = Label(prog, text="Project Directory: Test/test/test/test/test")

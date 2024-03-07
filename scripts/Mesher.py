@@ -3,6 +3,8 @@ import pymeshlab
 import os
 import sys
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 # Default Parameters
 OVERLAP = 0.1 # Overlap ammount between tiles
 TEXTURE_RES = 4096

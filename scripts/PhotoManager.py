@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+# VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later
+
 # List of allowed file types
 EXTENSIONS = ['.jpg', '.jpeg', '.png', '.tif', '.tiff', '.JPG', '.JPEG', '.PNG', '.TIF', '.TIFF']
 DEFAULT_PREVIEW = Path(f"gui/placeholder/drone.jpg").resolve()
