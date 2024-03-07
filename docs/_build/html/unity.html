@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Unity Help &mdash; VirtualRocks 1.0 documentation</title>
+  <title>VirtualRocks Unity &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -21,8 +21,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="References" href="reference/references.html" />
-    <link rel="prev" title="Dependencies" href="dependencies.html" /> 
+    <link rel="next" title="Dependencies" href="dependencies.html" />
+    <link rel="prev" title="Samples" href="Samples.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,16 +46,16 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="FAQ.html">VirtualRocks FAQ</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Samples.html">Samples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Unity Help</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">VirtualRocks Unity</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#getting-the-unity-project">1: Getting the Unity project</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-new-scene">2: Add new scene</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build-to-headset">3: Build to headset</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Licensing</a></li>
 </ul>
@@ -74,7 +74,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Unity Help</li>
+      <li class="breadcrumb-item active">VirtualRocks Unity</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/unity.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -84,8 +84,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="unity-help">
-<h1>Unity Help<a class="headerlink" href="#unity-help" title="Link to this heading"></a></h1>
+  <section id="virtualrocks-unity">
+<h1>VirtualRocks Unity<a class="headerlink" href="#virtualrocks-unity" title="Link to this heading"></a></h1>
 <p><strong>VirtualRocks</strong> makes tiled meshes that, when imported and compiled in <strong>Unity</strong>, can be viewed on a VR headset.</p>
 <section id="getting-the-unity-project">
 <h2>1: Getting the Unity project<a class="headerlink" href="#getting-the-unity-project" title="Link to this heading"></a></h2>
@@ -99,19 +99,19 @@
 <h2>2: Add new scene<a class="headerlink" href="#add-new-scene" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Create a copy of sample scene folder.</p></li>
-<li><p>Rename new folder, the unity scene, and the sampleMat to something unique.</p></li>
-<li><p>Switch the the newly created scene by double clicking.</p></li>
+<li><p>Rename new folder, the unity scene, and the sampleMat to a unique value.</p></li>
+<li><p>Switch the newly created scene by double clicking.</p></li>
 <li><p>Drag the models and textures from your out folder to the meshes folder for your scene, wait for them to import.</p></li>
 <li><p>Drag and drop the tile prefab files into the map folder in the scene previewer.</p></li>
 <li><p>With prefabs selected right click and under “prefab” select “unpack completely”.</p></li>
 <li><p>Right click and select children, then drag into the map folder again.</p></li>
-<li><p>Now use the searchbar in the scene previewer to find and delete all the now empty tile opjects.</p></li>
+<li><p>Now use the search bar in the scene previewer to find and delete all the now empty tile objects.</p></li>
 <li><p>Select all the “default” objects and add a sphere collider.</p></li>
-<li><p>Then mark as static and turn off cast and recieve shadows.</p></li>
-<li><p>Finally dissable the mesh renderer for all “default” objects</p></li>
+<li><p>Then mark as static and turn off cast and receive shadows.</p></li>
+<li><p>Finally disable the mesh renderer for all “default” objects</p></li>
 <li><p>Move loy_poly prefab into scene, unpack, and mark as static.</p></li>
-<li><p>Disable cast and recieve shadows for low_poly.</p></li>
-<li><p>Set the texture for the special meterial in the scene folder to be the low_poly.jpg</p></li>
+<li><p>Disable cast and receive shadows for low_poly.</p></li>
+<li><p>Set the texture for the special material in the scene folder to be the low_poly.jpg</p></li>
 <li><p>Set the material for the low_poly mesh in the scene to be the special material.</p></li>
 <li><p>Scale and rotate all meshes to be roughly the size of the white plane, then remove the plane for the scene.</p></li>
 <li><p>Save and add the new scene to the build.</p></li>
@@ -125,7 +125,7 @@
 <h2>3: Build to headset<a class="headerlink" href="#build-to-headset" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Oculus desktop app: <a class="reference external" href="https://www.meta.com/quest/setup/">https://www.meta.com/quest/setup/</a></p></li>
-<li><p>Note: you may need to enable developer mode on your quest headset <a class="reference external" href="https://youtu.be/0sOqjnjkn-g?si=ehpftVt5r_5uk_OD">https://youtu.be/0sOqjnjkn-g?si=ehpftVt5r_5uk_OD</a></p></li>
+<li><p>Note: you may need to enable developer mode on your Quest headset <a class="reference external" href="https://youtu.be/0sOqjnjkn-g?si=ehpftVt5r_5uk_OD">https://youtu.be/0sOqjnjkn-g?si=ehpftVt5r_5uk_OD</a></p></li>
 </ul>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/yHr-8eaQD2o?si=u7X5OwBDjSiwU3QJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe><hr class="docutils" />
 </section>
@@ -135,8 +135,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dependencies.html" class="btn btn-neutral float-left" title="Dependencies" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="reference/references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="Samples.html" class="btn btn-neutral float-left" title="Samples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dependencies.html" class="btn btn-neutral float-right" title="Dependencies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

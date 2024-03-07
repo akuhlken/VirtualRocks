@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dependencies &mdash; VirtualRocks 1.0 documentation</title>
+  <title>System Requirements &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -20,9 +20,7 @@
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="References" href="reference/references.html" />
-    <link rel="prev" title="Unity Help" href="unity.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,20 +43,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="FAQ.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Samples.html">Samples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="unity.html">Unity Help</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Dependencies</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#colmap">Colmap</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pymeshlab">Pymeshlab</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-libraries">Python libraries</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#open3d">open3d</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="dependencies.html">Dependencies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Licensing</a></li>
 </ul>
@@ -77,9 +67,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Dependencies</li>
+      <li class="breadcrumb-item active">System Requirements</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/dependencies.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/specreqs.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -87,43 +77,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="dependencies">
-<h1>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h1>
-<p><strong>VirtualRocks</strong> has a lot of dependencies in order to run. Here’s some info about them.</p>
-<section id="colmap">
-<span id="id1"></span><h2>Colmap<a class="headerlink" href="#colmap" title="Link to this heading"></a></h2>
-<p><strong>VirtualRocks</strong> depends on <strong>Colmap</strong>, open source software that does things.</p>
-<p>To learn more about Colmap, click on this link: <a class="reference external" href="https://colmap.github.io/">Colmap Documentation</a></p>
-</section>
-<section id="pymeshlab">
-<span id="meshlab"></span><h2>Pymeshlab<a class="headerlink" href="#pymeshlab" title="Link to this heading"></a></h2>
-<p><strong>VirtualRocks</strong> depends on <strong>pymeshlab</strong> (a Python library that interfaces to MeshLab).</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Pymeshlab changes filter names. Here’s a link to their list of filters (in case they change the names again):</p>
+  <section id="system-requirements">
+<span id="specreqs"></span><h1>System Requirements<a class="headerlink" href="#system-requirements" title="Link to this heading"></a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This app requires a computer with an NVIDIA graphics card with <a class="reference external" href="https://developer.nvidia.com/cuda-zone">CUDA</a> installed.</p>
 </div>
-<p>To learn more about pymeshlab, click on this link: <a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/">pymeshlab Documentation</a></p>
-<p>To learn more about MeshLab, click on this link: <a class="reference external" href="https://www.meshlab.net">MeshLab Website</a></p>
-</section>
-<section id="python-libraries">
-<h2>Python libraries<a class="headerlink" href="#python-libraries" title="Link to this heading"></a></h2>
-<p>talk about colmap, meshlab, maybe all of the libraries we install.</p>
-<section id="open3d">
-<h3>open3d<a class="headerlink" href="#open3d" title="Link to this heading"></a></h3>
-<p>The controls for the open3d window, taken from the
-<a class="reference external" href="https://www.open3d.org/docs/latest/tutorial/visualization/visualization.html#Visualization">open3d</a> documentation:
-<a class="reference internal" href="help/open3d.html#open3dcontrols"><span class="std std-ref">open3d controls</span></a></p>
-</section>
-</section>
+<p>Because <strong>VirtualRocks</strong> is a computationally intensive app, better graphics cards and larger RAM have a great impact on how
+quickly you can make a 3D model.</p>
+<p>Minimum:</p>
+<ul class="simple">
+<li><p>Windows OS</p></li>
+<li><p>NVIDIA discrete graphics card with Cuda</p></li>
+<li><p>16gb of RAM</p></li>
+</ul>
 </section>
 
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="unity.html" class="btn btn-neutral float-left" title="Unity Help" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="reference/references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 
