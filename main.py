@@ -382,6 +382,12 @@ class main(Tk):
         """
         self.state = state
         self.page2.progresstotal.config(value=state)
+        # Get correct chart
+        if self.page2.viewtype:
+            chart = "height_map.png"
+        else:
+            chart = "heat_map.png"
+
         if state == STARTED:
             self.page2.set_chart(self.page2.DEFAULT_CHART)
             self.page2.matcher.config(state='disabled')
@@ -402,7 +408,7 @@ class main(Tk):
             self.page2.matcher.config(state='active')
         if state == MATCHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_chart(Path(dense/ "height_map.png"))
+            self.page2.set_chart(Path(dense/ chart))
             self.page2.show.config(state='disabled')
             self.page2.matcher.config(state='active')
             self.page2.previewcloud.config(state='active')
@@ -412,7 +418,7 @@ class main(Tk):
             self.page2.mesher.config(state='active')
         if state == MESHER:
             dense = Path(self.projdir / "dense")
-            self.page2.set_chart(Path(dense/ "height_map.png"))
+            self.page2.set_chart(Path(dense/ chart))
             self.page2.matcher.config(state='active')
             self.page2.chartview.config(state='active')
             self.page2.resetbounds.config(state='active')
