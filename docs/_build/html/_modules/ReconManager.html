@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ReconManger &mdash; VirtualRocks 1.0 documentation</title>
+  <title>ReconManager &mdash; VirtualRocks 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -67,7 +67,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
-      <li class="breadcrumb-item active">ReconManger</li>
+      <li class="breadcrumb-item active">ReconManager</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -76,13 +76,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for ReconManger</h1><div class="highlight"><pre>
+  <h1>Source code for ReconManager</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">tkinter</span> <span class="kn">import</span> <span class="n">messagebox</span> <span class="k">as</span> <span class="n">mb</span>
 <span class="kn">import</span> <span class="nn">scripts.PointCloudManager</span> <span class="k">as</span> <span class="nn">pcm</span>
+
+<span class="c1"># VirtualRocks source is released under GPL-3.0-only or GPL-3.0-or-later</span>
 
 <span class="c1"># Progress Constants</span>
 <span class="n">STARTED</span> <span class="o">=</span> <span class="mi">0</span>
@@ -94,7 +96,7 @@
 <span class="n">PYTHONPATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;LOCALAPPDATA&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">Programs</span><span class="se">\\</span><span class="s2">Python</span><span class="se">\\</span><span class="s2">Python311</span><span class="se">\\</span><span class="s2">python.exe&quot;</span>
 
 <div class="viewcode-block" id="ReconManager">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager">[docs]</a>
 <span class="k">class</span> <span class="nc">ReconManager</span><span class="p">():</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">controller</span><span class="p">,</span> <span class="n">projdir</span><span class="p">):</span>
@@ -114,7 +116,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_progress</span><span class="p">(</span><span class="s2">&quot;$$&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="ReconManager.matcher">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.matcher">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager.matcher">[docs]</a>
     <span class="k">def</span> <span class="nf">matcher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method for starting the subprocess for the matcher, runs :ref:`Matcher.py &lt;matcher&gt;` and</span>
@@ -160,7 +162,7 @@
 
 
 <div class="viewcode-block" id="ReconManager.mesher">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.mesher">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager.mesher">[docs]</a>
     <span class="k">def</span> <span class="nf">mesher</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method for starting the subprocess for the mesher, runs :ref:`Mesher.py &lt;mesher&gt;` and</span>
@@ -188,7 +190,7 @@
 
 
 <div class="viewcode-block" id="ReconManager.cancel">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.cancel">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager.cancel">[docs]</a>
     <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        If a subprocess exists, this method sends teminate signal to current subprocess. After a</span>
@@ -215,7 +217,7 @@
 
 
 <div class="viewcode-block" id="ReconManager.auto">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager.auto">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager.auto">[docs]</a>
     <span class="k">def</span> <span class="nf">auto</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method runs a full reconstruction from images to tiled meshes automatically.</span>
@@ -231,7 +233,7 @@
 
 
 <div class="viewcode-block" id="ReconManager._update_progress">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager._update_progress">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager._update_progress">[docs]</a>
     <span class="k">def</span> <span class="nf">_update_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method for updating the progress bar text and completion.</span>
@@ -272,7 +274,7 @@
 
         
 <div class="viewcode-block" id="ReconManager._send_log">
-<a class="viewcode-back" href="../reference/ReconManger.html#ReconManger.ReconManager._send_log">[docs]</a>
+<a class="viewcode-back" href="../reference/ReconManager.html#ReconManager.ReconManager._send_log">[docs]</a>
     <span class="k">def</span> <span class="nf">_send_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper method to send a message to the :ref:`PipelineGUI &lt;pipelineGUI&gt;` log. If message</span>

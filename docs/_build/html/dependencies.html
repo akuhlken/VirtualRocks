@@ -53,10 +53,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Dependencies</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#colmap">Colmap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pymeshlab">Pymeshlab</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-libraries">Python libraries</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#open3d">open3d</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#open3d">open3d</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-libraries">Additional libraries</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference/references.html">References</a></li>
@@ -89,31 +87,66 @@
              
   <section id="dependencies">
 <h1>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading"></a></h1>
-<p><strong>VirtualRocks</strong> has a lot of dependencies in order to run. Here’s some info about them.</p>
+<p><strong>VirtualRocks</strong> has a lot of dependencies (libraries + subprocesses) in order to run properly.</p>
+<hr class="docutils" />
 <section id="colmap">
 <span id="id1"></span><h2>Colmap<a class="headerlink" href="#colmap" title="Link to this heading"></a></h2>
-<p><strong>VirtualRocks</strong> depends on <strong>Colmap</strong>, open source software that does things.</p>
-<p>To learn more about Colmap, click on this link: <a class="reference external" href="https://colmap.github.io/">Colmap Documentation</a></p>
+<p><strong>VirtualRocks</strong> depends on <strong>Colmap</strong>, an open source general-purpose Structure-from-Motion (SfM) and Multi-View Stereo (MVS) pipeline software.
+By running commands in Colmap’s <a class="reference external" href="https://colmap.github.io/cli.html">command-line interface</a> as subprocesses, VirtualRocks turns the imported
+images into a point cloud and texture with the touch of a button.</p>
+<p>The commands used in <a class="reference internal" href="reference/Matcher.html#matcher"><span class="std std-ref">Matcher.py</span></a>’s <cite>image2dense</cite> function include:</p>
+<ul class="simple">
+<li><p><cite>feature_extractor</cite>: extracts different features from the images.</p></li>
+<li><p><cite>exhaustive_matcher</cite>: Perform feature matching after performing feature extraction.</p></li>
+<li><p><cite>mapper</cite>: Sparse 3D reconstruction / mapping of the dataset using SfM after performing feature extraction and matching.</p></li>
+<li><p><cite>image_undistorter</cite>: Undistort images and/or export them for Multi-View Stereo or to external dense reconstruction software, such as CMVS/PMVS.</p></li>
+<li><p><cite>patch_match_stereo</cite>: the longest step, Dense 3D reconstruction / mapping using MVS after running the <cite>image_undistorter</cite> to initialize the workspace.</p></li>
+<li><p><cite>stereo_fusion</cite>: Fusion of patch_match_stereo results into to a colored point cloud.</p></li>
+<li><p><cite>model_converter</cite>: Convert the COLMAP export format into PLY.</p></li>
+</ul>
+<p><cite>Descriptions for each command taken from Colmap’s documentation.</cite></p>
+<p>To learn more about Colmap, check out their documentation: <a class="reference external" href="https://colmap.github.io/">Colmap Documentation</a></p>
+<hr class="docutils" />
 </section>
 <section id="pymeshlab">
 <span id="meshlab"></span><h2>Pymeshlab<a class="headerlink" href="#pymeshlab" title="Link to this heading"></a></h2>
-<p><strong>VirtualRocks</strong> depends on <strong>pymeshlab</strong> (a Python library that interfaces to MeshLab).</p>
+<p><strong>VirtualRocks</strong> depends on <strong>pymeshlab</strong>, a Python library that interfaces to MeshLab, to make 3D meshs from point clouds and
+image data.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Pymeshlab changes filter names. Here’s a link to their list of filters (in case they change the names again):</p>
+<p>Pymeshlab often changes filter names when updated. Their current list of filters (including functionality and name) can be
+found <a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/filter_list.html">here</a>.</p>
 </div>
-<p>To learn more about pymeshlab, click on this link: <a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/">pymeshlab Documentation</a></p>
-<p>To learn more about MeshLab, click on this link: <a class="reference external" href="https://www.meshlab.net">MeshLab Website</a></p>
+<p>As of initial release, the some of the critical filters in <a class="reference internal" href="reference/Mesher.html#mesher"><span class="std std-ref">Mesher.py</span></a>’s <cite>dense2mesh</cite> function include:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_clustering">meshing_decimation_clustering</a> (for point cloud simplification)</p></li>
+<li><p><a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_clustering">generate_surface_reconstruction_screened_poisson</a> (poisson mesher)</p></li>
+<li><p><a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_quadric_edge_collapse">meshing_decimation_quadric_edge_collapse</a> (mesh simplification)</p></li>
+<li><p><a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_repair_non_manifold_edges">meshing_repair_non_manifold_edges</a> (removing non-manifold edges)</p></li>
+<li><p><a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/filter_list.html#compute_texcoord_parametrization_and_texture_from_registered_rasters">compute_texcoord_parametrization_and_texture_from_registered_rasters</a> (building textures)</p></li>
+</ul>
+<p>To learn more about pymeshlab, check out their documentation: <a class="reference external" href="https://pymeshlab.readthedocs.io/en/latest/">pymeshlab Documentation</a></p>
+<p>To learn more about MeshLab, check out their documentation: <a class="reference external" href="https://www.meshlab.net">MeshLab Website</a></p>
 </section>
-<section id="python-libraries">
-<h2>Python libraries<a class="headerlink" href="#python-libraries" title="Link to this heading"></a></h2>
-<p>talk about colmap, meshlab, maybe all of the libraries we install.</p>
+<hr class="docutils" />
 <section id="open3d">
-<h3>open3d<a class="headerlink" href="#open3d" title="Link to this heading"></a></h3>
+<h2>open3d<a class="headerlink" href="#open3d" title="Link to this heading"></a></h2>
+<p>While not critical to the main functionality of the app, the <cite>open3d</cite> library lets users view the point cloud
+before turning it into a 3D mesh.</p>
 <p>The controls for the open3d window, taken from the
 <a class="reference external" href="https://www.open3d.org/docs/latest/tutorial/visualization/visualization.html#Visualization">open3d</a> documentation:
 <a class="reference internal" href="help/open3d.html#open3dcontrols"><span class="std std-ref">open3d controls</span></a></p>
+<p>To learn more about open3d, check out their documentation: <a class="reference external" href="https://www.open3d.org/docs/latest/index.html">open3d Documentation</a></p>
 </section>
+<hr class="docutils" />
+<section id="additional-libraries">
+<h2>Additional libraries<a class="headerlink" href="#additional-libraries" title="Link to this heading"></a></h2>
+<p><strong>VirtualRocks</strong> depends on other python libraries, including
+<a class="reference external" href="https://ttkbootstrap.readthedocs.io/en/latest/">Ttkbootstrap</a>,
+<a class="reference external" href="https://python-plyfile.readthedocs.io/en/latest/">plyfile</a>,
+<a class="reference external" href="https://pypi.org/project/show-in-file-manager/">show_in_file_manager</a>,
+and <a class="reference external" href="https://matplotlib.org/stable/">matplotlib</a>. While less critical to the core functionality of the app, each of these
+libraries help to create the app style and allows the app to run smoothly.</p>
 </section>
 </section>
 
