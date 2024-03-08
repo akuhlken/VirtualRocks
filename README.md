@@ -1,7 +1,7 @@
 # VirtualRocks
 Making 3D meshes of landscapes from drone photogrammetry
 
-Docs: https://kuhlkena.github.io/VirtualRocks/_build/html/index.html
+Docs: https://kuhlkena.github.io/VirtualRocks
 
 VR App: https://github.com/kuhlkena/VirtualRocksUnity
 
