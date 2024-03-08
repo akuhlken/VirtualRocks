@@ -93,7 +93,7 @@
 <a class="viewcode-back" href="../reference/PointCloudManager.html#PointCloudManager.get_coordinates">[docs]</a>
 <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper method which extract the x and y coordinates from the given `.ply` file.</span>
+<span class="sd">    Helper method which extracts the x and y coordinates from the given `.ply` file.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file.</span>
@@ -113,10 +113,10 @@
 <span class="sd">    Creates a heat map of the dense point cloud and exports it as `heat_map.png` in the dense</span>
 <span class="sd">    directory.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            filename (type?): what is it?</span>
-<span class="sd">            outdir (type?): what is it?</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file.</span>
+<span class="sd">        outdir (pathlib.Path): path to the project&#39;s &quot;out&quot; directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">get_coordinates</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="n">min_val</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
     <span class="n">max_val</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
@@ -135,7 +135,8 @@
 <a class="viewcode-back" href="../reference/PointCloudManager.html#PointCloudManager.create_height_map">[docs]</a>
 <span class="k">def</span> <span class="nf">create_height_map</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">outdir</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    description</span>
+<span class="sd">    Creates a height map of the dense point cloud and exports it as `height_map.png` in the dense</span>
+<span class="sd">    directory.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        filename (pathlib.Path): Path to a .ply point cloud file.</span>

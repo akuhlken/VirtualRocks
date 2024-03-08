@@ -104,19 +104,21 @@
 <span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">create_heat_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#create_heat_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.create_heat_map" title="Link to this definition"></a></dt>
 <dd><p>Creates a heat map of the dense point cloud and exports it as <cite>heat_map.png</cite> in the dense
 directory.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Args:</dt><dd><p>filename (type?): what is it?
-outdir (type?): what is it?</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file.</p></li>
+<li><p><strong>outdir</strong> (<em>pathlib.Path</em>) – path to the project’s “out” directory.</p></li>
+</ul>
 </dd>
 </dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="PointCloudManager.create_height_map">
 <span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">create_height_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#create_height_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.create_height_map" title="Link to this definition"></a></dt>
-<dd><p>description</p>
+<dd><p>Creates a height map of the dense point cloud and exports it as <cite>height_map.png</cite> in the dense
+directory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -130,7 +132,7 @@ outdir (type?): what is it?</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="PointCloudManager.get_coordinates">
 <span class="sig-prename descclassname"><span class="pre">PointCloudManager.</span></span><span class="sig-name descname"><span class="pre">get_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PointCloudManager.html#get_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PointCloudManager.get_coordinates" title="Link to this definition"></a></dt>
-<dd><p>Helper method which extract the x and y coordinates from the given <cite>.ply</cite> file.</p>
+<dd><p>Helper method which extracts the x and y coordinates from the given <cite>.ply</cite> file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>pathlib.Path</em>) – Path to a .ply point cloud file.</p>

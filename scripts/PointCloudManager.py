@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 
 def get_coordinates(filename):
     """
-    Helper method which extract the x and y coordinates from the given `.ply` file.
+    Helper method which extracts the x and y coordinates from the given `.ply` file.
 
     Args:
         filename (pathlib.Path): Path to a .ply point cloud file.
@@ -29,10 +29,10 @@ def create_heat_map(filename, outdir):
     Creates a heat map of the dense point cloud and exports it as `heat_map.png` in the dense
     directory.
 
-        Args:
-            filename (type?): what is it?
-            outdir (type?): what is it?
-        """
+    Args:
+        filename (pathlib.Path): Path to a .ply point cloud file.
+        outdir (pathlib.Path): path to the project's "out" directory.
+    """
     x, y, z = get_coordinates(filename)
     min_val = min(np.min(x), np.min(y))
     max_val = max(np.max(x), np.max(y))
@@ -48,7 +48,8 @@ def create_heat_map(filename, outdir):
 
 def create_height_map(filename, outdir):
     """
-    description
+    Creates a height map of the dense point cloud and exports it as `height_map.png` in the dense
+    directory.
 
     Args:
         filename (pathlib.Path): Path to a .ply point cloud file.
