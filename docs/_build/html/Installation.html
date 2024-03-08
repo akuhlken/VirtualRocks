@@ -85,28 +85,29 @@
            <div itemprop="articleBody">
              
   <section id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <section id="binary-installer">
 <h2>Binary installer<a class="headerlink" href="#binary-installer" title="Link to this heading"></a></h2>
-<p>To install the VirtualRocks desktop app head to the <a class="reference external" href="https://github.com/kuhlkena/VirtualRocks/releases">GitHub releases</a>
-and download the latest installer. Note that the installer will also install Python 3.11 with it’s required packages and for the
-best results we recomend first uninstalling python 3.11 if it is present on your system.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Check out the <a class="reference internal" href="specreqs.html#specreqs"><span class="std std-ref">System Requirements page</span></a> before installing</p>
+<p>Check out the <a class="reference internal" href="specreqs.html#specreqs"><span class="std std-ref">System Requirements</span></a> before installing.</p>
 </div>
+<p>To install the <strong>VirtualRocks</strong> desktop app, go to <a class="reference external" href="https://github.com/kuhlkena/VirtualRocks/releases">GitHub releases</a>
+and download the latest installer. Note that the installer will also install Python 3.11 with its required packages. For the
+best results, <strong>uninstall Python 3.11</strong> if it’s already present on your system <strong>before</strong> trying to install.</p>
 </section>
+<hr class="docutils" />
 <section id="downloading-from-source">
 <h2>Downloading from source<a class="headerlink" href="#downloading-from-source" title="Link to this heading"></a></h2>
-<p>Download and extract the source code from the <a class="reference external" href="https://github.com/kuhlkena/VirtualRocks">GitHub</a>
-Install Python 3.11.5 and ensure that it is installed under AppData\Local\Programs\Python\Python311 or modify the constant
-<strong>PYTHONPATH</strong> in main.py and ReconManager.py</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Know issue with python downloaded from the Microsoft store and pymeshlab <a class="reference external" href="https://github.com/cnr-isti-vclab/PyMeshLab/issues/47">pymeshlab issue</a>
-as well as issues using anaconda and pymeshlab</p>
+<p>Download and extract the source code from the <a class="reference external" href="https://github.com/kuhlkena/VirtualRocks">GitHub</a>.</p>
+<p>Install Python 3.11.5 and ensure that it is installed under <cite>AppData\Local\Programs\Python\Python311</cite> or modify the constant
+<strong>PYTHONPATH</strong> in <a class="reference internal" href="reference/main.html#main"><span class="std std-ref">main.py</span></a> and <a class="reference internal" href="reference/ReconManager.html#reconmanager"><span class="std std-ref">ReconManager.py</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>There’s a <a class="reference external" href="https://github.com/cnr-isti-vclab/PyMeshLab/issues/47">known issue</a> when trying to use pymeshlab on specific versions
+of Python. Pymeshlab will not work with Python downloaded from the Microsoft store or when using Anaconda.</p>
 </div>
-<p>Run pip install for</p>
+<p>Run pip install for:</p>
 <ul class="simple">
 <li><p>ttkbootstrap</p></li>
 <li><p>show_in_file_manager</p></li>
@@ -115,17 +116,19 @@ as well as issues using anaconda and pymeshlab</p>
 <li><p>pymeshlab</p></li>
 <li><p>open3d</p></li>
 </ul>
-<p>Also requires and installation of Cuda wich may or may not already be present.</p>
+<p>Also requires the installation of <a class="reference external" href="https://developer.nvidia.com/cuda-zone">CUDA</a>, which may or may not already be present.</p>
 </section>
+<hr class="docutils" />
 <section id="installing-on-linux">
 <h2>Installing on Linux<a class="headerlink" href="#installing-on-linux" title="Link to this heading"></a></h2>
 <p>The source code for the Windows version of Colmap has been enclosed within
-the project under /scripts, to run on Linux this must be replaced with the
-linux version of <a class="reference external" href="https://colmap.github.io/">Colmap</a> and all calls to
-<strong>COLMAP.bat</strong> must be repaced in ReconManager.py and Matcher.py</p>
+the project under <cite>/scripts</cite>.</p>
+<p>To run on Linux, download the Linux version of <a class="reference external" href="https://colmap.github.io/">Colmap</a>. All calls to
+<strong>COLMAP.bat</strong> must be replaced in <a class="reference internal" href="reference/ReconManager.html#reconmanager"><span class="std std-ref">ReconManager.py</span></a> and <a class="reference internal" href="reference/Matcher.html#matcher"><span class="std std-ref">Matcher.py</span></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This has not beet tested but should be possible.</p>
+<p>While this should be possible, <strong>VirtualRocks</strong> has not been tested on Linux. This should only be attempted
+by advanced users.</p>
 </div>
 </section>
 </section>

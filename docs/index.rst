@@ -15,19 +15,22 @@ VirtualRocks
 
 
 **VirtualRocks** is a CS senior capstone project made over the course of the 2023/24
-school year. It serves as a pipeline to turn a set of images into a set of tiled 3D meshes with 
-high quality textures. 
+school year. It serves as a pipeline to turn a set of user-uploaded images into a set of tiled 3D meshes with 
+high quality textures, optimized for viewing on VR headsets.
 
-**VirtualRocks Unity** is a partner virtual reality application created in Unity designed to view and 
-navivate the very large models created by the VirtualRocks app using distance culling and shaders.
+**VirtualRocks Unity** is a partner `virtual reality application <https://github.com/kuhlkena/VirtualRocksUnity>`_
+created in Unity designed to view and navigate the large models created by the `VirtualRocks` app using distance 
+culling and shaders.
+
+----
 
 Getting Started
 ---------------
-* Install the VirtualRocks application :ref:`here <Installation>`
+* Install the VirtualRocks application :ref:`here <installation>`.
 * Create a new project inside a directory that will be used as the project workspace.
-* Add your images, images should have a high degree of overlap with minimal background (we recomend between 100-500 images)
-* Run matcher and mesher
-* To veiw your models in VR visit :ref:`Unity installation <unity>`
+* Add your images. Images should have a high degree of overlap with minimal background (Ideally between 100-500 images).
+* Run the :ref:`matcher <colmap>` and :ref:`mesher <meshlab>`.
+* To view your models in VR, follow the instructions in :ref:`Unity installation <unity>`.
 
 .. figure:: media/start.png
    :alt: mojave model
@@ -43,11 +46,14 @@ Getting Started
    :scale: 100 %
    :align: left
 
+
 Acknowledgments
 ---------------
-* Twin Sisters and Mojave models created by Lyman Persico
-* Weston Elgin Hw models created by Coden Stark
-* Mt Carmel Junction model created by Morgan Sharp
+The default models in **VirtualRocks Unity** are sourced from different projects and research conducted by
+the `Geology Department <https://www.whitman.edu/academics/majors-and-minors/geology>`_ at Whitman College.
+
+The Twin Sisters and Mojave models were created by Lyman Persico, Weston Elgin Hw model by Coden Stark, and
+Mt Carmel Junction model by Morgan Sharp.
 
 
 .. toctree::

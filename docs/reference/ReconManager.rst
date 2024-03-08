@@ -3,7 +3,7 @@
 ReconManger
 ==================
 
-.. automodule:: ReconManger
+.. automodule:: ReconManager
    :members:
    :private-members:
    :undoc-members:

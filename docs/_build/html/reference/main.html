@@ -62,7 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="Matcher.html">Matcher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Mesher.html">Mesher</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PipelineGUI.html">PipelineGUI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="ReconManger.html">ReconManger</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ReconManager.html">ReconManger</a></li>
 <li class="toctree-l3"><a class="reference internal" href="StartGUI.html">StartGUI</a></li>
 </ul>
 </li>
@@ -182,7 +182,7 @@ a new project. Will be called by <cite>new_project</cite> and <cite>open_project
 <span class="sig-name descname"><span class="pre">add_photos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imgdir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.add_photos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.add_photos" title="Link to this definition"></a></dt>
 <dd><p>Method that sets the controller variable for image directory and sets the example image
 from pictures in the selected image directory. Progress on this step is tracked using the
-<cite>_send_log</cite> helper function in <a class="reference internal" href="ReconManger.html#reconmanager"><span class="std std-ref">ReconManager</span></a>.</p>
+<cite>_send_log</cite> helper function in <a class="reference internal" href="ReconManager.html#reconmanager"><span class="std std-ref">ReconManager</span></a>.</p>
 <p>The handler method <cite>photos_handler</cite> in <a class="reference internal" href="PipelineGUI.html#pipelinegui"><span class="std std-ref">PipelineGUI</span></a> opens a dialog
 that allows the user to select an image directory.</p>
 <dl class="field-list simple">
@@ -197,11 +197,11 @@ that allows the user to select an image directory.</p>
 <span class="sig-name descname"><span class="pre">auto_recon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.auto_recon"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.auto_recon" title="Link to this definition"></a></dt>
 <dd><p>Handler method for the automatic reconstuction feature, called by a command in the
 <cite>Reconstruction</cite> file menu in <a class="reference internal" href="AppWindow.html#appwindow"><span class="std std-ref">AppWindow</span></a>.</p>
-<p>It starts a new thread for the <cite>auto</cite> method in the <a class="reference internal" href="ReconManger.html#reconmanager"><span class="std std-ref">ReconManager</span></a>
+<p>It starts a new thread for the <cite>auto</cite> method in the <a class="reference internal" href="ReconManager.html#reconmanager"><span class="std std-ref">ReconManager</span></a>
 class.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Using <a class="reference internal" href="ReconManger.html#reconmanager"><span class="std std-ref">ReconManager</span></a>’s <cite>auto</cite> method does not allow the user to
+<p>Using <a class="reference internal" href="ReconManager.html#reconmanager"><span class="std std-ref">ReconManager</span></a>’s <cite>auto</cite> method does not allow the user to
 trim the point cloud. It’s useful when running the app on a large dataset or overnight,
 but will likely result in a final mesh that includes outlier points.</p>
 </div>
@@ -287,7 +287,7 @@ setting bounds.</p>
 <dd><p>Method communicates between the GUI and the PointCloudManager for trimming models by
 removing points from the dense point clouds.
 This step automatically completes, and its progress is tracked using the <cite>_send_log</cite>
-helper function in <a class="reference internal" href="ReconManger.html#reconmanager"><span class="std std-ref">ReconManager</span></a>.
+helper function in <a class="reference internal" href="ReconManager.html#reconmanager"><span class="std std-ref">ReconManager</span></a>.
 The handler method <cite>bounds_handler</cite> in <a class="reference internal" href="PipelineGUI.html#pipelinegui"><span class="std std-ref">PipelineGUI</span></a> creates the dialog
 (using the <a class="reference internal" href="BoundsDialog.html#boundsdialog"><span class="std std-ref">BoundsDialog</span></a> class) and passes the bounds received from
 the user to this method. Bounds are inclusive.</p>
@@ -310,7 +310,7 @@ the user to this method. Bounds are inclusive.</p>
 <span class="sig-name descname"><span class="pre">start_matcher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.start_matcher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.start_matcher" title="Link to this definition"></a></dt>
 <dd><p>Handler method for starting the mesher (<a class="reference internal" href="../dependencies.html#colmap"><span class="std std-ref">Colmap</span></a>), called via “2: Matcher”
 button press in <a class="reference internal" href="PipelineGUI.html#pipelinegui"><span class="std std-ref">PipelineGUI</span></a>.</p>
-<p>It starts a new thread for the <cite>matcher</cite> method in the <a class="reference internal" href="ReconManger.html#reconmanager"><span class="std std-ref">ReconManager</span></a>
+<p>It starts a new thread for the <cite>matcher</cite> method in the <a class="reference internal" href="ReconManager.html#reconmanager"><span class="std std-ref">ReconManager</span></a>
 class.</p>
 </dd></dl>
 
@@ -319,7 +319,7 @@ class.</p>
 <span class="sig-name descname"><span class="pre">start_mesher</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/main.html#main.start_mesher"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.main.start_mesher" title="Link to this definition"></a></dt>
 <dd><p>Handler method for starting the mesher (<a class="reference internal" href="../dependencies.html#meshlab"><span class="std std-ref">pymeshlab</span></a>), called via “3: Mesher”
 button push in <a class="reference internal" href="PipelineGUI.html#pipelinegui"><span class="std std-ref">PipelineGUI</span></a>.</p>
-<p>It starts a new thread for the <cite>mesher</cite> method in the <a class="reference internal" href="ReconManger.html#reconmanager"><span class="std std-ref">ReconManager</span></a>
+<p>It starts a new thread for the <cite>mesher</cite> method in the <a class="reference internal" href="ReconManager.html#reconmanager"><span class="std std-ref">ReconManager</span></a>
 class.</p>
 </dd></dl>
 
