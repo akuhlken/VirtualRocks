@@ -11,7 +11,7 @@ Colmap
 ===========
 
 **VirtualRocks** depends on **Colmap**, an open source general-purpose Structure-from-Motion (SfM) and Multi-View Stereo (MVS) pipeline software. 
-By running commands in Colmap's `command-line interface <https://colmap.github.io/cli.html>`_ as subprocess, VirtualRocks turns the imported 
+By running commands in Colmap's `command-line interface <https://colmap.github.io/cli.html>`_ as subprocesses, VirtualRocks turns the imported 
 images into a point cloud and texture with the touch of a button.
 
 The commands used in :ref:`Matcher.py <matcher>`'s `image2dense` function include:
@@ -43,7 +43,7 @@ image data.
     Pymeshlab often changes filter names when updated. Their current list of filters (including functionality and name) can be 
     found `here <https://pymeshlab.readthedocs.io/en/latest/filter_list.html>`_.
 
-As of initial release, the some of the critical filters in :ref:`Mesher.py <mesher>`'s `dense2mesh` function include...
+As of initial release, the some of the critical filters in :ref:`Mesher.py <mesher>`'s `dense2mesh` function include:
 
 * `meshing_decimation_clustering <https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_clustering>`_ (for point cloud simplification)
 * `generate_surface_reconstruction_screened_poisson <https://pymeshlab.readthedocs.io/en/latest/filter_list.html#meshing_decimation_clustering>`_ (poisson mesher)

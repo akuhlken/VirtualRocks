@@ -1,3 +1,4 @@
+.. _installation:
 
 Installation
 -----------------
@@ -18,7 +19,7 @@ Downloading from source
 ^^^^^^^^^^^^^^^^^^^^^^^
 Download and extract the source code from the `GitHub <https://github.com/kuhlkena/VirtualRocks>`_.
 
-Install Python 3.11.5 and ensure that it is installed under AppData\\Local\\Programs\\Python\\Python311 or modify the constant 
+Install Python 3.11.5 and ensure that it is installed under `AppData\\Local\\Programs\\Python\\Python311` or modify the constant 
 **PYTHONPATH** in :ref:`main.py <main>` and :ref:`ReconManager.py <ReconManager>`.
 
 .. warning::

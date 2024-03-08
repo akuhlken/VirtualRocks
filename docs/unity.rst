@@ -1,8 +1,10 @@
+.. _unity:
 
 VirtualRocks Unity
 ------------------
 
-**VirtualRocks** makes tiled meshes that, when imported and compiled in **Unity**, can be viewed on a VR headset.
+**VirtualRocks** makes tiled meshes that, when imported and compiled in **Unity**, can be viewed on a VR headset. The easiest
+way to view the models is using the **VirtualRocks Unity** `virtual reality application <https://github.com/kuhlkena/VirtualRocksUnity>`_.
 
 1: Getting the Unity project
 ***********************************
