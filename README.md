@@ -1,9 +1,9 @@
 # VirtualRocks
 Making 3D meshes of landscapes from drone photogrammetry
 
-Docs: https://kuhlkena.github.io/VirtualRocks
+Docs: [VirtualRocks Documentation](https://akuhlken.github.io/VirtualRocks)
 
-VR App: https://github.com/kuhlkena/VirtualRocksUnity
+VR App: [VirtualRocksUnity](https://github.com/akuhlken/VirtualRocksUnity)
 
 Using: 
 - Colmap 3.8 https://github.com/colmap/colmap/releases/tag/3.8
